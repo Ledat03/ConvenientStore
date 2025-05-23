@@ -1,0 +1,30 @@
+.admin-container {
+  .second-container {
+    display: flex;
+    .main-content-admin {
+      .admin-header {
+        background-color: yellow;
+        width: 100vw;
+      }
+
+      .manage-user {
+        width: 100vw;
+        height: 100vh;
+      }
+    }
+  }
+}
+.filter-admin {
+  height: 90vh;
+  background-color: azure;
+  .sidebar-admin {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    background-color: wheat;
+    height: max-height;
+  }
+}
+.sidebar-header {
+  width: 100%;
+}
