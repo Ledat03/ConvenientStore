@@ -19,9 +19,13 @@ public class Product {
     private String howToUse;
     private String preserve;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subCategoryId")
+    @JoinColumn(name = "subCategory_id")
     private SubCategory subCategory;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
     @OneToMany(mappedBy = "product")
     private List<ProductVariant> productVariant;
-
+    @OneToMany(mappedBy = "product")
+    private List<CartDetail> cartDetails;
 }

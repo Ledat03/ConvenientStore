@@ -29,15 +29,18 @@ public class FormatRestResponse implements ResponseBodyAdvice {
             return body;
         }
         int getStatus = serverHttpResponse.getStatus();
-        RestRestponse<Object> restResponse = new RestRestponse<Object>();
-        restResponse.setStatusCode(getStatus);
-        if (getStatus >= 400) {
-            return body;
-        } else {
-            restResponse.setData(body);
-            restResponse.setMessage("OK");
-            restResponse.setStatusCode(200);
-        }
+            RestRestponse<Object> restResponse = new RestRestponse<>() ;
+            if (getStatus >= 400) {
+                restResponse.setMessage("Lỗi");
+                restResponse.setError("lỗi");
+                restResponse.setStatusCode(getStatus);
+            } else {
+                restResponse.setData(body);
+                restResponse.setMessage("OK");
+                restResponse.setStatusCode(getStatus);
+                restResponse.setError(null);
+            }
+
         return restResponse;
     }
 }

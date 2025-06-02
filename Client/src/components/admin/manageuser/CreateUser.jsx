@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import { createNewUser } from "../../../services/GetAPI";
 import { Modal, Button, Form, Col, Row } from "react-bootstrap";
 import { useState } from "react";
+import { FaPlus } from "react-icons/fa";
 const CreateUser = (props) => {
   const [isShow, setShow] = useState(false);
   const close = () => setShow(false);
@@ -48,12 +49,12 @@ const CreateUser = (props) => {
   return (
     <>
       <Button
-        className="btn add-btn"
+        className="add-btn"
         onClick={() => {
           open();
         }}
       >
-        Thêm mới người dùng
+        <FaPlus className="i i-add-user" />
       </Button>
       <Modal size="xl" show={isShow} onHide={close}>
         <Modal.Header closeButton> Add New User</Modal.Header>

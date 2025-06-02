@@ -1,0 +1,62 @@
+// Colors
+$primary-blue: #2f3b6f;
+$orange-accent: #d8a442;
+$red-accent: #ae4c3c;
+$teal-accent: #4bb9ba;
+$gray-light: #f7f8f8;
+$gray-medium: #99aaad;
+$gray-dark: #cbcdce;
+$white: #ffffff;
+$black: #000000;
+
+// Typography
+$font-primary: "Inter", sans-serif;
+$font-secondary: "Dosis", sans-serif;
+
+// Font Sizes
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-base: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-2xl: 24px;
+$font-size-3xl: 30px;
+$font-size-4xl: 36px;
+
+// Spacing
+$spacing-1: 4px;
+$spacing-2: 8px;
+$spacing-3: 12px;
+$spacing-4: 16px;
+$spacing-5: 20px;
+$spacing-6: 24px;
+$spacing-8: 32px;
+$spacing-10: 40px;
+$spacing-12: 48px;
+$spacing-16: 64px;
+$spacing-20: 80px;
+
+// Breakpoints
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;
+
+// Container
+$container-max-width: 1200px;
+
+// Transitions
+$transition-base: all 0.3s ease;
+$transition-fast: all 0.15s ease;
+
+// Border Radius
+$border-radius-sm: 4px;
+$border-radius-base: 8px;
+$border-radius-lg: 12px;
+$border-radius-xl: 16px;
+
+// Shadows
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);

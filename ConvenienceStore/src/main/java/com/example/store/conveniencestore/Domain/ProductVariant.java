@@ -10,10 +10,12 @@ import java.util.List;
 @Table(name = "Product_Variants")
 public class ProductVariant {
     @Id
-    private String productVariantId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long variantId;
     private double price;
     private double salePrice;
-    private String status;
+    private long stock;
+    private String calUnit;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "productId")
     private Product product;

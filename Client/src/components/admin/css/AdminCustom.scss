@@ -1,30 +1,144 @@
-.admin-container {
-  .second-container {
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+#root {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  height: 100vh;
+  overflow: hidden;
+
+  * {
+    font-family: "Poppins", sans-serif;
+  }
+}
+
+.app-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.sidebar-admin {
+  width: 250px;
+  min-width: 0;
+  transition: width 0.3s ease;
+  background-color: #f8f9fa;
+  overflow: hidden;
+
+  &.collapsed {
+    width: 0px;
+  }
+}
+.second-container {
+  display: flex;
+  .main-content-admin {
+    flex: 1;
     display: flex;
-    .main-content-admin {
-      .admin-header {
-        background-color: yellow;
-        width: 100vw;
+    flex-direction: column;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+
+    .admin-header {
+      height: 60px;
+      background-color: #fff;
+      color: white;
+      padding: 10px;
+      border: 0;
+      border-bottom: 1px;
+      border-style: solid;
+      border-color: black;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .i {
+        color: black;
+      }
+    }
+
+    .manage-user-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 20px 30px;
+      box-sizing: border-box;
+
+      .manage-user-subcontainer {
+        display: flex;
+        justify-content: end;
+        margin-bottom: 10px;
       }
 
-      .manage-user {
-        width: 100vw;
-        height: 100vh;
+      .table-container {
+        flex: 1;
+        overflow-y: auto;
       }
     }
   }
 }
-.filter-admin {
-  height: 90vh;
-  background-color: azure;
-  .sidebar-admin {
-    display: flex;
-    flex-direction: column;
-    width: 300px;
-    background-color: wheat;
-    height: max-height;
+.table-user {
+  height: 80vh;
+  .table {
+    width: 100%;
+    border-collapse: collapse;
   }
 }
-.sidebar-header {
-  width: 100%;
+
+.add-btn {
+  align-self: end;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover {
+    background-color: #218838;
+  }
+
+  .i-add-user {
+    display: block;
+    size: 5px;
+  }
+}
+
+.modal-content {
+  border-radius: 8px;
+}
+
+.modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+  border-top: 1px solid #dee2e6;
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+.form-control {
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  padding: 8px;
+
+  &:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-admin {
+    width: 0;
+    display: none;
+  }
+
+  .main-content {
+    flex: 100%;
+  }
 }

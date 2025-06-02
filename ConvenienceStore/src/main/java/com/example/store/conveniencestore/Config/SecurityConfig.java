@@ -42,7 +42,7 @@ public class SecurityConfig {
     @Value("${store.jwt.base64-secret}")
     private String jwtPrivateKey;
 
-    @Value("${store.jwt.token-validity-in-seconds}")
+    @Value("${store.jwt.access-token-validity-in-seconds}")
     private long jwtExpiredTime;
 
     @Bean
@@ -84,7 +84,7 @@ public class SecurityConfig {
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
-                                .requestMatchers("/user/**", "/","/product/**").permitAll()
+                                .requestMatchers("/user/**", "/**","/product/**","/variant/**").permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2.jwt(Customizer.withDefaults())

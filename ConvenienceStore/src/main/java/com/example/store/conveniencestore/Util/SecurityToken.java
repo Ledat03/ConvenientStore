@@ -6,6 +6,8 @@ import java.time.temporal.ChronoUnit;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.example.store.conveniencestore.DTO.ResLoginDTO;
+import com.example.store.conveniencestore.DTO.UserDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -23,22 +25,39 @@ public class SecurityToken {
     @Value("${store.jwt.base64-secret}")
     private String jwtPrivateKey;
 
-    @Value("${store.jwt.token-validity-in-seconds}")
-    private long jwtExpiredTime;
+    @Value("${store.jwt.access-token-validity-in-seconds}")
+    private long accessTokenExpiration;
+
+    @Value("${store.jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenExpiration;
 
     public SecurityToken(JwtEncoder jwtEncoder) {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public String createToken(Authentication authentication) {
+    public String createAccessToken(Authentication authentication) {
         Instant now = Instant.now();
-        Instant validity = now.plus(this.jwtExpiredTime, ChronoUnit.SECONDS);
+        Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(authentication.getName())
-                .claim("AccessStore", authentication)
+                .claim("user", authentication)
+                .build();
+
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).type("JWT").build();
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+    }
+    public String createRefreshToken(String Email, ResLoginDTO userDTO) {
+        Instant now = Instant.now();
+        Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuedAt(now)
+                .expiresAt(validity)
+                .subject(Email)
+                .claim("user",userDTO.getUser() )
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).type("JWT").build();

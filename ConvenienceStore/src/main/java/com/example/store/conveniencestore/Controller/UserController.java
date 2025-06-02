@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.store.conveniencestore.Domain.RestRestponse;
 import com.example.store.conveniencestore.Service.UserService;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +36,6 @@ public class UserController {
     }
     private UserDTO convertUserToDTO(User user) {
        UserDTO userDTO = new UserDTO();
-
        userDTO.setId(user.getId());
        userDTO.setEmail(user.getEmail());
        userDTO.setFirstName(user.getFirstName());
@@ -62,6 +62,10 @@ public class UserController {
         user.setAddress(userDTO.getAddress());
         user.setPhone(userDTO.getPhone());
         user.setRole(convertRoleDTOToRole(userDTO.getRole()));
+        user.setCreatedAt(TempUser.getCreatedAt());
+        user.setCreatedBy(TempUser.getCreatedBy());
+        user.setUpdatedAt(Instant.now());
+        user.setUpdatedBy("admin");
         return user;
     }
     private Role convertRoleDTOToRole(String roleName) {
@@ -69,12 +73,12 @@ public class UserController {
         return role;
     }
     @GetMapping("/view")
-    public ResponseEntity<List<UserDTO>> getUsers() {
+    public ResponseEntity<Object> getUsers() {
         List<User> users = userService.findAll();
-        RestRestponse<List<UserDTO>> usersResponse = new RestRestponse<>();
-        List<UserDTO> userDTOs = users.stream().map(this::convertUserToDTO).toList();
-        usersResponse.setData(userDTOs);
-        return ResponseEntity.ok().body(userDTOs);
+            RestRestponse<List<UserDTO>> usersResponse = new RestRestponse<>();
+            List<UserDTO> userDTOs = users.stream().map(this::convertUserToDTO).toList();
+            usersResponse.setData(userDTOs);
+            return ResponseEntity.ok().body(userDTOs);
     }
 
     @PutMapping("/update")
@@ -100,6 +104,8 @@ public class UserController {
             newUser.setLastName(user.getLastName());
             newUser.setAddress(user.getAddress());
             newUser.setPhone(user.getPhone());
+            newUser.setCreatedAt(Instant.now());
+            newUser.setCreatedBy("admin");
             userService.save(newUser);
             restRestponse.setData(user);
         }

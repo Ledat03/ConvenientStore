@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useEffect } from "react";
 
 const APIsCustomize = axios.create({
   baseURL: "http://localhost:8080/",
@@ -12,7 +13,6 @@ APIsCustomize.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
 APIsCustomize.interceptors.response.use(
   function (response) {
     console.log("interceptor >>>", response);

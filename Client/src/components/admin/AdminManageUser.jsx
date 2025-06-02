@@ -31,12 +31,11 @@ export const AdminManageUser = () => {
   return (
     <div className="manage-user-container">
       <div className="manage-user-subcontainer">
-        <h2>MANAGE USER</h2>
         <>
           <CreateUser handleUsers={handleUsers} />
         </>
       </div>
-      <div>
+      <div className="table-user">
         <UserTable handleUsers={handleUsers} Users={Users} />
       </div>
     </div>

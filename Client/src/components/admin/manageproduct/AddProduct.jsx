@@ -1,8 +1,8 @@
 import { toast } from "react-toastify";
 import { Modal, Button, Form, Col, Row } from "react-bootstrap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { handleListSubCate, addNewProduct } from "../../../services/GetAPI";
-const AddProduct = () => {
+const AddProduct = (props) => {
   const [isShow, setShow] = useState(false);
   const close = () => setShow(false);
   const open = () => setShow(true);
@@ -14,15 +14,29 @@ const AddProduct = () => {
   const [Preserve, setPreserve] = useState("");
   const [SubCategory, setSubCategory] = useState([]);
   const [GetCategory, setGetCategory] = useState("Sữa Tươi");
+  const clearInput = () => {
+    setProductName("");
+    setProductDescription("");
+    setOrigin("");
+    setIngredient("");
+    setHowToUse("");
+    setPreserve("");
+    setGetCategory("");
+  };
+  useEffect(() => {
+    getListSubCate();
+  }, []);
   const getListSubCate = async () => {
     const dataSubCate = await handleListSubCate();
     setSubCategory(dataSubCate.data.data);
-    console.log(dataSubCate.data.data);
   };
   const handleAddProduct = async () => {
     try {
       await addNewProduct(ProductName, ProductDescription, Origin, Ingredient, HowToUse, Preserve, GetCategory);
       toast.success("Product Information Successful Added");
+      close();
+      props.handleProductsList();
+      clearInput();
     } catch (error) {
       toast.error("Fail");
     }
@@ -33,10 +47,9 @@ const AddProduct = () => {
         className="btn add-btn"
         onClick={() => {
           open();
-          getListSubCate();
         }}
       >
-        Thêm mới người dùng
+        Thêm sản phẩm
       </Button>
       <Modal size="xl" show={isShow} onHide={close}>
         <Modal.Header closeButton> Add New Product</Modal.Header>

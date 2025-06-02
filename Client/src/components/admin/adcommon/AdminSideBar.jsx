@@ -1,15 +1,11 @@
 import { useState } from "react";
-import { Button, Nav, Navbar, NavLink } from "react-bootstrap";
+import { Dropdown, DropdownButton } from "react-bootstrap";
 import { BiCheckCircle, BiUser } from "react-icons/bi";
 import { FaProductHunt } from "react-icons/fa";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 export const AdminSideBar = ({ collapse } = props) => {
   return (
-    <Sidebar
-      className="sidebar-admin"
-      collapsed={collapse}
-      collapsedWidth="0px"
-    >
+    <Sidebar className="sidebar-admin" collapsed={collapse} collapsedWidth="0px">
       <Menu>
         <MenuItem href="/admin">Manage System</MenuItem>
         <SubMenu label="Charts" icon={<BiCheckCircle />}>
@@ -23,6 +19,7 @@ export const AdminSideBar = ({ collapse } = props) => {
           Manage Stock
         </MenuItem>
       </Menu>
+      <DropdownButton></DropdownButton>
     </Sidebar>
   );
 };

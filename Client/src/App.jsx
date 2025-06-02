@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.scss";
 import axios from "axios";
-import { CommonNav } from "./components/common/NavBar";
+import HomeHeader from "./components/HomePage/HomeHeader";
 import { FilterBar } from "./components/HomePage/FilterBar";
 import { Outlet } from "react-router-dom";
+import "./header.scss";
 function App() {
   const [data, setData] = useState([]);
   const [loadingState, setLoadingState] = useState(false);
@@ -25,9 +26,7 @@ function App() {
   }, []);
   return (
     <div className="main-container">
-      <div className="header">
-        <CommonNav />
-      </div>
+      <HomeHeader />
       <div className="body-container">
         <div className="filter-nav">
           <FilterBar />

@@ -16,6 +16,7 @@ public class ProductDTO {
     private String ingredient;
     private String howToUse;
     private String preserve;
+    private String category;
     private String subCategory;
     private List<ProductVariantDTO> productVariant;
 }

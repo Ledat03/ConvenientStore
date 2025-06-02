@@ -1,6 +1,5 @@
 import { Outlet } from "react-router-dom";
 import { AdminSideBar } from "./adcommon/AdminSideBar";
-import { AdminManageUser } from "./AdminManageUser";
 import "./css/AdminCustom.scss";
 import { useState } from "react";
 import { AdminHeader } from "./adcommon/AdminHeader";
@@ -19,7 +18,6 @@ export const AdminPage = () => {
         </div>
       </div>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
-      <div className="footer-admin">footer</div>
     </div>
   );
 };

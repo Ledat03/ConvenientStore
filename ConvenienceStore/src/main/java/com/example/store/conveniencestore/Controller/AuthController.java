@@ -1,6 +1,7 @@
 package com.example.store.conveniencestore.Controller;
 
 import com.example.store.conveniencestore.DTO.LoginDTO;
+import com.example.store.conveniencestore.DTO.ResLoginDTO;
 import com.example.store.conveniencestore.Domain.RestRestponse;
 import com.example.store.conveniencestore.Domain.User;
 import com.example.store.conveniencestore.Service.UserService;
@@ -57,15 +58,21 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<RestRestponse<Object>> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<Object> login(@Valid @RequestBody LoginDTO loginDTO) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(),
                 loginDTO.getPassword());
         Authentication auth = authenticationManagerBuilder.getObject().authenticate(token);
-        String AuthToken = securityToken.createToken(auth);
+        String AuthToken = securityToken.createAccessToken(auth);
+        User user = userService.findByEmail(loginDTO.getUsername());
+        ResLoginDTO resLoginDTO = new ResLoginDTO();
+        resLoginDTO.setAccessToken(AuthToken);
+        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(user.getId(), loginDTO.getUsername(),loginDTO.getPassword());
+        resLoginDTO.setUser(userLogin);
+        String refreshToken = securityToken.createRefreshToken(user.getEmail(),resLoginDTO);
         RestRestponse<Object> AuthSuccess = new RestRestponse<>();
-        AuthSuccess.setStatusCode(200);
-        AuthSuccess.setData(AuthToken);
-        AuthSuccess.setMessage("Verified");
+        AuthSuccess.setData(resLoginDTO);
+        user.setRefreshToken(refreshToken);
+        userService.save(user);
         return ResponseEntity.ok().body(AuthSuccess);
     }
 }

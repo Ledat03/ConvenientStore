@@ -14,7 +14,7 @@ const UpdateUser = (props) => {
   const [Address, setAddress] = useState("");
   const [Role, setRole] = useState("user");
   useEffect(() => {
-    console.log("this is useEffect  ");
+    console.log("this is useEffect ");
     if (!_.isEmpty(props.InfoUser)) {
       setId(props.InfoUser.id);
       setEmail(props.InfoUser.email);
@@ -27,14 +27,9 @@ const UpdateUser = (props) => {
     }
   }, [props.InfoUser]);
   const handleUpdateUser = async () => {
-    // const RegexEmail = validateEmail(Email);
-    // if (!RegexEmail) {
-    //   toast.error("Invalid Email");
-    //   return;
-    // }
-
     try {
       let response = await handleUpdate(Id, Email, Password, FirstName, LastName, UserName, Phone, Address, Role);
+      console.log(response);
       if (response.statusCode < 400) {
         toast.success("Change information successful");
         props.closeUpdate();

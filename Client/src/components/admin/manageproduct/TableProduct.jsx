@@ -1,21 +1,36 @@
 import { useState } from "react";
-import { Table, Button } from "react-bootstrap";
+import { Table, Button, DropdownButton, Dropdown } from "react-bootstrap";
 import DeleteProduct from "./DeleteProduct";
 import UpdateProduct from "./UpdateProduct";
 import ViewProduct from "./ViewProduct";
+import CustomVariant from "./VariantsProduct/CustomVariant";
+import { GetListVariant } from "../../../services/GetAPI";
 const TableProduct = (props) => {
-  const [isShowUpdate, setShowUpdate] = useState(false);
-  const [isShowView, setShowView] = useState(false);
-  const [isShowDelete, setShowDelete] = useState(false);
-  const closeUpdate = () => setShowUpdate(false);
-  const openUpdate = () => setShowUpdate(true);
-  const closeView = () => setShowView(false);
-  const openView = () => setShowView(true);
-  const closeDelete = () => setShowDelete(false);
-  const openDelete = () => setShowDelete(true);
-  const [InfoProduct, setInfoProduct] = useState({});
+  const [HandleProductState, setState] = useState({
+    ProdView: false,
+    ProdUpdate: false,
+    ProdDelete: false,
+    ProdVariant: false,
+  });
+  const openModal = (modalName) => {
+    setState((prev) => ({ ...prev, [modalName]: true }));
+  };
+  const closeModal = (modalName) => {
+    setState((prev) => ({ ...prev, [modalName]: false }));
+  };
+  const [InfoItem, setInfoItem] = useState({});
+  const [ListVariants, setListVariants] = useState([]);
   const handleProduct = (product) => {
-    setInfoProduct(product);
+    setInfoItem(product);
+  };
+
+  const getVariants = async (id) => {
+    try {
+      const handleVariants = await GetListVariant(id);
+      setListVariants(handleVariants.data.data);
+    } catch (error) {
+      throw error;
+    }
   };
   return (
     <>
@@ -23,42 +38,51 @@ const TableProduct = (props) => {
         <thead>
           <tr>
             <td>ID</td>
-            <td>Username</td>
-            <td>Email</td>
-            <td>Role</td>
+            <td>Product name</td>
+            <td>Category</td>
             <td>Action</td>
           </tr>
         </thead>
         <tbody>
-          {/* {props.Users.length > 0 ? (
-            props.Users.map((item, index) => {
+          {props.InfoProduct.length > 0 ? (
+            props.InfoProduct.map((item, index) => {
               return (
-                <tr key={item.id}>
-                  <td>{item.id}</td>
-                  <td>{item.username}</td>
-                  <td>{item.email}</td>
-                  <td>{item.role}</td>
+                <tr key={item.productId}>
+                  <td>{item.productId}</td>
+                  <td>{item.productName}</td>
+                  <td>{item.category}</td>
                   <td className="crud-group-btn">
                     <Button
                       onClick={() => {
-                        openView();
-                        handleUser(item);
+                        openModal("ProdVariant");
+                        handleProduct(item);
+                        getVariants(item.productId);
+                        console.log(ListVariants);
+                      }}
+                    >
+                      Chỉnh sửa thông tin
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        openModal("ProdView");
+                        handleProduct(item);
                       }}
                     >
                       Infomation
                     </Button>
+
                     <Button
                       onClick={() => {
-                        openUpdate();
-                        handleUser(item);
+                        openModal("ProdUpdate");
+                        handleProduct(item);
                       }}
                     >
                       Update
                     </Button>
                     <Button
                       onClick={() => {
-                        openDelete();
-                        handleUser(item);
+                        openModal("ProdDelete");
+                        handleProduct(item);
                       }}
                     >
                       Delete
@@ -71,16 +95,14 @@ const TableProduct = (props) => {
             <tr>
               <td colSpan={4}> System doesn't have any user </td>
             </tr>
-          )} */}
-          <tr>
-            <td colSpan={4}> System doesn't have any user </td>
-          </tr>
+          )}
         </tbody>
       </Table>
       <>
-        <UpdateProduct handleUsers={props.handleUsers} isShowUpdate={isShowUpdate} closeUpdate={closeUpdate} openUpdate={openUpdate} InfoUser={InfoProduct} />
-        <ViewProduct isShowView={isShowView} closeView={closeView} openView={openView} InfoUser={InfoProduct} />
-        <DeleteProduct isShowDelete={isShowDelete} closeDelete={closeDelete} openDelete={openDelete} InfoUser={InfoProduct} handleUsers={props.handleUsers} />
+        <UpdateProduct isShowUpdate={HandleProductState.ProdUpdate} closeUpdate={() => closeModal("ProdUpdate")} openUpdate={() => openModal("ProdUpdate")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
+        <ViewProduct isShowView={HandleProductState.ProdView} closeView={() => closeModal("ProdView")} openView={() => openModal("ProdView")} InfoItem={InfoItem} />
+        <DeleteProduct isShowDelete={HandleProductState.ProdDelete} closeDelete={() => closeModal("ProdDelete")} openDelete={() => openModal("ProdDelete")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
+        <CustomVariant isShowVariant={HandleProductState.ProdVariant} closeModal={() => closeModal("ProdVariant")} InfoItem={InfoItem} ListVariants={ListVariants} getVariants={getVariants} />
       </>
     </>
   );

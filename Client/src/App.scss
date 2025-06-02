@@ -1,10 +1,14 @@
+#root {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
 .main-container {
   .header {
     .navbar {
       background-color: rgba(0, 0, 0, 0) !important;
       .nav-link {
         &.active {
-          color: aqua;
+          color: aliceblue;
         }
       }
     }
@@ -28,4 +32,10 @@
 
 .txt-SignIn {
   border: none;
+}
+.crud-group-btn {
+  display: flex;
+}
+.Info-Variant {
+  display: flex;
 }
