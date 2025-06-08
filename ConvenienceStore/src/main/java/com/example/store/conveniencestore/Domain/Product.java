@@ -2,7 +2,6 @@ package com.example.store.conveniencestore.Domain;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.util.List;
 
 @Entity
@@ -13,11 +12,17 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long productId;
     private String productName;
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String productDescription;
     private String origin;
     private String ingredient;
     private String howToUse;
     private String preserve;
+    private String brand;
+    private String sku;
+    private Boolean isActive;
+    private String status;
+    private String image;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subCategory_id")
     private SubCategory subCategory;
@@ -28,4 +33,6 @@ public class Product {
     private List<ProductVariant> productVariant;
     @OneToMany(mappedBy = "product")
     private List<CartDetail> cartDetails;
+    private String createdAt;
+    private String updatedAt;
 }

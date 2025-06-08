@@ -1,0 +1,178 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #64748b;
+
+  &-link {
+    color: #3b82f6;
+    text-decoration: none;
+  }
+
+  &-separator {
+    color: #cbd5e1;
+  }
+
+  &-current {
+    color: #334155;
+    font-weight: 500;
+  }
+}
+
+.product-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  .product-table-container {
+    width: 100%;
+    min-height: 20vh;
+    .product-table {
+      width: 100%;
+      .name-header {
+        box-sizing: border-box;
+        padding-left: 20px;
+        width: 40%;
+      }
+    }
+    .product-info {
+      .product-image {
+        width: 50px;
+        height: 50px;
+      }
+    }
+  }
+}
+
+.product-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .page-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .header-buttons {
+    display: flex;
+    gap: 12px;
+  }
+}
+
+.primary-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  background: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.secondary-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.product-list-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  .filters-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+  }
+
+  .filters-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    color: #64748b;
+    z-index: 1;
+  }
+
+  .search-input {
+    padding: 8px 12px 8px 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    min-width: 200px;
+  }
+}
+
+.date-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .date-input {
+    padding: 8px 40px 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    min-width: 120px;
+  }
+
+  .date-icon {
+    position: absolute;
+    right: 12px;
+    color: #64748b;
+    pointer-events: none;
+  }
+}
+
+.filter-select {
+  padding: 8px 32px 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+  outline: none;
+  min-width: 120px;
+}
+
+.filter-button-text {
+  background: none;
+  color: #64748b;
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+}

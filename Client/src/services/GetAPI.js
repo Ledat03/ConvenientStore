@@ -51,18 +51,10 @@ const handleUpdate = async (Id, Email, Password, FirstName, LastName, UserName, 
 
 //Product Controller
 const handleListSubCate = async () => await APIsCustomize.get("product/view/subCategories", { headers: { "Content-Type": "application/json" } });
-const addNewProduct = async (ProductName, ProductDescription, Origin, Ingredient, HowToUse, Preserve, GetCategory) => {
-  let InfoProduct = {
-    productName: ProductName,
-    productDescription: ProductDescription,
-    origin: Origin,
-    ingredient: Ingredient,
-    howToUse: HowToUse,
-    preserve: Preserve,
-    subCategory: GetCategory,
-  };
+const handleCategories = async () => await APIsCustomize.get("product/view/categories", { headers: { "Content-Type": "application/json" } });
+const addNewProduct = async (formData) => {
   try {
-    await APIsCustomize.post("/product/add", InfoProduct, { headers: { "Content-Type": "application/json" } });
+    await APIsCustomize.post("/product/add", formData, { headers: { "Content-Type": "multipart/form-data" } });
   } catch (error) {
     throw error;
   }
@@ -72,11 +64,11 @@ const updateProduct = async (Product) => {
 };
 const fetchListProduct = async () => await APIsCustomize.get("/product/view", { headers: { "Content-Type": "application/json" } });
 const deleteProduct = async (id) => await APIsCustomize.delete(`/product/delete/${id}`, { headers: { "Content-Type": "application/json" } });
-
+const fetchProductById = async (productId) => await APIsCustomize.get(`/product/view/product-info/${productId}`, { headers: { "Content-Type": "application/json" } });
 //Variant Controller
 
 const AddNewVariant = async (formData) => await APIsCustomize.post("/variant/add", formData, { headers: { "Content-Type": "multipart/form-data" } });
 const GetListVariant = async (id) => await APIsCustomize.get(`/variant/view/${id}`, { headers: { "Content-Type": "application/json" } });
 const deleteVariant = async (id) => await APIsCustomize.delete(`/variant/delete/${id}`, { headers: { "Content-Type": "application/json" } });
 const UpdateVariantItem = async (formData) => await APIsCustomize.put(`/variant/update`, formData, { headers: { "Content-Type": "multipart/form-data" } });
-export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem };
+export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById };

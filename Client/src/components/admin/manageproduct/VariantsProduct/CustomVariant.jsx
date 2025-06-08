@@ -33,7 +33,6 @@ const CustomVariant = (props) => {
           <FaPlusCircle
             onClick={() => {
               openModal("ProdVariantAdd");
-              fetchVariantInfo(item);
             }}
           />
           <Table hover>

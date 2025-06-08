@@ -22,7 +22,6 @@ export const UserTable = (props) => {
     setInfoUser(user);
   };
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => {
-    console.log("CustomToggle rendered");
     return (
       <span
         ref={ref}

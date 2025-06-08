@@ -9,25 +9,19 @@ const UpdateVariant = (props) => {
   const [Stock, setStock] = useState("");
   const [Image, setImage] = useState([]);
   const [Unit, setUnit] = useState("");
+  const [SKUCode, setSKUCode] = useState("");
+  const [IsActive, setActive] = useState("Draft");
   const [ImagePreviewURL, setImagePreviewURL] = useState([]);
-  const ClearInput = () => {
-    setPrice("");
-    setSalePrice("");
-    setStock("");
-    setImage([]);
-    setUnit("");
-    setImagePreviewURL([]);
-  };
   useEffect(() => {
     if (!_.isEmpty(props.Variant)) {
       setPrice(props.Variant.price);
       setSalePrice(props.Variant.salePrice);
       setStock(props.Variant.stock);
       setUnit(props.Variant.calUnit);
-    } else {
-      ClearInput();
+      setSKUCode(props.Variant.skuCode);
+      setActive(props.Variant.isActive);
     }
-  }, []);
+  }, [props.isShowVariant]);
 
   const Add = async () => {
     const formData = new FormData();
@@ -35,8 +29,10 @@ const UpdateVariant = (props) => {
     formData.append("productId", props.InfoItem.productId);
     formData.append("price", Price);
     formData.append("salePrice", SalePrice);
-    formData.append("stock", Stock);
     formData.append("calUnit", Unit);
+    formData.append("skuCode", SKUCode);
+    formData.append("stock", Stock);
+    formData.append("isActive", IsActive);
     Image.forEach((item) => {
       formData.append(`productImage`, item);
     });
@@ -52,6 +48,7 @@ const UpdateVariant = (props) => {
       throw e;
     }
   };
+  console.log(props.Variant);
   const handleImage = (e) => {
     const files = Array.from(e.target.files);
     setImage(files);
@@ -96,6 +93,20 @@ const UpdateVariant = (props) => {
                 ></Form.Control>
               </Form.Group>
             </Row>{" "}
+            <Row className="mb-3">
+              <Form.Group as={Col} controlId="formIsActive">
+                <Form.Label>Mã SKU</Form.Label>
+                <Form.Control defaultValue={props.Variant.skuCode} onChange={(e) => setSKUCode(e.target.value)}></Form.Control>
+              </Form.Group>{" "}
+              <Form.Group as={Col} controlId="formSubCategory">
+                <Form.Label>Trạng Thái</Form.Label>
+                <Form.Select defaultValue={props.Variant.isActive} onChange={(e) => setActive(e.target.value)}>
+                  <option value="Draft">Chưa hoàn thành</option>
+                  <option value="Published">Đang Bán</option>
+                  <option value="NotAvailable">Ngừng Kinh Doanh</option>
+                </Form.Select>
+              </Form.Group>
+            </Row>
             <Form.Group as={Col} controlId="formImage">
               <Form.Label>Hình ảnh sản phẩm</Form.Label>
               <Form.Control
@@ -121,7 +132,6 @@ const UpdateVariant = (props) => {
           <Button
             onClick={() => {
               props.closeVariant();
-              ClearInput();
             }}
           >
             Hủy

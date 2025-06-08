@@ -12,6 +12,8 @@ public class ProductVariantDTO {
     private Double salePrice;
     private long stock;
     private String calUnit;
+    private String isActive;
+    private String skuCode;
     private long productId;
     private List<String> productImage;
 }

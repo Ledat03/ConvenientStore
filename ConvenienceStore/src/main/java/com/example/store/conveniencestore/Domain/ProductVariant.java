@@ -16,8 +16,10 @@ public class ProductVariant {
     private double salePrice;
     private long stock;
     private String calUnit;
+    private String skuCode;
+    private String isActive;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "productId")
+    @JoinColumn(name = "id")
     private Product product;
     @ElementCollection
     private List<String> productImage;

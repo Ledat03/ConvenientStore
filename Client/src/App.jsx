@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.scss";
 import axios from "axios";
-import HomeHeader from "./components/HomePage/HomeHeader";
+import HomeHeader from "./components/common/HomeHeader";
 import { FilterBar } from "./components/HomePage/FilterBar";
 import { Outlet } from "react-router-dom";
-import "./header.scss";
+import "./assets/scss/header.scss";
+import Footer from "./components/common/Footer";
 function App() {
   const [data, setData] = useState([]);
   const [loadingState, setLoadingState] = useState(false);
@@ -28,14 +29,14 @@ function App() {
     <div className="main-container">
       <HomeHeader />
       <div className="body-container">
-        <div className="filter-nav">
-          <FilterBar />
-        </div>
+        <div className="filter-nav"></div>
         <div className="content-container">
           <Outlet />
         </div>
       </div>
-      <div className="footer"></div>
+      <div className="footer">
+        <Footer />
+      </div>
     </div>
   );
 }

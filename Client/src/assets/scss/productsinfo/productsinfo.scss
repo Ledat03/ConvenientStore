@@ -1,0 +1,321 @@
+@use "../variables.scss" as var;
+.products-app {
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+  line-height: 1.5;
+}
+
+.products-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.products-main-content {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 30px;
+}
+
+// Common styles
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+
+  &__link {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  &__separator {
+    color: #6c757d;
+  }
+
+  &__current {
+    color: #333;
+    font-weight: 500;
+  }
+}
+
+.search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  &__button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  &__text {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  &__count {
+    color: #6c757d;
+    font-size: 14px;
+  }
+
+  &__select {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 12px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+  }
+}
+
+.filter-section {
+  margin-bottom: 25px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 20px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 15px;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  &__arrow {
+    transition: transform 0.2s;
+    color: #6c757d;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  &__checkbox {
+    width: 16px;
+    height: 16px;
+    accent-color: #007bff;
+  }
+
+  &__button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+}
+
+.sidebar {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  height: fit-content;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &__filter-section {
+    margin-bottom: 25px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 20px;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+  }
+
+  &__price-range {
+    margin: 15px 0;
+  }
+
+  &__slider {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+    margin-bottom: 10px;
+  }
+
+  &__labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #6c757d;
+  }
+}
+
+.product-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.product-card {
+  flex: 1;
+  background: white;
+  border: solid 1px;
+  height: 550px;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  border-color: var.$red-accent;
+  &__badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 1;
+  }
+
+  &__badge--low-stock {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+
+  &__badge--out-stock {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  &__image-container {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__info {
+    padding: 15px;
+  }
+
+  &__name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  &__tags {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  &__tag {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+  }
+
+  &__note {
+    font-size: 12px;
+    color: #dc3545;
+    margin-bottom: 8px;
+  }
+
+  &__reviews {
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  &__pricing {
+    display: flex;
+    gap: 12px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .product-card__discount {
+    width: 70px;
+    height: 20px;
+    text-align: center;
+    border: 1px solid #28a745;
+    border-radius: 10%;
+    font-size: 12px;
+    background-color: #28a745;
+    color: #fff;
+    font-weight: 500;
+  }
+  .Card-ButtonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    .Card-Button {
+      width: 100%;
+      background-color: var.$red-accent;
+      border: none;
+      &:hover {
+        background-color: #fff;
+        color: var.$red-accent;
+        transition: all 0.3s ease;
+        border: 1px solid var.$red-accent;
+      }
+    }
+  }
+
+  &__current-price {
+    font-size: 18px;
+    font-weight: 700;
+    margin-right: 10px;
+    color: #333;
+  }
+
+  &__original-price {
+    font-size: 14px;
+    color: #6c757d;
+    text-decoration: line-through;
+  }
+}

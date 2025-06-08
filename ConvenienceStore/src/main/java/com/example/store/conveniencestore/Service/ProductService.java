@@ -62,4 +62,15 @@ public class ProductService {
     public void deleteVariant(ProductVariant productVariant) {
         variantRepository.delete(productVariant);
     }
+
+    public List<Category> findAllCategories() {
+        return categoryRepository.findAll();
+    }
+    public List<ProductVariant> findProductVariantsByProductId(long productId) {
+        return variantRepository.findByProduct_ProductId(productId);
+    }
+    @Transactional
+    public void deleteAllByProduct(Product product) {
+        variantRepository.deleteAllByProduct(product);
+    }
 }

@@ -1,7 +1,9 @@
 package com.example.store.conveniencestore.DTO;
 
-import java.util.List;
+import lombok.Data;
 
+import java.util.List;
+@Data
 public class CategoryDTO {
     private long categoryId;
     private String categoryName;

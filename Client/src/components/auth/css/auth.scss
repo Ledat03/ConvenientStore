@@ -1,3 +1,5 @@
+@use "../../../assets/scss/variables.scss" as var;
+
 .Authentication {
   display: flex;
   justify-content: center;
@@ -22,16 +24,38 @@
     height: 100vh;
     &__Handle {
       .Auth-Option {
-        &__Login {
-          border-radius: 10px 0px 0px 10px;
-          width: 175px;
-        }
         &__Register {
+          transition: all 0.2s ease;
           border-radius: 0px 10px 10px 0px;
           width: 175px;
+          background-color: #fff;
+          color: var.$red-accent;
+          border: 1px solid;
+          border-left: none;
+          &.active {
+            width: 175px;
+            background-color: var.$red-accent;
+            color: #fff;
+            border: 1px solid;
+          }
+        }
+        &__Login {
+          transition: all 0.2s ease;
+          border-radius: 10px 0px 0px 10px;
+          width: 175px;
+          background-color: #fff;
+          color: var.$red-accent;
+          border: 1px solid;
+          border-right: none;
+          &.active {
+            width: 175px;
+            background-color: var.$red-accent;
+            color: #fff;
+            border: 1px solid;
+          }
         }
       }
-      h2 {
+      h4 {
         text-align: center;
       }
     }
@@ -42,7 +66,6 @@
       justify-content: center;
       gap: 20px;
       padding: 10px;
-
       .txt-SignIn {
         border-radius: 10px;
         width: 350px;
@@ -56,15 +79,21 @@
           display: flex;
           gap: 10px;
         }
+        a {
+          color: var.$red-accent;
+        }
       }
     }
   }
   .Auth-Button {
     width: 100%;
     margin-top: 20px;
+    background-color: var.$red-accent;
+    border: #fff;
     &:hover {
-      color: black;
-      background-color: yellow;
+      color: var.$red-accent;
+      background-color: #fff;
+      border: 1px var.$red-accent solid;
     }
   }
   .Label-Register {

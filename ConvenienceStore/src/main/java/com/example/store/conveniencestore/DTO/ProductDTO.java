@@ -18,5 +18,11 @@ public class ProductDTO {
     private String preserve;
     private String category;
     private String subCategory;
+    private String updateAt;
+    private String image;
+    private String sku;
+    private String brand;
+    private String isActive;
+    private String status;
     private List<ProductVariantDTO> productVariant;
 }

@@ -1,8 +1,12 @@
 #root {
   font-size: 0.8rem;
   font-weight: 600;
+  height: auto;
+  overflow: visible !important;
 }
 .main-container {
+  width: 100vw;
+  height: 100vh;
   .header {
     .navbar {
       background-color: rgba(0, 0, 0, 0) !important;

@@ -37,37 +37,9 @@ public class VariantController {
         productVariantDTO.setPrice(product.getPrice());
         productVariantDTO.setSalePrice(product.getSalePrice());
         productVariantDTO.setCalUnit(product.getCalUnit());
+        productVariantDTO.setSkuCode(product.getSkuCode());
+        productVariantDTO.setIsActive(product.getIsActive());
         return productVariantDTO;
-    }
-
-    public String extractPublicIdFromCloudinaryUrl(String urlString) {
-        try {
-            if (urlString == null || urlString.trim().isEmpty()) {
-                return null;
-            }
-            if (!urlString.contains("res.cloudinary.com")) {
-                return null;
-            }
-            String pattern = ".*/upload/v\\d+/(.+)";
-            java.util.regex.Pattern r = java.util.regex.Pattern.compile(pattern);
-            java.util.regex.Matcher m = r.matcher(urlString);
-
-            if (m.find()) {
-                String publicId = m.group(1);
-
-                int lastDotIndex = publicId.lastIndexOf(".");
-                if (lastDotIndex > 0 && lastDotIndex > publicId.lastIndexOf("/")) {
-                    publicId = publicId.substring(0, lastDotIndex);
-                }
-
-                return publicId;
-            }
-
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     @PostMapping("/add")
@@ -76,6 +48,8 @@ public class VariantController {
                                              @RequestParam(value = "salePrice") String salePrice ,
                                              @RequestParam(value = "stock") String stock ,
                                              @RequestParam(value = "calUnit") String calUnit,
+                                             @RequestParam(value = "skuCode" , required = false) String sku,
+                                             @RequestParam(value = "isActive" , required = false) String isActive ,
                                              @RequestParam(value = "productImage") List<MultipartFile> Images ) throws IOException {
         List<UploadResult> uploadResults = CloudinaryService.uploadMultipleImages(Images , "variant");
         ProductVariant productVariant = new ProductVariant();
@@ -89,6 +63,8 @@ public class VariantController {
          productVariant.setStock(Integer.parseInt(stock));
          productVariant.setProduct(productService.findProductById(Long.parseLong(productId)));
          productVariant.setCalUnit(calUnit);
+         productVariant.setIsActive(isActive);
+         productVariant.setSkuCode(sku);
          productVariant.setProductImage(ImageURL);
          productService.saveVariant(productVariant);
          ProductVariantDTO productVariantDTO = convertToDTO(productVariant);
@@ -110,9 +86,11 @@ public class VariantController {
                                                 @RequestParam(value = "salePrice" , required = false) String salePrice ,
                                                 @RequestParam(value = "stock" , required = false) String stock ,
                                                 @RequestParam(value = "calUnit" , required = false) String calUnit,
+                                                @RequestParam(value = "skuCode" , required = false) String sku,
+                                                @RequestParam(value = "isActive" , required = false) String isActive ,
                                                 @RequestParam(value = "productImage" , required = false) List<MultipartFile> Images) throws IOException{
         ProductVariant productVariant = productService.findProductVariantById(Long.parseLong(Id));
-        ProductVariantDTO productVariantDTO = new ProductVariantDTO();
+        ProductVariantDTO productVariantDTO;
         if( productVariant != null) {
             List<String> ImageURL = productVariant.getProductImage();
             if( Images != null) {
@@ -127,6 +105,8 @@ public class VariantController {
             productVariant.setStock(!stock.isEmpty() ? Integer.parseInt(stock) : productVariant.getStock());
             productVariant.setProduct(productService.findProductById(Long.parseLong(productId)));
             productVariant.setCalUnit(!calUnit.isEmpty() ? calUnit : productVariant.getCalUnit());
+            productVariant.setSkuCode(!sku.isEmpty() ? sku : productVariant.getSkuCode());
+            productVariant.setIsActive(!isActive.isEmpty() ? isActive : productVariant.getIsActive());
             productVariant.setProductImage(ImageURL);
             productService.saveVariant(productVariant);
             productVariantDTO = convertToDTO(productVariant);
@@ -146,7 +126,7 @@ public class VariantController {
             if (imagesURL != null && !imagesURL.isEmpty()) {
                 List<String> publicIds = new ArrayList<>();
                 for (String url : imagesURL) {
-                    String publicId = extractPublicIdFromCloudinaryUrl(url);
+                    String publicId = CloudinaryService.extractPublicIdFromCloudinaryUrl(url);
                     if (publicId != null) {
                         publicIds.add(publicId);
                         System.out.println("Extracted publicId: " + publicId + " from URL: " + url);

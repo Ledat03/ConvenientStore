@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import TableProduct from "./manageproduct/TableProduct";
-import AddProduct from "./manageproduct/AddProduct";
 import { fetchListProduct } from "../../services/GetAPI";
+import LoadingAnimation from "../common/LoadingAnimation";
 export const ManageProduct = () => {
   const [InfoProduct, setInfoProduct] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export const ManageProduct = () => {
     setLoading(false);
   };
   if (loading) {
-    return <div>Loading ....</div>;
+    return <LoadingAnimation />;
   }
   if (error != null) {
     return <div>Can't handle User List duo to {error}</div>;
@@ -23,9 +23,6 @@ export const ManageProduct = () => {
   return (
     <>
       <div className="manage-product-container">
-        <div className="manage-product-subcontainer head">
-          <AddProduct handleProductsList={handleProductsList} />
-        </div>
         <div className="manage-product-subcontainer body">
           <TableProduct InfoProduct={InfoProduct} handleProductsList={handleProductsList} />
         </div>

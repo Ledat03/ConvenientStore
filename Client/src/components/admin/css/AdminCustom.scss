@@ -30,6 +30,120 @@
     width: 0px;
   }
 }
+// Admin Header Component
+.admin-header {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  &__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  &__search-container {
+    flex: 1;
+    max-width: 400px;
+  }
+
+  &__search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  &__search-icon {
+    position: absolute;
+    left: 12px;
+    color: #64748b;
+    z-index: 1;
+  }
+
+  &__search-input {
+    width: 100%;
+    padding: 8px 12px 8px 40px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    font-size: 14px;
+    outline: none;
+
+    &:focus {
+      border-color: #94a3b8;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__language {
+    &-flag {
+      width: 24px;
+      height: 16px;
+      border-radius: 2px;
+    }
+  }
+
+  &__action-button {
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #64748b;
+
+    &:hover {
+      background: #f1f5f9;
+    }
+  }
+
+  &__notification-button {
+    position: relative;
+  }
+
+  &__notification-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  &__user {
+    width: 50px;
+    height: 50px;
+    &-avatar {
+      width: 30px;
+      height: 40px;
+
+      border: 2px solid #e2e8f0;
+      cursor: pointer;
+
+      &:hover {
+        border-color: #94a3b8;
+      }
+    }
+  }
+}
 .second-container {
   display: flex;
   .main-content-admin {

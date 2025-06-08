@@ -9,6 +9,8 @@ const AddVariant = (props) => {
   const [Stock, setStock] = useState("");
   const [Image, setImage] = useState([]);
   const [Unit, setUnit] = useState("");
+  const [SKUCode, setSKUCode] = useState("");
+  const [IsActive, setActive] = useState("true");
   const [ImagePreviewURL, setImagePreviewURL] = useState([]);
   const ClearInput = () => {
     setPrice("");
@@ -16,6 +18,8 @@ const AddVariant = (props) => {
     setStock("");
     setImage([]);
     setUnit("");
+    setSKUCode("");
+    setActive("true");
     setImagePreviewURL([]);
   };
   const Add = async () => {
@@ -25,7 +29,9 @@ const AddVariant = (props) => {
     formData.append("salePrice", SalePrice);
     formData.append("stock", Stock);
     formData.append("calUnit", Unit);
-    Image.forEach((item, index) => {
+    formData.append("skuCode", SKUCode);
+    formData.append("isActive", IsActive);
+    Image.forEach((item) => {
       formData.append(`productImage`, item);
     });
     try {
@@ -85,6 +91,20 @@ const AddVariant = (props) => {
                 ></Form.Control>
               </Form.Group>
             </Row>{" "}
+            <Row className="mb-3">
+              <Form.Group as={Col} controlId="formIsActive">
+                <Form.Label>Mã SKU</Form.Label>
+                <Form.Control value={SKUCode} onChange={(e) => setSKUCode(e.target.value)}></Form.Control>
+              </Form.Group>{" "}
+              <Form.Group as={Col} controlId="formSubCategory">
+                <Form.Label>Trạng Thái</Form.Label>
+                <Form.Select value={IsActive} onChange={(e) => setActive(e.target.value)}>
+                  <option value="Draft">Chưa hoàn thành</option>
+                  <option value="Published">Đang Bán</option>
+                  <option value="NotAvailable">Ngừng Kinh Doanh</option>
+                </Form.Select>
+              </Form.Group>
+            </Row>
             <Form.Group as={Col} controlId="formImage">
               <Form.Label>Hình ảnh sản phẩm</Form.Label>
               <Form.Control

@@ -13,6 +13,12 @@ const UpdateProduct = (props) => {
   const [Preserve, setPreserve] = useState("");
   const [SubCategory, setSubCategory] = useState([]);
   const [GetCategory, setGetCategory] = useState("Sữa Tươi");
+  const [Brand, setBrand] = useState("");
+  const [SKU, setSKU] = useState("");
+  const [IsActive, setActive] = useState("true");
+  const [Status, setStatus] = useState("Draft");
+  const [Image, setImage] = useState(null);
+  const [ImageURL, setImageURL] = useState(null);
   useEffect(() => {
     if (!_.isEmpty(props.InfoItem)) {
       setId(props.InfoItem.productId);
@@ -23,6 +29,10 @@ const UpdateProduct = (props) => {
       setHowToUse(props.InfoItem.howToUse);
       setPreserve(props.InfoItem.preserve);
       setGetCategory(props.InfoItem.subCategory);
+      setActive(props.InfoItem.isActive);
+      setStatus(props.InfoItem.status);
+      setBrand(props.InfoItem.brand);
+      setSKU(props.InfoItem.sku);
     }
     getListSubCate();
   }, [props.InfoItem]);
@@ -41,6 +51,10 @@ const UpdateProduct = (props) => {
         howToUse: HowToUse,
         preserve: Preserve,
         subCategory: GetCategory,
+        brand: Brand,
+        sku: SKU,
+        isActive: IsActive,
+        status: Status,
       };
       await updateProduct(Product);
       toast.success("Product Information is Updated");
@@ -94,6 +108,33 @@ const UpdateProduct = (props) => {
                   {SubCategory.map((item) => {
                     return <option key={item.id}>{item.subCategoryName}</option>;
                   })}
+                </Form.Select>
+              </Form.Group>
+            </Row>
+            <Row className="mb-3">
+              <Form.Group as={Col} className="mb-3" controlId="formIngredient">
+                <Form.Label>Mã SKU</Form.Label>
+                <Form.Control type="text" placeholder="Nhập Mã" value={SKU} onChange={(e) => setSKU(e.target.value)} />
+              </Form.Group>
+              <Form.Group as={Col} controlId="formSubCategory">
+                <Form.Label>Hãng Sản Phẩm</Form.Label>
+                <Form.Control value={Brand} onChange={(e) => setBrand(e.target.value)}></Form.Control>
+              </Form.Group>
+            </Row>
+            <Row className="mb-3">
+              <Form.Group as={Col} controlId="formSubCategory">
+                <Form.Label>Trạng Thái</Form.Label>
+                <Form.Select value={Status} onChange={(e) => setStatus(e.target.value)}>
+                  <option value="Draft">Chưa hoàn thành</option>
+                  <option value="Published">Đang Bán</option>
+                  <option value="NotAvailable">Ngừng Kinh Doanh</option>
+                </Form.Select>
+              </Form.Group>
+              <Form.Group as={Col} controlId="formIsActive">
+                <Form.Label>Trạng thái Hoạt Động</Form.Label>
+                <Form.Select value={IsActive} onChange={(e) => setActive(e.target.value)}>
+                  <option value="true">Hiển thị</option>
+                  <option value="false">Ẩn</option>
                 </Form.Select>
               </Form.Group>
             </Row>

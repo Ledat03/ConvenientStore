@@ -47,4 +47,15 @@ public class UserService {
     public void deleteUserById(long id) {
         userRepository.deleteUserById(id);
     }
+
+    public User findByRefreshTokenAndEmail(String refreshToken, String email) {
+        return userRepository.findByRefreshTokenAndEmail(refreshToken, email);
+    }
+    public void updateUserToken(String Token,String username){
+        User user = findByEmail(username);
+        if(user != null){
+            user.setRefreshToken(Token);
+            userRepository.save(user);
+        }
+    }
 }

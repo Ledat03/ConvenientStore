@@ -123,4 +123,34 @@ public class CloudinaryService {
         public String getUrl() { return url; }
         public Long getFileSize() { return fileSize; }
     }
+
+    public String extractPublicIdFromCloudinaryUrl(String urlString) {
+        try {
+            if (urlString == null || urlString.trim().isEmpty()) {
+                return null;
+            }
+            if (!urlString.contains("res.cloudinary.com")) {
+                return null;
+            }
+            String pattern = ".*/upload/v\\d+/(.+)";
+            java.util.regex.Pattern r = java.util.regex.Pattern.compile(pattern);
+            java.util.regex.Matcher m = r.matcher(urlString);
+
+            if (m.find()) {
+                String publicId = m.group(1);
+
+                int lastDotIndex = publicId.lastIndexOf(".");
+                if (lastDotIndex > 0 && lastDotIndex > publicId.lastIndexOf("/")) {
+                    publicId = publicId.substring(0, lastDotIndex);
+                }
+
+                return publicId;
+            }
+
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

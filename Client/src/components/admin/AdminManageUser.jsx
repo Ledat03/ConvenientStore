@@ -3,6 +3,7 @@ import { UserTable } from "./manageuser/UserTable";
 import { handleListUser } from "../../services/GetAPI";
 import { useEffect, useState } from "react";
 import CreateUser from "./manageuser/CreateUser";
+import LoadingAnimation from "../common/LoadingAnimation";
 export const AdminManageUser = () => {
   const [Users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +24,7 @@ export const AdminManageUser = () => {
     }
   };
   if (loading) {
-    return <div>Loading ....</div>;
+    return <LoadingAnimation />;
   }
   if (error != null) {
     return <div>Can't handle User List duo to {error}</div>;
