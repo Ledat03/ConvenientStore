@@ -33,7 +33,7 @@ const RelatedProducts = () => {
 
   return (
     <div className="related-products">
-      <div className="section-header">
+      {/* <div className="section-header">
         <h2 className="section-title">Các sản phẩm liên quan</h2>
         <div className="navigation">
           <button className="nav-btn">‹</button>
@@ -56,7 +56,7 @@ const RelatedProducts = () => {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };

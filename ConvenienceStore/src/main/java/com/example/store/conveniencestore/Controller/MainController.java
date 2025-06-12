@@ -9,8 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("main")
+@RequestMapping("/main")
 public class MainController {
 
     private final UserService userService;
@@ -21,8 +23,8 @@ public class MainController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<User> index(@RequestBody User user) {
-
-        return ResponseEntity.ok(user);
+    public ResponseEntity<Object> index() {
+        List<Product> productList = productService.findAllProducts();
+        return ResponseEntity.ok(productList);
     }
 }

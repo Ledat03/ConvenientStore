@@ -11,15 +11,19 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
+  .products-main-content {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 30px;
+  }
+  .product-table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 
-.products-main-content {
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: 30px;
-}
-
-// Common styles
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -186,14 +190,16 @@
 
 .product-grid {
   display: flex;
+  width: 100%;
   flex-wrap: wrap;
+  justify-content: start;
   gap: 20px;
 }
 
 .product-card {
-  flex: 1;
   background: white;
   border: solid 1px;
+  width: 340px;
   height: 550px;
   border-radius: 8px;
   overflow: hidden;
@@ -318,4 +324,15 @@
     color: #6c757d;
     text-decoration: line-through;
   }
+}
+.pagination {
+  .page-item {
+    .page-link {
+      background-color: white;
+      color: black;
+    }
+  }
+}
+.page-link.active {
+  border: var.$red-accent 1px solid;
 }

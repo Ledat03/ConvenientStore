@@ -8,24 +8,23 @@ const SearchHeader = ({ resultCount, sortBy, onSortChange }) => {
         </Link>
         <span className="breadcrumb__separator">/</span>
         <Link to="/" className="breadcrumb__link">
-          Living room
+          Các Loại Sữa
         </Link>
         <span className="breadcrumb__separator">/</span>
-        <span className="breadcrumb__current">Armchair</span>
+        <span className="breadcrumb__current">Sữa</span>
       </nav>
 
       <div className="search-header">
         <div className="search-header__info">
-          <button className="search-header__button">Hide filters ▼</button>
-          <span className="search-header__text">Searched for 'Armchair'</span>
+          <button className="search-header__button"></button>
+          <span className="search-header__text"></span>
         </div>
         <div className="search-header__controls">
-          <span className="search-header__count">{resultCount} results</span>
+          <span className="search-header__count">{resultCount} Kết Quả</span>
           <select className="search-header__select" value={sortBy} onChange={(e) => onSortChange(e.target.value)}>
-            <option value="recommended">Recommended ▼</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="rating">Highest Rated</option>
+            <option value="recommended">Sắp Xếp Theo</option>
+            <option value="price-low">Giá: Từ thấp đến cao</option>
+            <option value="price-high">Price: Từ cao đến thấp</option>
           </select>
         </div>
       </div>

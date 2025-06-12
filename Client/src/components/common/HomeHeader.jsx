@@ -1,15 +1,15 @@
 import { FaRegUser, FaCaretDown, FaCaretRight } from "react-icons/fa";
 import { fetchLogOut } from "../../services/AuthAPI";
-import { useNavigate } from "react-router-dom";
-import { Dropdown, ButtonGroup, DropdownButton } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { Dropdown, ButtonGroup } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { handleCategories } from "../../services/GetAPI";
 import React from "react";
+import Logo from "../../assets/Winmart.svg";
 import { FiShoppingCart } from "react-icons/fi";
 const HomeHeader = () => {
   const navigate = useNavigate();
   const [Category, setCategory] = useState([]);
-  const [isHover, setHover] = useState(false);
   const [openIdx, setIdx] = useState(null);
   useEffect(() => {
     fetchCategory();
@@ -38,8 +38,7 @@ const HomeHeader = () => {
           <div className="header__main-content">
             <div className="header__logo">
               <a href="/">
-                <img src="https://ext.same-assets.com/3309198820/1685326235.png" alt="Bacola" />
-                <span className="header__tagline">Online Grocery Shopping Center</span>
+                <img src={Logo} alt="Bacola" />
               </a>
             </div>
 
@@ -102,9 +101,12 @@ const HomeHeader = () => {
               </div>
             ) : (
               <div className="header__action">
-                <div className="header__cart">
+                <Link to="/cart" className="header__cart">
+                  <div className="header__cart__count">
+                    <span>1</span>
+                  </div>
                   <FiShoppingCart size={20} className="cart-icon" />
-                </div>
+                </Link>
                 <Dropdown as={ButtonGroup} className="header__login">
                   <Dropdown.Toggle className="header__infoUser">
                     <FaRegUser className="i-user" />

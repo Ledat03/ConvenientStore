@@ -23,4 +23,8 @@ public class ProductVariant {
     private Product product;
     @ElementCollection
     private List<String> productImage;
+    @OneToMany(mappedBy = "productVariant")
+    private List<CartDetail> cartDetails;
+    @OneToMany(mappedBy = "productVariant")
+    private List<OrderItem> orderItem;
 }

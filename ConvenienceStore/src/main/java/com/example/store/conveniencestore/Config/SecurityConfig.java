@@ -87,7 +87,7 @@ public class SecurityConfig {
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
-                                .requestMatchers("/api/check/**","/product/view/**","/variant/view/**").permitAll()
+                                .requestMatchers("/api/**","/product/view/**","/variant/view/**","/cart/view/**","/main/").permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2.jwt(Customizer.withDefaults())

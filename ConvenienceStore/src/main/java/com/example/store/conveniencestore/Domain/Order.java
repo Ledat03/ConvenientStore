@@ -15,7 +15,7 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    private Double totalPrice;
+    private Double total;
     @OneToMany(mappedBy = "order")
     List<OrderItem> orderDetails;
     @OneToOne(fetch = FetchType.LAZY)

@@ -1,6 +1,5 @@
 import SearchHeader from "./SearchHeader";
 import ProductCard from "./ProductCard";
-import ReactPaginate from "react-paginate";
 import FilterProducts from "./FilterProducts";
 import "../../../assets/scss/productsinfo/productsinfo.scss";
 import { useState, useEffect } from "react";
@@ -10,30 +9,23 @@ const ProductInfo = () => {
   const [filters, setFilters] = useState({
     availability: [],
     sale: [],
-    material: [],
+    unit: [],
     category: [],
-    priceRange: [0, 1500],
+    priceRange: [0, 1000000],
     features: [],
   });
   const [Product, setProduct] = useState([]);
   const [Loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("recommended");
-  const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = 1;
-  const pageCount = Math.ceil(Product.length / itemsPerPage);
-  const offset = currentPage * itemsPerPage;
-  const currentProducts = Product.slice(offset, offset + itemsPerPage);
   const handleFilterChange = (filterType, value) => {
     setFilters((prev) => ({
       ...prev,
       [filterType]: value,
     }));
   };
-
   useEffect(() => {
     handleProductList();
   }, []);
-
   const handleProductList = async () => {
     try {
       const res = await fetchListProduct();
@@ -44,6 +36,23 @@ const ProductInfo = () => {
       throw error;
     }
   };
+
+  const flatVariant = Product.flatMap((product) =>
+    product.productVariant.map((variant) => ({
+      ...variant,
+      productName: product.productName,
+      brand: product.brand,
+      subCategory: product.subCategory,
+      productId: product.productId,
+      image: product.image,
+      status: product.status,
+      Active: product.isActive,
+    }))
+  );
+  const filterBrand = [...new Set(flatVariant.map((product) => product.brand))];
+  const filterSubCategory = [...new Set(flatVariant.map((product) => product.subCategory))];
+  const filterStock = [...new Set(flatVariant.map((product) => product.stock))];
+  const filterUnit = [...new Set(flatVariant.map((product) => product.calUnit))];
   if (Loading) {
     return (
       <div>
@@ -51,15 +60,15 @@ const ProductInfo = () => {
       </div>
     );
   }
+  console.log(filters);
   return (
     <div className="products-app">
       <div className="products-container">
         <SearchHeader resultCount={85} sortBy={sortBy} onSortChange={setSortBy} />
         <div className="products-main-content">
-          <FilterProducts filters={filters} onFilterChange={handleFilterChange} />
-          <ProductCard products={Product} />
-          <div className="pagination-container">
-            <ReactPaginate previousLabel={"← Previous"} nextLabel={"Next →"} pageCount={filteredPageCount} onPageChange={handlePageChange} forcePage={currentPage} containerClassName={"pagination"} previousLinkClassName={"pagination__link"} nextLinkClassName={"pagination__link"} disabledClassName={"pagination__link--disabled"} activeClassName={"pagination__link--active"} pageClassName={"pagination__item"} pageLinkClassName={"pagination__link"} breakClassName={"pagination__break"} marginPagesDisplayed={2} pageRangeDisplayed={5} />
+          <FilterProducts products={flatVariant} filters={filters} onFilterChange={handleFilterChange} filterBrand={filterBrand} filterStock={filterStock} filterSubCategory={filterSubCategory} filterUnit={filterUnit} />
+          <div className="product-table">
+            <ProductCard products={flatVariant} filters={filters} />
           </div>
         </div>
       </div>

@@ -12,6 +12,7 @@ import { ManageProduct } from "./components/admin/ManageProduct.jsx";
 import { MainPage } from "./components/admin/MainPage.jsx";
 import ProductPage from "./components/HomePage/ProductDetail/ProductPage.jsx";
 import ProductInfo from "./components/HomePage/ProductsInfo/ProductInfo.jsx";
+import Cart from "./components/HomePage/Cart.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
@@ -20,6 +21,7 @@ createRoot(document.getElementById("root")).render(
           <Route index element={<Home />} />
           <Route path="/products" element={<ProductInfo />} />
           <Route path="/products/product/:productId" element={<ProductPage />} />
+          <Route path="/cart" element={<Cart />} />
         </Route>
         <Route path="/authenticate" element={<Authentication />} />
 

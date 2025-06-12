@@ -1,30 +1,36 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.scss";
 import axios from "axios";
+import { Bounce, ToastContainer } from "react-toastify";
 import HomeHeader from "./components/common/HomeHeader";
-import { FilterBar } from "./components/HomePage/FilterBar";
 import { Outlet } from "react-router-dom";
 import "./assets/scss/header.scss";
+import LoadingAnimation from "./components/common/LoadingAnimation";
 import Footer from "./components/common/Footer";
+import { getMainPage } from "./services/UserSevice";
 function App() {
   const [data, setData] = useState([]);
   const [loadingState, setLoadingState] = useState(false);
   const [error, setError] = useState(null);
   useEffect(() => {
-    const TestAPI = async () => {
-      setError(null);
-      setLoadingState(true);
-      try {
-        const res = await axios.get("http://localhost:8080/");
-        setData(res.data);
-        setLoadingState(false);
-      } catch (error) {
-        setError(error);
-        setLoadingState(false);
-      }
-    };
     TestAPI();
   }, []);
+  const TestAPI = async () => {
+    setError(null);
+    setLoadingState(true);
+    try {
+      const res = await getMainPage("http://localhost:8080/");
+      setData(res.data);
+      setLoadingState(false);
+    } catch (error) {
+      setError(error);
+      setLoadingState(false);
+    }
+  };
+  console.log(data);
+  if (loadingState) {
+    <LoadingAnimation />;
+  }
   return (
     <div className="main-container">
       <HomeHeader />
@@ -37,6 +43,7 @@ function App() {
       <div className="footer">
         <Footer />
       </div>
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
     </div>
   );
 }

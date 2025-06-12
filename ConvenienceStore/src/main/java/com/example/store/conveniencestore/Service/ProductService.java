@@ -73,4 +73,6 @@ public class ProductService {
     public void deleteAllByProduct(Product product) {
         variantRepository.deleteAllByProduct(product);
     }
+
+
 }

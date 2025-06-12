@@ -6,7 +6,6 @@ import ProductTabs from "./ProductTabs";
 import LoadingAnimation from "../../common/LoadingAnimation";
 import RelatedProducts from "./RelatedProducts";
 import { fetchProductById } from "../../../services/GetAPI";
-import Footer from "../../common/Footer";
 import { useParams, useSearchParams } from "react-router-dom";
 const ProductPage = () => {
   const { productId } = useParams();
@@ -69,6 +68,7 @@ const ProductPage = () => {
                 <div className="product-detail__layout-right">
                   <ProductInfo product={productData} quantity={quantity} setQuantity={setQuantity} Unit={Unit} setUnit={handleUnit} />
                 </div>
+                {console.log(Unit)}
               </div>
               <RelatedProducts />
             </div>

@@ -1,8 +1,7 @@
 import { useState } from "react";
 
-const FilterProducts = ({ filters, onFilterChange }) => {
-  // FilterSection component logic
-  const FilterSection = ({ title, options, selected, onChange, type, showMore = false }) => {
+const FilterProducts = ({ filters, onFilterChange, filterSubCategory, filterUnit }) => {
+  const FilterSection = ({ title, options, selected, onChange, type, showMore = true }) => {
     const [isExpanded, setIsExpanded] = useState(true);
     const [showAll, setShowAll] = useState(false);
 
@@ -43,62 +42,45 @@ const FilterProducts = ({ filters, onFilterChange }) => {
 
   // Sidebar data
   const availabilityOptions = [
-    { id: "in-stock", label: "In stock" },
-    { id: "low-stock", label: "Low Stock" },
-    { id: "out-of-stock", label: "Out of stock" },
+    { id: "in-stock", label: "Còn Hàng" },
+    { id: "low-stock", label: "Sắp Hết Hàng" },
+    { id: "out-of-stock", label: "Hết Hàng" },
   ];
 
   const saleOptions = [
-    { id: "clearance", label: "Clearance sale" },
-    { id: "voucher", label: "Voucher" },
-    { id: "regular", label: "Regular price" },
+    { id: "clearance", label: "Giá Siêu Ưu Đãi" },
+    { id: "voucher", label: "Mua Với Voucher" },
+    { id: "regular", label: "Mua Với Giá Gốc" },
   ];
 
-  const materialOptions = [
-    { id: "cotton", label: "Cotton" },
-    { id: "upholstered", label: "Upholstered" },
-    { id: "metal", label: "Metal" },
-    { id: "wood", label: "Wood" },
-  ];
+  const UnitOptions = filterUnit.map((item) => ({ id: item, label: item }));
 
-  const categoryOptions = [
-    { id: "chair", label: "Chair" },
-    { id: "divan", label: "Divan" },
-    { id: "sofa", label: "Sofa" },
-    { id: "sectional", label: "Sectional" },
-  ];
-
-  const featureOptions = [
-    { id: "outdoor", label: "Outdoor" },
-    { id: "adjustable", label: "Adjustable" },
-    { id: "swivel", label: "Swivel" },
-    { id: "handmade", label: "Handmade" },
-  ];
-
+  const categoryOptions = filterSubCategory.map((item) => ({
+    id: item,
+    label: item,
+  }));
   return (
     <aside className="sidebar">
-      <FilterSection title="Availability" options={availabilityOptions} selected={filters.availability} onChange={(value) => onFilterChange("availability", value)} type="checkbox" />
-      <FilterSection title="Sale" options={saleOptions} selected={filters.sale} onChange={(value) => onFilterChange("sale", value)} type="checkbox" />
+      <FilterSection title="Tình trạng" options={availabilityOptions} selected={filters.availability} onChange={(value) => onFilterChange("availability", value)} type="checkbox" />
+      <FilterSection title="Ưu Đãi" options={saleOptions} selected={filters.sale} onChange={(value) => onFilterChange("sale", value)} type="" />
 
-      <FilterSection title="Material" options={materialOptions} selected={filters.material} onChange={(value) => onFilterChange("material", value)} type="checkbox" showMore={true} />
+      <FilterSection title="Đơn Vị Tính" options={UnitOptions} selected={filters.unit} onChange={(value) => onFilterChange("unit", value)} type="checkbox" showMore={true} />
 
-      <FilterSection title="Category" options={categoryOptions} selected={filters.category} onChange={(value) => onFilterChange("category", value)} type="checkbox" showMore={true} />
+      <FilterSection title="Loại Sản Phẩm" options={categoryOptions} selected={filters.category} onChange={(value) => onFilterChange("category", value)} type="checkbox" showMore={true} />
 
       <div className="sidebar__filter-section">
-        <h3 className="sidebar__title">Price</h3>
+        <h3 className="sidebar__title">Giá</h3>
         <div className="sidebar__price-range">
           <div>
-            <input type="range" min="0" max="1500" value={filters.priceRange[0]} onChange={(e) => onFilterChange("priceRange", [Number.parseInt(e.target.value), filters.priceRange[1]])} className="sidebar__slider" />
-            <input type="range" min="0" max="1500" value={filters.priceRange[1]} onChange={(e) => onFilterChange("priceRange", [filters.priceRange[0], Number.parseInt(e.target.value)])} className="sidebar__slider" />
+            <input type="range" min="0" max="1000000" step={1000} value={filters.priceRange[0]} onChange={(e) => onFilterChange("priceRange", [Number.parseInt(e.target.value), filters.priceRange[1]])} className="sidebar__slider" />
+            <input type="range" min="0" max="1000000" step={1000} value={filters.priceRange[1]} onChange={(e) => onFilterChange("priceRange", [filters.priceRange[0], Number.parseInt(e.target.value)])} className="sidebar__slider" />
           </div>
           <div className="sidebar__labels">
-            <span>${filters.priceRange[0]}</span>
-            <span>${filters.priceRange[1]}</span>
+            <span>{filters.priceRange[0].toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+            <span>{filters.priceRange[1].toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
           </div>
         </div>
       </div>
-
-      <FilterSection title="Features" options={featureOptions} selected={filters.features} onChange={(value) => onFilterChange("features", value)} type="checkbox" showMore={true} />
     </aside>
   );
 };

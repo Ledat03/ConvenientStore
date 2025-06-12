@@ -14,16 +14,17 @@ const ProductGallery = ({ productData, Variant, Unit }) => {
       <div className="main-image">
         <img alt="Product" className="main-img" src={selectedImage == null || selectedImage > fillVariant.productImage.length - 1 ? productData.image : fillVariant.productImage[selectedImage]} />
         <div className="navigation-arrows">
-          <button className="nav-arrow-left">‹--</button>
-          <button className="nav-arrow-right">--›</button>
+          <button className="nav-arrow-left">‹-</button>
+          <button className="nav-arrow-right">-›</button>
         </div>
       </div>
       <div className="thumbnail-list">
-        {fillVariant.productImage?.map((image, index) => (
-          <div key={index} className={index === selectedImage ? "thumbnail active" : "thumbnail"} onClick={() => setSelectedImage(index)}>
-            <img src={image} alt={`Product ${index + 1}`} className="thumbnail-img" />
-          </div>
-        ))}
+        {fillVariant &&
+          fillVariant.productImage?.map((image, index) => (
+            <div key={index} className={index === selectedImage ? "thumbnail active" : "thumbnail"} onClick={() => setSelectedImage(index)}>
+              <img src={image} alt={`Product ${index + 1}`} className="thumbnail-img" />
+            </div>
+          ))}
       </div>
     </div>
   );
