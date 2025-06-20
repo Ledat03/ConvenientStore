@@ -214,7 +214,6 @@
     display: flex;
     gap: 10px;
     margin-bottom: 30px;
-
     .color-option {
       width: 60px;
       height: 30px;
@@ -222,11 +221,16 @@
       color: black;
       border: 2px solid var.$red-accent;
       cursor: pointer;
-      text-align: center;
+      position: relative;
       &.selected {
         border: 2px solid var.$red-accent;
         background-color: var.$red-accent;
         color: #fff;
+      }
+      span {
+        position: absolute;
+        left: 10px;
+        top: 5px;
       }
     }
   }

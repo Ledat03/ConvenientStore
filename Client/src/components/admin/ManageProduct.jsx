@@ -18,7 +18,7 @@ export const ManageProduct = () => {
     return <LoadingAnimation />;
   }
   if (error != null) {
-    return <div>Can't handle User List duo to {error}</div>;
+    return <div>Không thể lấy danh sách sản phẩm {error}</div>;
   }
   return (
     <>

@@ -31,6 +31,6 @@ public class    User {
    @JoinColumn(name = "role_id")
    @JsonManagedReference
     private Role role;
-   @OneToOne(mappedBy = "user")
+   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
    private Cart cart;
 }

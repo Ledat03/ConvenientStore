@@ -4,13 +4,13 @@ import com.example.store.conveniencestore.DTO.CategoryDTO;
 import com.example.store.conveniencestore.DTO.ProductDTO;
 import com.example.store.conveniencestore.DTO.ProductVariantDTO;
 import com.example.store.conveniencestore.DTO.SubCategoryDTO;
-import com.example.store.conveniencestore.Domain.Category;
-import com.example.store.conveniencestore.Domain.Product;
-import com.example.store.conveniencestore.Domain.ProductVariant;
-import com.example.store.conveniencestore.Domain.SubCategory;
+import com.example.store.conveniencestore.Domain.*;
+import com.example.store.conveniencestore.EnumType.DiscountScope;
 import com.example.store.conveniencestore.Service.CloudinaryService;
 import com.example.store.conveniencestore.Service.ProductService;
+import com.example.store.conveniencestore.Service.PromotionService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,10 +26,12 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
     private final CloudinaryService cloudinaryService;
+    private final PromotionService promotionService;
 
-    public ProductController(ProductService productService, CloudinaryService cloudinaryService) {
+    public ProductController(ProductService productService, CloudinaryService cloudinaryService, PromotionService promotionService) {
         this.productService = productService;
         this.cloudinaryService = cloudinaryService;
+        this.promotionService = promotionService;
     }
 
     private SubCategoryDTO convertSubCategoryToDTO(SubCategory subCategory) {
@@ -54,14 +56,18 @@ public class ProductController {
         categoryDTO.setSubCategories(subCategoryDTOList);
         return categoryDTO;
     }
-    private String getTime(){
+    private String getTime(LocalDateTime localDateTime) {
+        String formattedTime = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        return formattedTime;
+    }
+    private LocalDateTime getLocalDateTime(){
         Instant instant = Instant.now();
         LocalDateTime ldt = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-        String formattedTime = ldt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        return formattedTime;
+       return ldt;
     }
     private Product convertProductDTOToProduct(ProductDTO productDTO) {
        Product product = productService.findProductById(productDTO.getProductId());
+       Brand brand = productService.findBrandbyBrandName(productDTO.getBrand());
        product.setProductName(productDTO.getProductName());
        product.setProductDescription(productDTO.getProductDescription());
        product.setHowToUse(productDTO.getHowToUse());
@@ -70,12 +76,12 @@ public class ProductController {
        product.setCategory(convertCategoryDTOtoMain(productDTO.getSubCategory()));
        product.setSubCategory(convertSubCategoryDTOToMain(productDTO.getSubCategory()));
        product.setIngredient(productDTO.getIngredient());
-       product.setBrand(productDTO.getBrand());
+       product.setBrand(brand);
        product.setStatus(productDTO.getStatus());
        product.setIsActive(Boolean.parseBoolean(productDTO.getIsActive()));
        product.setSku(productDTO.getSku());
        product.setImage(productDTO.getImage() == null ? product.getImage() : "" );
-       product.setUpdatedAt(getTime());
+       product.setUpdatedAt(getLocalDateTime());
        product.setCreatedAt(product.getCreatedAt());
        return product;
     }
@@ -90,11 +96,11 @@ public class ProductController {
         productDTO.setCategory(product.getCategory().getCategoryName());
         productDTO.setSubCategory(product.getSubCategory().getSubCategoryName());
         productDTO.setIngredient(product.getIngredient());
-        productDTO.setUpdateAt(product.getUpdatedAt());
+        productDTO.setUpdateAt(getTime(product.getUpdatedAt()));
         productDTO.setImage(product.getImage());
         productDTO.setStatus(product.getStatus());
         productDTO.setIsActive(Boolean.toString(product.getIsActive()));
-        productDTO.setBrand(product.getBrand());
+        productDTO.setBrand(product.getBrand().getBrandName());
         productDTO.setSku(product.getSku());
         List<ProductVariantDTO> temp = product.getProductVariant().stream().map(this::convertVariantToDTO).toList();
         productDTO.setProductVariant(temp);
@@ -153,12 +159,13 @@ public class ProductController {
         product.setSku(sku);
         product.setIsActive(Boolean.parseBoolean(isActive));
         product.setStatus(status);
-        product.setBrand(brand);
+        Brand brandName = productService.findBrandbyBrandName(brand);
+        product.setBrand(brandName);
         SubCategory subCate = productService.findBySubCategoryName(subCategory);
         product.setSubCategory(subCate);
         product.setCategory(productService.findCategoriesByCategory_id(subCate.getCategory().getCategory_id()));
-        product.setUpdatedAt(getTime());
-        product.setCreatedAt(getTime());
+        product.setUpdatedAt(getLocalDateTime());
+        product.setCreatedAt(getLocalDateTime());
         if(image != null){
             try{
                CloudinaryService.UploadResult uploadResult = cloudinaryService.uploadImage(image,"previewproduct");
@@ -177,12 +184,46 @@ public class ProductController {
         return ResponseEntity.ok(productDTO);
     }
     @GetMapping("/view")
-    public ResponseEntity<Object> ViewProduct(){
-         List<Product> ListProducts = productService.findAllProducts();
+    public ResponseEntity<Object> ViewProduct(@RequestParam(value = "category" , required = false) String category, @RequestParam(value = "subCategory",required = false) String subCategory,@RequestParam(value = "code",required = false) String code) {
+        if(subCategory != null){
+            List<Product> productList = productService.findAllProductsBySubCategory(subCategory);
+            List<ProductDTO> ListProductDTO = productList.stream().map(this::convertProductToProductDTO).toList();
+            return ResponseEntity.ok(ListProductDTO);
+        }else if(subCategory == null && category != null){
+            List<Product> ListProducts = productService.findAllProductsByCategory(category);
+            List<ProductDTO> ListProductDTO = ListProducts.stream().map(this::convertProductToProductDTO).toList();
+            return ResponseEntity.ok(ListProductDTO);
+        }
+        if(code != null){
+            Promotion promotion = promotionService.findPromotionByCode(code);
+            List<Product> productList = new ArrayList<>();
+            if(promotion.getScope() == DiscountScope.CATEGORY){
+                for (PromotionCategory promotionCategory : promotion.getCouponCategories()){
+                    List<Product> products  = productService.findAllProductsByCategory(promotionCategory.getCategory().getCategoryName());
+                    productList.addAll(products);
+                }
+                List<ProductDTO> ListProductDTO = productList.stream().map(this::convertProductToProductDTO).toList();
+                return ResponseEntity.ok(ListProductDTO);
+            }else if(promotion.getScope() == DiscountScope.BRAND){
+                for (PromotionBrand promotionBrand : promotion.getPromotionBrands()){
+                    List<Product> products  = productService.findAllProductsByBrand(promotionBrand.getBrand().getBrandName());
+                    productList.addAll(products);
+                }
+                List<ProductDTO> ListProductDTO = productList.stream().map(this::convertProductToProductDTO).toList();
+                return ResponseEntity.ok(ListProductDTO);
+            }else if(promotion.getScope() == DiscountScope.PRODUCT){
+                for (PromotionProduct promotionProduct: promotion.getPromotionProducts()){
+                    Product products  = productService.findProductByProductName(promotionProduct.getProduct().getProductName());
+                    productList.add(products);
+                }
+                List<ProductDTO> ListProductDTO = productList.stream().map(this::convertProductToProductDTO).toList();
+                return ResponseEntity.ok(ListProductDTO);
+            }
+        }
+        List<Product> ListProducts = productService.findAllProducts();
         List<ProductDTO> ListProductDTO = ListProducts.stream().map(this::convertProductToProductDTO).toList();
         return ResponseEntity.ok(ListProductDTO);
     }
-
     @GetMapping("/view/product-info/{id}")
     public ResponseEntity<ProductDTO> getProductInfo(@PathVariable long id) {
         Product product = productService.findProductById(id);

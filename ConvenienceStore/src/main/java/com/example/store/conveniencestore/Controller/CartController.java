@@ -1,23 +1,24 @@
 package com.example.store.conveniencestore.Controller;
 
 import com.example.store.conveniencestore.DTO.*;
-import com.example.store.conveniencestore.Domain.Cart;
-import com.example.store.conveniencestore.Domain.CartDetail;
-import com.example.store.conveniencestore.Domain.Product;
-import com.example.store.conveniencestore.Domain.ProductVariant;
+import com.example.store.conveniencestore.Domain.*;
+import com.example.store.conveniencestore.Service.ProductService;
 import com.example.store.conveniencestore.Service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
-public class CartOrderController {
+public class CartController {
     private final UserService userService;
+    private final ProductService productService;
 
-    public CartOrderController( UserService userService) {
+    public CartController(UserService userService, ProductService productService) {
         this.userService = userService;
+        this.productService = productService;
     }
 
     public CartDetailDTO convertToDTO(CartDetail cartDetail) {
@@ -31,12 +32,12 @@ public class CartOrderController {
 
     public ProductVariantDTO convertToDTO(ProductVariant productVariant) {
         ProductVariantDTO productVariantDTO = new ProductVariantDTO();
+        productVariantDTO.setId(productVariant.getVariantId());
         productVariantDTO.setProductId(productVariant.getVariantId());
         productVariantDTO.setPrice(productVariant.getPrice());
         productVariantDTO.setSalePrice(productVariant.getSalePrice());
         productVariantDTO.setCalUnit(productVariant.getCalUnit());
         productVariantDTO.setSkuCode(productVariant.getSkuCode());
-        productVariantDTO.setProductId(productVariant.getVariantId());
         productVariantDTO.setProductImage(productVariant.getProductImage());
         return productVariantDTO;   
     }
@@ -44,11 +45,11 @@ public class CartOrderController {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setProductId(product.getProductId());
         productDTO.setProductName(product.getProductName());
-        productDTO.setCategory(productDTO.getCategory());
-        productDTO.setSubCategory(productDTO.getSubCategory());
+        productDTO.setCategory(product.getCategory().getCategoryName());
+        productDTO.setSubCategory(product.getSubCategory().getSubCategoryName());
         productDTO.setImage(product.getImage());
         productDTO.setSku(product.getSku());
-        productDTO.setBrand(product.getBrand());
+        productDTO.setBrand(product.getBrand().getBrandName());
         return productDTO;
     }
 
@@ -69,10 +70,17 @@ public class CartOrderController {
     }
 
     @GetMapping("/view")
-    public ResponseEntity<Object> viewCart(@RequestParam String userId) {
-        Cart cart = userService.getUserCart(Long.parseLong(userId));
+    public ResponseEntity<Object> viewCart(@RequestParam long userId) {
+        Cart cart = userService.getUserCart(userId);
         if (cart == null) {
-            return ResponseEntity.status(404).body("No cart found");
+            Cart newCart = userService.getOrCreateUserCart(userId);
+            CartDTO cartDTO = new CartDTO();
+            cartDTO.setCartId(newCart.getId());
+            cartDTO.setUserId(newCart.getUser().getId());
+            cartDTO.setSumQuantity(0);
+            List<CartDetailDTO> list  = new ArrayList<>();
+            cartDTO.setCartDetailList(list);
+            return ResponseEntity.status(200).body("Tạo mới giỏ hàng thành công !");
         }
         CartDTO cartDTO = convertCartToDTO(cart);
         return ResponseEntity.ok().body(cartDTO);

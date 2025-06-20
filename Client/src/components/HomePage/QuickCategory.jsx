@@ -1,5 +1,6 @@
 import React from "react";
 import "../../assets/scss/QuickCategory.scss";
+import { Link } from "react-router-dom";
 
 const QuickCategory = () => {
   const categories = [
@@ -17,7 +18,7 @@ const QuickCategory = () => {
     },
     {
       id: 3,
-      name: "Sữa Các Loại",
+      name: "Các Loại Sữa",
       count: "12 Sản Phẩm",
       icon: "https://res.cloudinary.com/donwvgcah/image/upload/v1749117031/milk-300x300_lqz109.jpg",
     },
@@ -40,7 +41,7 @@ const QuickCategory = () => {
       <div className="container">
         <div className="product-categories__grid">
           {categories.map((category) => (
-            <div key={category.id} className="product-categories__item">
+            <Link to={`/products?category=${category.name}`} key={category.id} className="product-categories__item">
               <div className="product-categories__icon">
                 <img src={category.icon} alt={category.name} />
               </div>
@@ -48,7 +49,7 @@ const QuickCategory = () => {
                 <h3 className="product-categories__name">{category.name}</h3>
                 <span className="product-categories__count">{category.count}</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

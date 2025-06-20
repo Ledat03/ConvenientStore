@@ -86,7 +86,6 @@ const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
         >
           Thêm Vào Giỏ Hàng
         </button>
-        <button className="buy-now">Mua Ngay</button>
       </div>
 
       <div className="info-section">

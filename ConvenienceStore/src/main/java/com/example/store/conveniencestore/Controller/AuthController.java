@@ -2,7 +2,9 @@ package com.example.store.conveniencestore.Controller;
 
 import com.example.store.conveniencestore.DTO.LoginDTO;
 import com.example.store.conveniencestore.DTO.ResLoginDTO;
+import com.example.store.conveniencestore.DTO.UserDTO;
 import com.example.store.conveniencestore.Domain.RestRestponse;
+import com.example.store.conveniencestore.Domain.Role;
 import com.example.store.conveniencestore.Domain.User;
 import com.example.store.conveniencestore.Service.UserService;
 import com.example.store.conveniencestore.Util.SecurityToken;
@@ -18,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+
 @RestController
 @RequestMapping("api/check")
 public class AuthController {
@@ -28,6 +32,26 @@ public class AuthController {
     @Value("${store.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
 
+    public User convertUserDTOToUser(UserDTO userDTO) {
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        String Hash = passwordEncoder.encode(userDTO.getPasswordHash());
+        user.setPasswordHash(Hash);
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setAddress(userDTO.getAddress());
+        user.setPhone(userDTO.getPhone());
+        Role role = userService.findByName(userDTO.getRole());
+        user.setRole(role);
+        user.setCreatedBy("user");
+        user.setCreatedAt(Instant.now());
+        user.setUpdatedAt(Instant.now());
+        user.setUpdatedBy("user");
+        return user;
+    }
+
+
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityToken securityToken,
                           UserService userService, PasswordEncoder passwordEncoder) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
@@ -37,7 +61,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<RestRestponse<Object>> signUp(@RequestBody User user) {
+    public ResponseEntity<Object> signUp(@RequestBody UserDTO user) {
         User CheckExist = userService.findByEmail(user.getEmail());
         if (CheckExist != null && user.getEmail().equals(CheckExist.getEmail())) {
             RestRestponse<Object> ErrorRestRestponse = new RestRestponse<>();
@@ -46,14 +70,9 @@ public class AuthController {
             ErrorRestRestponse.setStatusCode(HttpStatus.valueOf(400).value());
             return ResponseEntity.ok().body(ErrorRestRestponse);
         }
-        RestRestponse<Object> restRestponse = new RestRestponse<>();
-        restRestponse.setMessage("Đăng kí thành công !");
-        restRestponse.setStatusCode(HttpStatus.valueOf(200).value());
-        String HashPassword = passwordEncoder.encode(user.getPasswordHash());
-        user.setPasswordHash(HashPassword);
-        userService.save(user);
-        restRestponse.setData(user);
-        return ResponseEntity.ok().body(restRestponse);
+        User newUser = convertUserDTOToUser(user);
+        userService.save(newUser);
+        return ResponseEntity.ok().body(user);
     }
 
     @PostMapping("/login")

@@ -351,6 +351,9 @@ a {
   opacity: 0;
   transform: translateX(6px);
   transition: all 0.25s ease;
+  a{
+    color: var.$red-accent !important;
+  }
   &.show {
     /* React-Bootstrap tự thêm .show */
     opacity: 1;
@@ -363,6 +366,10 @@ a {
 .dropdown-item {
   font-size: 14px !important;
   margin: 5px 0;
+  a{
+    color: black;
+    
+  }
   &:hover {
     background-color: var.$red-accent !important;
     color: #fff !important;

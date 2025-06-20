@@ -51,8 +51,14 @@ public class UserService {
     public Role findRoleById(long id) {
         return roleRepository.findRoleById(id);
     }
+
     @Transactional
     public void deleteUserById(long id) {
+        Cart cart = cartRepository.findByUser_Id(id);
+        if(cart != null) {
+            cart.setUser(null);
+            cartRepository.delete(cart);
+        }
         userRepository.deleteUserById(id);
     }
 
@@ -120,6 +126,7 @@ public class UserService {
     }
     public Cart getUserCart(long userId) {
         return cartRepository.findByUser_Id(userId);
+
     }
     public void deleteCartDetail(long CartDetailId) {
         CartDetail cartDetail = cartDetailRepository.findById(CartDetailId);
@@ -130,6 +137,20 @@ public class UserService {
             cartRepository.save(cart);
         }
     }
+
+    @Transactional
+    public synchronized Cart getOrCreateUserCart(long userId) {
+        Cart cart = cartRepository.findByUser_Id(userId);
+        if (cart == null) {
+            cart = new Cart();
+            User user = userRepository.findById(userId);
+            cart.setUser(user);
+            cart.setSumQuantity(0);
+            cart = cartRepository.save(cart);
+        }
+        return cart;
+    }
+
     public CartDetail findCartDetailById(long CartDetailId) {
         return cartDetailRepository.findById(CartDetailId);
     }

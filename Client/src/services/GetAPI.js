@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import APIsCustomize from "../utils/APIsCustomize";
 
 //User Controller
@@ -62,7 +61,7 @@ const addNewProduct = async (formData) => {
 const updateProduct = async (Product) => {
   await APIsCustomize.put("product/update", Product, { headers: { "Content-Type": "application/json" } });
 };
-const fetchListProduct = async () => await APIsCustomize.get("/product/view", { headers: { "Content-Type": "application/json" } });
+const fetchListProduct = async (category, subCategory, code) => await APIsCustomize.get("/product/view", { params: { category, subCategory, code }, headers: { "Content-Type": "application/json" } });
 const deleteProduct = async (id) => await APIsCustomize.delete(`/product/delete/${id}`, { headers: { "Content-Type": "application/json" } });
 const fetchProductById = async (productId) => await APIsCustomize.get(`/product/view/product-info/${productId}`, { headers: { "Content-Type": "application/json" } });
 //Variant Controller
@@ -71,4 +70,13 @@ const AddNewVariant = async (formData) => await APIsCustomize.post("/variant/add
 const GetListVariant = async (id) => await APIsCustomize.get(`/variant/view/${id}`, { headers: { "Content-Type": "application/json" } });
 const deleteVariant = async (id) => await APIsCustomize.delete(`/variant/delete/${id}`, { headers: { "Content-Type": "application/json" } });
 const UpdateVariantItem = async (formData) => await APIsCustomize.put(`/variant/update`, formData, { headers: { "Content-Type": "multipart/form-data" } });
-export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById };
+//Brand Controller
+const addBrand = async (brand) => await APIsCustomize.post("/brand/add", brand, { headers: { "Content-Type": "application/json" } });
+const updateBrand = async (brand) => await APIsCustomize.put("/brand/update", brand, { headers: { "Content-Type": "application/json" } });
+const deleteBrand = async (brand) => await APIsCustomize.delete("/brand/delete", { params: { brand }, headers: { "Content-Type": "application/json" } });
+const viewBrand = async () => await APIsCustomize.get("/brand/view", { headers: { "Content-Type": "application/json" } });
+//PromotionController
+const addNewPromotion = async (formData) => await APIsCustomize.post("/promotion/add", formData, { headers: { "Content-Type": "application/json" } });
+const fetchListPromotion = async () => await APIsCustomize.get("/promotion/view", { headers: { "Content-Type": "application/json" } });
+const fetchListPromotionByFilter = async (code) => await APIsCustomize.get("/promotion/filterpromo", { params: { code }, headers: { "Content-Type": "application/json" } });
+export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, fetchListPromotionByFilter };

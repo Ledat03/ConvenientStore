@@ -65,7 +65,8 @@ const HomeHeader = () => {
                           onMouseLeave={() => setIdx(null)}
                         >
                           <Dropdown.Toggle variant="link" className="custom-nested-dropdown-toggle dropdown-item" id={`dropdown-nested-${cate.categoryId}`}>
-                            {cate.categoryName}
+                            <Link to={`/products?category=${cate.categoryName}`}>{cate.categoryName}</Link>
+
                             <FaCaretRight style={{ marginLeft: "auto" }} />
                           </Dropdown.Toggle>
                           <Dropdown.Menu className="header__dropdown-Submenu">
@@ -73,7 +74,9 @@ const HomeHeader = () => {
                               <Dropdown.Item
                                 key={item.id}
                                 href={item.link}
-                                // onClick={() => handleSubCategorySelect(subCategory)}
+                                onClick={() => {
+                                  navigate(`/products?category=${cate.categoryName}&sub-category=${item.subCategoryName}`);
+                                }}
                               >
                                 {item.subCategoryName}
                               </Dropdown.Item>
@@ -102,9 +105,6 @@ const HomeHeader = () => {
             ) : (
               <div className="header__action">
                 <Link to="/cart" className="header__cart">
-                  <div className="header__cart__count">
-                    <span>1</span>
-                  </div>
                   <FiShoppingCart size={20} className="cart-icon" />
                 </Link>
                 <Dropdown as={ButtonGroup} className="header__login">

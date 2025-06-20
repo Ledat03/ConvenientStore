@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.scss";
-import axios from "axios";
 import { Bounce, ToastContainer } from "react-toastify";
 import HomeHeader from "./components/common/HomeHeader";
 import { Outlet } from "react-router-dom";

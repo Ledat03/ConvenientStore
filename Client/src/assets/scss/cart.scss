@@ -1,3 +1,4 @@
+@use "../scss/variables.scss" as var;
 .cart-container {
   background: #f9fafb;
   padding: 2rem 1rem;
@@ -90,6 +91,7 @@
 
 .item-name {
   font-weight: 600;
+  font-size: medium;
   color: #111827;
   margin-bottom: 0.5rem;
 }
@@ -167,6 +169,7 @@
 }
 
 .cart-summary {
+  font-size: medium;
   background: white;
   padding: 1.5rem;
   border-radius: 8px;
@@ -180,17 +183,18 @@
   }
 
   .checkout-btn {
-    background: #3b82f6;
+    background: #16a34a;
     color: white;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 6px;
     cursor: pointer;
+    text-align: center;
     font-weight: 500;
     transition: background 0.3s ease;
 
     &:hover {
-      background: #2563eb;
+      background: var.$red-accent;
     }
   }
 }
@@ -215,4 +219,11 @@
   font-size: 1.2rem;
   font-weight: bold;
   margin-top: 1rem;
+}
+.coupon-btn {
+  color: #fff;
+  border: none;
+  height: 35px;
+  border-radius: 10px;
+  background-color: var.$red-accent;
 }

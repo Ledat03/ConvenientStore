@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-const SearchHeader = ({ resultCount, sortBy, onSortChange }) => {
+const SearchHeader = ({ resultCount, sortBy, onSortChange, product, category, subCate }) => {
   return (
     <>
       <nav className="breadcrumb">
@@ -7,11 +7,15 @@ const SearchHeader = ({ resultCount, sortBy, onSortChange }) => {
           Home
         </Link>
         <span className="breadcrumb__separator">/</span>
-        <Link to="/" className="breadcrumb__link">
-          Các Loại Sữa
+        <Link to={`/products?category=${category}`} className="breadcrumb__link">
+          {category}
         </Link>
-        <span className="breadcrumb__separator">/</span>
-        <span className="breadcrumb__current">Sữa</span>
+        {subCate != null && (
+          <>
+            <span className="breadcrumb__separator">/</span>
+            <span className="breadcrumb__current">{subCate}</span>
+          </>
+        )}
       </nav>
 
       <div className="search-header">
@@ -20,7 +24,7 @@ const SearchHeader = ({ resultCount, sortBy, onSortChange }) => {
           <span className="search-header__text"></span>
         </div>
         <div className="search-header__controls">
-          <span className="search-header__count">{resultCount} Kết Quả</span>
+          <span className="search-header__count">{product.length} Kết Quả</span>
           <select className="search-header__select" value={sortBy} onChange={(e) => onSortChange(e.target.value)}>
             <option value="recommended">Sắp Xếp Theo</option>
             <option value="price-low">Giá: Từ thấp đến cao</option>

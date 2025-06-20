@@ -1,11 +1,13 @@
 import { toast } from "react-toastify";
 import { Modal, Button, Form, Col, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { handleListSubCate, addNewProduct } from "../../../services/GetAPI";
+import { handleListSubCate, addNewProduct, viewBrand } from "../../../services/GetAPI";
+import "../css/promotion.scss";
 const AddProduct = (props) => {
   const [isShow, setShow] = useState(false);
   const close = () => setShow(false);
   const open = () => setShow(true);
+  const [ListBrand, setListBrand] = useState([]);
   const [GetCategory, setGetCategory] = useState("Sữa Tươi");
   const [ProductName, setProductName] = useState("");
   const [ProductDescription, setProductDescription] = useState("");
@@ -13,7 +15,7 @@ const AddProduct = (props) => {
   const [Ingredient, setIngredient] = useState("");
   const [HowToUse, setHowToUse] = useState("");
   const [Preserve, setPreserve] = useState("");
-  const [Brand, setBrand] = useState("");
+  const [Brand, setBrand] = useState("LOF");
   const [SKU, setSKU] = useState("");
   const [IsActive, setActive] = useState("true");
   const [Status, setStatus] = useState("Draft");
@@ -30,16 +32,18 @@ const AddProduct = (props) => {
     setGetCategory("Sữa Tươi");
     setStatus("Draft");
     setActive("true");
-    setBrand("");
+    setBrand("LOF");
     setSKU("");
     setImage(null);
     setImageURL("");
   };
   useEffect(() => {
-    getListSubCate();
+    getRequireInfo();
   }, []);
-  const getListSubCate = async () => {
+  const getRequireInfo = async () => {
     const dataSubCate = await handleListSubCate();
+    const dataBrands = await viewBrand();
+    setListBrand(dataBrands.data.data);
     setSubCategory(dataSubCate.data.data);
   };
   const handleImage = (e) => {
@@ -137,7 +141,11 @@ const AddProduct = (props) => {
               </Form.Group>
               <Form.Group as={Col} controlId="formSubCategory">
                 <Form.Label>Hãng Sản Phẩm</Form.Label>
-                <Form.Control value={Brand} onChange={(e) => setBrand(e.target.value)}></Form.Control>
+                <Form.Select value={Brand} onChange={(e) => setBrand(e.target.value)}>
+                  {ListBrand?.map((item) => {
+                    return <option key={item.brandId}>{item.brandName}</option>;
+                  })}
+                </Form.Select>
               </Form.Group>
             </Row>
             <Row className="mb-3">

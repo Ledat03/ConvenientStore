@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Paginate from "../../common/Paginate";
 import { toast } from "react-toastify";
 import { AddToCart } from "../../../services/UserSevice";
-const ProductCard = ({ products, filters }) => {
+const ProductCard = ({ products, filters, Loading, subCate }) => {
   const calSavePrice = (salePrice, price) => {
     let sale = ((salePrice - price) / price) * 100;
     return Math.round(sale);
@@ -22,7 +22,7 @@ const ProductCard = ({ products, filters }) => {
       setTotalProduct(products.length);
     }
     IsLogIn();
-  }, [filters]);
+  }, [filters, Loading]);
   const ActiveProduct = products
     .filter((item) => item.Active == "true")
     .filter((item) => {
@@ -54,6 +54,15 @@ const ProductCard = ({ products, filters }) => {
         return true;
       }
       if (filters.category.includes(item.subCategory)) {
+        return true;
+      }
+      return false;
+    })
+    .filter((item) => {
+      if (filters.brand.length === 0) {
+        return true;
+      }
+      if (filters.brand.includes(item.brand)) {
         return true;
       }
       return false;

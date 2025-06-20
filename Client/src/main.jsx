@@ -13,6 +13,9 @@ import { MainPage } from "./components/admin/MainPage.jsx";
 import ProductPage from "./components/HomePage/ProductDetail/ProductPage.jsx";
 import ProductInfo from "./components/HomePage/ProductsInfo/ProductInfo.jsx";
 import Cart from "./components/HomePage/Cart.jsx";
+import ManagePromotion from "./components/admin/ManagePromotion.jsx";
+import { ManageBrand } from "./components/admin/ManageBrand.jsx";
+import Checkout from "./components/HomePage/Checkout.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
@@ -22,6 +25,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/products" element={<ProductInfo />} />
           <Route path="/products/product/:productId" element={<ProductPage />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Route>
         <Route path="/authenticate" element={<Authentication />} />
 
@@ -29,6 +33,8 @@ createRoot(document.getElementById("root")).render(
           <Route index element={<MainPage />} />
           <Route path="manage-user" element={<AdminManageUser />} />
           <Route path="manage-stock" element={<ManageProduct />} />
+          <Route path="manage-brand" element={<ManageBrand />} />
+          <Route path="manage-promotion" element={<ManagePromotion />} />
         </Route>
       </Routes>
     </BrowserRouter>

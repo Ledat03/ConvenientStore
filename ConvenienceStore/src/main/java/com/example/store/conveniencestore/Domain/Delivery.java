@@ -1,5 +1,6 @@
 package com.example.store.conveniencestore.Domain;
 
+import com.example.store.conveniencestore.EnumType.DeliveryStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -30,8 +31,9 @@ public class Delivery {
     @Column(name = "receiver_phone", columnDefinition = "VARCHAR(15)")
     private String receiver_phone;
 
-    @Column(name = "delivery_status", columnDefinition = "ENUM('pending', 'shipped', 'delivered', 'failed', 'returned') DEFAULT 'pending'")
-    private String delivery_status;
+    @Column(name = "delivery_status")
+    @Enumerated(EnumType.STRING)
+    private DeliveryStatus delivery_status;
 
     @Column(name = "delivery_method", columnDefinition = "VARCHAR(50)")
     private String delivery_method;

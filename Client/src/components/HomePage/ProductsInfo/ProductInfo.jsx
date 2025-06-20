@@ -3,8 +3,10 @@ import ProductCard from "./ProductCard";
 import FilterProducts from "./FilterProducts";
 import "../../../assets/scss/productsinfo/productsinfo.scss";
 import { useState, useEffect } from "react";
-import { fetchListProduct } from "../../../services/GetAPI";
+import { fetchListProduct, fetchListPromotionByFilter } from "../../../services/GetAPI";
 import LoadingAnimation from "../../common/LoadingAnimation";
+import { useSearchParams } from "react-router-dom";
+import PromotionFilter from "./PromotionFilter";
 const ProductInfo = () => {
   const [filters, setFilters] = useState({
     availability: [],
@@ -12,8 +14,13 @@ const ProductInfo = () => {
     unit: [],
     category: [],
     priceRange: [0, 1000000],
-    features: [],
+    brand: [],
   });
+  const [searchParams] = useSearchParams();
+  const category = searchParams.get("category");
+  const subCate = searchParams.get("sub-category");
+  const promotion = searchParams.get("promotion");
+  const [Promo, setPromo] = useState({});
   const [Product, setProduct] = useState([]);
   const [Loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("recommended");
@@ -24,11 +31,12 @@ const ProductInfo = () => {
     }));
   };
   useEffect(() => {
+    setLoading(true);
     handleProductList();
-  }, []);
+  }, [category, subCate]);
   const handleProductList = async () => {
     try {
-      const res = await fetchListProduct();
+      const res = await fetchListProduct(category, subCate, promotion);
       setProduct(res.data.data);
       setLoading(false);
     } catch (error) {
@@ -36,7 +44,6 @@ const ProductInfo = () => {
       throw error;
     }
   };
-
   const flatVariant = Product.flatMap((product) =>
     product.productVariant.map((variant) => ({
       ...variant,
@@ -60,15 +67,15 @@ const ProductInfo = () => {
       </div>
     );
   }
-  console.log(filters);
   return (
     <div className="products-app">
       <div className="products-container">
-        <SearchHeader resultCount={85} sortBy={sortBy} onSortChange={setSortBy} />
+        <SearchHeader product={flatVariant} category={category} subCate={subCate} sortBy={sortBy} onSortChange={setSortBy} />
+        <PromotionFilter category={category} flatVariant={flatVariant} filterBrand={filterBrand} promotion />
         <div className="products-main-content">
-          <FilterProducts products={flatVariant} filters={filters} onFilterChange={handleFilterChange} filterBrand={filterBrand} filterStock={filterStock} filterSubCategory={filterSubCategory} filterUnit={filterUnit} />
+          <FilterProducts products={flatVariant} filters={filters} onFilterChange={handleFilterChange} filterBrand={filterBrand} filterStock={filterStock} filterSubCategory={filterSubCategory} filterUnit={filterUnit} subCate={subCate} />
           <div className="product-table">
-            <ProductCard products={flatVariant} filters={filters} />
+            <ProductCard Loading={Loading} products={flatVariant} filters={filters} />
           </div>
         </div>
       </div>

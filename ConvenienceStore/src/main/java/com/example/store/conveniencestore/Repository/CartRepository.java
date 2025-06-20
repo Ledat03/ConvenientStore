@@ -12,7 +12,6 @@ import java.util.List;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
     Cart findByUser_Id(long userId);
-    @Transactional
     Cart save(Cart cart);
     @Transactional
     void delete(Cart cart);

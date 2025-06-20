@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Table, Button, DropdownButton, Dropdown, ButtonGroup } from "react-bootstrap";
+import { Dropdown, ButtonGroup } from "react-bootstrap";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import AddProduct from "./AddProduct";
 import DeleteProduct from "./DeleteProduct";
@@ -35,7 +35,6 @@ const TableProduct = (props) => {
       throw error;
     }
   };
-  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     vendor: "",
     taggedWith: "",
@@ -59,11 +58,11 @@ const TableProduct = (props) => {
           Home
         </a>
         <span className="breadcrumb-separator">/</span>
-        <span className="breadcrumb-current">Products</span>
+        <span className="breadcrumb-current">Sản Phẩm</span>
       </nav>
 
       <div className="product-list-header">
-        <h1 className="page-title">Product list</h1>
+        <h1 className="page-title">Danh Sách Sản Phẩm</h1>
         <div className="header-buttons">
           <button className="secondary-button">Export</button>
           <button className="secondary-button">Import</button>
@@ -78,7 +77,7 @@ const TableProduct = (props) => {
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input type="text" placeholder="Search product" className="search-input" />
+            <input type="text" placeholder="Tìm Kiếm Sản Phẩm" className="search-input" />
           </div>
 
           <div className="date-container">
