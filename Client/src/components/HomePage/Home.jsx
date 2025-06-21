@@ -4,6 +4,7 @@ import BestDeal from "./BestDeal";
 import BestSeller from "./BestSeller";
 import NewProduct from "./NewProduct";
 import Promotion from "./Promotion";
+import ChatbotWidget from "./ChatbotWidget";
 export const Home = () => {
   return (
     <>
@@ -13,6 +14,7 @@ export const Home = () => {
       <BestDeal />
       <BestSeller />
       <NewProduct />
+      <ChatbotWidget />
     </>
   );
 };

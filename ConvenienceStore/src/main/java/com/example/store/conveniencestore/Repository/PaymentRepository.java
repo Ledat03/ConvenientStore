@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Payment findById(long id);
+    Payment findByTransactionId(String transaction_id);
     Payment save(Payment payment);
 }

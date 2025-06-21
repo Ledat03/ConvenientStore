@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../../assets/scss/checkout.scss";
 import { fetchListPromotion } from "../../services/GetAPI";
 import Logo from "../../assets/v-vnpay.svg";
 import { addCheckout } from "../../services/UserSevice";
 export default function Checkout() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [Redirect, setRedirect] = useState();
   const user = location.state.userInfo;
   const checkoutInfo = location.state?.checkoutItems;
   const [isShow, setShow] = useState(false);
@@ -48,9 +50,12 @@ export default function Checkout() {
       })),
     };
     const res = await addCheckout(order);
-    console.log(res.data.data);
+    if (formData.paymentMethod === "COD") {
+      navigate("/ordercheck");
+    } else {
+      window.location.href = res.data;
+    }
   };
-  console.log(checkoutInfo);
   const fetchRelativePromo = async () => {
     const res = await fetchListPromotion();
     setBrand([...new Set(checkoutInfo.map((cartdetail) => cartdetail.product.brand))]);
@@ -99,13 +104,13 @@ export default function Checkout() {
 
             <div className="delivery-options">
               <label className={`delivery-option ${formData.deliveryMethod === "ship" ? "selected" : ""}`}>
-                <input type="radio" name="deliveryMethod" value="SHIP" checked={formData.deliveryMethod === "ship"} onChange={handleInputChange} />
+                <input type="radio" name="deliveryMethod" value="ship" checked={formData.deliveryMethod === "ship"} onChange={handleInputChange} />
                 <span className="option-text">Giao Hàng Tận Nhà</span>
                 <span className="option-icon">🚚</span>
               </label>
 
               <label className={`delivery-option ${formData.deliveryMethod === "pickup" ? "selected" : ""}`}>
-                <input type="radio" name="deliveryMethod" value="PICKUP" checked={formData.deliveryMethod === "pickup"} onChange={handleInputChange} />
+                <input type="radio" name="deliveryMethod" value="pickup" checked={formData.deliveryMethod === "pickup"} onChange={handleInputChange} />
                 <span className="option-text">Lấy Tại Cửa Hàng</span>
                 <span className="option-icon">🏪</span>
               </label>

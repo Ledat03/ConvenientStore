@@ -217,6 +217,36 @@
   transform: translateY(1px);
 }
 
+.Thank-Component {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  .COD-text {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    h3 {
+      color: forestgreen;
+    }
+    .button {
+      height: 40px;
+      background-color: var.$red-accent;
+      width: 150px;
+      border-radius: 20px;
+      position: relative;
+      a {
+        color: white;
+        position: absolute;
+        right: 15px;
+        top: 10px;
+      }
+    }
+  }
+}
 /* Responsive design */
 @media (max-width: 768px) {
   .promotion-wrapper {

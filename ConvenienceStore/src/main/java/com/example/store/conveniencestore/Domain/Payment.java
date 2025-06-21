@@ -29,8 +29,7 @@ public class Payment {
     @Column(name = "payment_status", nullable = false)
     private TransactionStatus paymentStatus;
 
-    @Column(name = "transaction_id", length = 100)
-    private String transaction_id;
+    private String transactionId;
 
     @Column(name = "payment_date")
     private LocalDateTime paymentDate;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../assets/scss/cart.scss";
-
+import logo from "../../assets/No-product.jpg";
 import { ViewCart, DeleteCartDetail } from "../../services/UserSevice";
 import { Link, useNavigate } from "react-router-dom";
 import LoadingAnimation from "../common/LoadingAnimation";
@@ -187,10 +187,13 @@ const Cart = () => {
           </div>
         </div>
       ) : (
-        <div>
-          <span>Hiện tại bạn không có sản phẩm</span>
-          <br />
-          <span>Bạn hãy thử chọn lựa các sản phẩm trong cửa hàng </span>
+        <div className="No-product">
+          <div className="notice">
+            <img src={logo} alt="" />
+            <h2>Hiện tại bạn không có sản phẩm</h2>
+            <br />
+            <h5>Bạn hãy thử chọn lựa các sản phẩm trong cửa hàng </h5>
+          </div>
         </div>
       )}
     </div>

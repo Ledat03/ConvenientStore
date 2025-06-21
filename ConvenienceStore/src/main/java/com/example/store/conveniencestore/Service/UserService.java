@@ -137,6 +137,9 @@ public class UserService {
             cartRepository.save(cart);
         }
     }
+    public void deleteAllCartDetail(Cart cart) {
+        cartDetailRepository.deleteAllByCart(cart);
+    }
 
     @Transactional
     public synchronized Cart getOrCreateUserCart(long userId) {

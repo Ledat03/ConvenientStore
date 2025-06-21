@@ -87,7 +87,7 @@ public class SecurityConfig {
                 .csrf(c -> c.disable())
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
-                                .requestMatchers("/api/**","/product/view/**","/variant/view/**","/cart/view/**","/main/","/brand/view","/promotion/**").permitAll()
+                                .requestMatchers("/api/**","/product/view/**","/variant/view/**","/cart/view/**","/main/","/brand/view","/promotion/**","/order/vnpay_jsp/vnpay_return").permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2.jwt(Customizer.withDefaults())

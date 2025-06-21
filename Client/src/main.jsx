@@ -16,6 +16,7 @@ import Cart from "./components/HomePage/Cart.jsx";
 import ManagePromotion from "./components/admin/ManagePromotion.jsx";
 import { ManageBrand } from "./components/admin/ManageBrand.jsx";
 import Checkout from "./components/HomePage/Checkout.jsx";
+import Thankyou from "./components/HomePage/Thankyou.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
@@ -26,6 +27,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/products/product/:productId" element={<ProductPage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/ordercheck" element={<Thankyou />} />
         </Route>
         <Route path="/authenticate" element={<Authentication />} />
 

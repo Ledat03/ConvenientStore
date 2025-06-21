@@ -18,4 +18,6 @@ public interface CartDetailRepository extends JpaRepository<CartDetail, Long> {
     @Transactional
     void deleteById(long id);
     List<CartDetail> findByCart_Id(long id);
+    @Transactional
+    void deleteAllByCart(Cart cart);
 }

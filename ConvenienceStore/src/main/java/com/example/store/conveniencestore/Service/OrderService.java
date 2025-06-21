@@ -38,4 +38,7 @@ public class OrderService {
     public Payment save(Payment payment) {
         return paymentRepository.save(payment);
     }
+    public Payment findbyTransactionId(String transactionId) {
+        return  paymentRepository.findByTransactionId(transactionId);
+    }
 }
