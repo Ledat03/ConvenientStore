@@ -6,7 +6,7 @@
 }
 .main-container {
   width: 100vw;
-  height: 100vh;
+  min-height: fit-content;
   .header {
     .navbar {
       background-color: rgba(0, 0, 0, 0) !important;
@@ -15,6 +15,12 @@
           color: aliceblue;
         }
       }
+    }
+  }
+  .body-container {
+    height: 100%;
+    .content-container {
+      height: 100%;
     }
   }
 }

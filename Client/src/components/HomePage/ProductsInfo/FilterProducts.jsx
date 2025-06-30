@@ -9,7 +9,6 @@ const FilterProducts = ({ filters, onFilterChange, filterSubCategory, filterUnit
       const newSelected = selected.includes(optionId) ? selected.filter((id) => id !== optionId) : [...selected, optionId];
       onChange(newSelected);
     };
-    console.log(showAll);
     const displayOptions = showMore && !showAll ? options.slice(0, 4) : options;
 
     return (
@@ -61,7 +60,7 @@ const FilterProducts = ({ filters, onFilterChange, filterSubCategory, filterUnit
   }));
   return (
     <>
-      {products.length != 0 && (
+      {products != null && (
         <aside className="sidebar">
           <FilterSection title="Tình trạng" options={availabilityOptions} selected={filters.availability} onChange={(value) => onFilterChange("availability", value)} type="checkbox" />
           <FilterSection title="Ưu Đãi" options={saleOptions} selected={filters.sale} onChange={(value) => onFilterChange("sale", value)} type="" />

@@ -107,12 +107,22 @@ public class UserService {
                 cartRepository.save(userCart);
                 return "Tăng số lượng thành công !";
             } else if (newCartDetail != null && quantity != 0) {
-                userCart.setSumQuantity(userCart.getSumQuantity()-newCartDetail.getQuantity()+quantity);
-                newCartDetail.setQuantity(quantity);
+                userCart.setSumQuantity(userCart.getSumQuantity()+quantity);
+                newCartDetail.setQuantity(newCartDetail.getQuantity() + quantity);
                 cartDetailRepository.save(newCartDetail);
                 cartRepository.save(userCart);
                 return "Tăng nhiều thành công !";
-            } else {
+            }else if (newCartDetail == null && quantity != 0) {
+                CartDetail cartDetail = new CartDetail();
+                userCart.setSumQuantity(userCart.getSumQuantity()+quantity);
+                cartDetail.setProduct(productRepository.findById(productId));
+                cartDetail.setProductVariant(variantRepository.findByVariantId(variantId));
+                cartDetail.setQuantity(quantity);
+                cartDetail.setCart(userCart);
+                cartDetailRepository.save(cartDetail);
+                cartRepository.save(userCart);
+                return "Tạo & Thêm nhiều cùng lúc thành công !";
+            } else if (newCartDetail == null && quantity == 0) {
                 newCartDetail = new CartDetail();
                 newCartDetail.setProduct(productRepository.findById(productId));
                 newCartDetail.setProductVariant(variantRepository.findByVariantId(variantId));
@@ -123,6 +133,7 @@ public class UserService {
                 return "Thêm vào giỏ hàng thành công !";
             }
         }
+        return "Không vào trường hợp nào";
     }
     public Cart getUserCart(long userId) {
         return cartRepository.findByUser_Id(userId);

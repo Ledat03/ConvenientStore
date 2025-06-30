@@ -27,4 +27,6 @@ public class ProductVariant {
     private List<CartDetail> cartDetails;
     @OneToMany(mappedBy = "productVariant")
     private List<OrderItem> orderItem;
+    @OneToMany(mappedBy = "variant")
+    private List<InventoryImportDetail> inventoryImportDetails;
 }

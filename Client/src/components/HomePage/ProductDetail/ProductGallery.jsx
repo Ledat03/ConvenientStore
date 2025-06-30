@@ -1,6 +1,7 @@
 import "../../../assets/scss/productdetail/productdetail.scss";
 import { useEffect, useState } from "react";
-
+import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowRight } from "react-icons/fa";
 const ProductGallery = ({ productData, Variant, Unit }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [fillVariant, setFillVariant] = useState({});
@@ -14,8 +15,12 @@ const ProductGallery = ({ productData, Variant, Unit }) => {
       <div className="main-image">
         <img alt="Product" className="main-img" src={selectedImage == null || selectedImage > fillVariant.productImage.length - 1 ? productData.image : fillVariant.productImage[selectedImage]} />
         <div className="navigation-arrows">
-          <button className="nav-arrow-left">‹-</button>
-          <button className="nav-arrow-right">-›</button>
+          <button className="nav-arrow-left">
+            <FaArrowLeft />
+          </button>
+          <button className="nav-arrow-right">
+            <FaArrowRight />
+          </button>
         </div>
       </div>
       <div className="thumbnail-list">

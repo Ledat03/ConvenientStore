@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DeliveryRepository extends JpaRepository<Delivery,Long> {
-    Delivery getById(Long id);
+    Delivery findByDeliveryId(long deliveryId);
     Delivery save(Delivery delivery);
 }

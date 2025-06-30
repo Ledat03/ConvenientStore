@@ -61,7 +61,7 @@ const addNewProduct = async (formData) => {
 const updateProduct = async (Product) => {
   await APIsCustomize.put("product/update", Product, { headers: { "Content-Type": "application/json" } });
 };
-const fetchListProduct = async (category, subCategory, code) => await APIsCustomize.get("/product/view", { params: { category, subCategory, code }, headers: { "Content-Type": "application/json" } });
+const fetchListProduct = async (category, subCategory, code, name) => await APIsCustomize.get("/product/view", { params: { category, subCategory, code, name }, headers: { "Content-Type": "application/json" } });
 const deleteProduct = async (id) => await APIsCustomize.delete(`/product/delete/${id}`, { headers: { "Content-Type": "application/json" } });
 const fetchProductById = async (productId) => await APIsCustomize.get(`/product/view/product-info/${productId}`, { headers: { "Content-Type": "application/json" } });
 //Variant Controller
@@ -79,4 +79,11 @@ const viewBrand = async () => await APIsCustomize.get("/brand/view", { headers: 
 const addNewPromotion = async (formData) => await APIsCustomize.post("/promotion/add", formData, { headers: { "Content-Type": "application/json" } });
 const fetchListPromotion = async () => await APIsCustomize.get("/promotion/view", { headers: { "Content-Type": "application/json" } });
 const fetchListPromotionByFilter = async (code) => await APIsCustomize.get("/promotion/filterpromo", { params: { code }, headers: { "Content-Type": "application/json" } });
-export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, fetchListPromotionByFilter };
+
+//OrderController
+const fetchListOrder = async () => await APIsCustomize.get("/order/view");
+const updateDelivery = async (delivery) => await APIsCustomize.put("/order/update/delivery", delivery, { headers: { "Content-Type": "application/json" } });
+const updatePayment = async (payment) => await APIsCustomize.put("/order/update/payment", payment, { headers: { "Content-Type": "application/json" } });
+//InventoryImport
+
+export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, fetchListPromotionByFilter, fetchListOrder, updateDelivery, updatePayment };

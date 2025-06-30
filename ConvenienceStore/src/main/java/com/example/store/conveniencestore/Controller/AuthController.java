@@ -19,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.Instant;
 
 @RestController
@@ -89,7 +88,7 @@ public class AuthController {
         resLoginDTO.setAccessToken(AuthToken);
         String refreshToken = securityToken.createRefreshToken(user.getEmail(), resLoginDTO);
         userService.updateUserToken(refreshToken,user.getEmail());
-        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken).httpOnly(true).maxAge(refreshTokenExpiration).path("/").build();
+        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken).maxAge(refreshTokenExpiration).path("/").build();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(resLoginDTO);
     }
 
@@ -106,7 +105,7 @@ public class AuthController {
         return ResponseEntity.ok().body(resLoginDTO);
     }
     @GetMapping("/auth/refresh")
-    public ResponseEntity<ResLoginDTO> refreshToken(@CookieValue(name = "refreshToken" ) String refreshToken) {
+    public ResponseEntity<ResLoginDTO> refreshToken(@RequestParam(name = "refreshToken",required = false) String refreshToken) {
         Jwt decodedToken = this.securityToken.checkRefreshToken(refreshToken);
         String Email = decodedToken.getSubject();
         User user  = userService.findByRefreshTokenAndEmail(refreshToken, Email);
@@ -120,14 +119,14 @@ public class AuthController {
         resLoginDTO.setAccessToken(AuthToken);
         String newRefreshToken = securityToken.createRefreshToken(user.getEmail(), resLoginDTO);
         userService.updateUserToken(newRefreshToken,user.getEmail());
-        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", newRefreshToken).httpOnly(true).maxAge(refreshTokenExpiration).path("/").build();
+        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", newRefreshToken).maxAge(refreshTokenExpiration).path("/").build();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(resLoginDTO);
     }
     @GetMapping("/logout")
     public ResponseEntity<Void> logout() {
        String email = SecurityToken.getCurrentUserLogin().isPresent() ? SecurityToken.getCurrentUserLogin().get() : "";
        userService.updateUserToken(null,email);
-       ResponseCookie responseCookie = ResponseCookie.from("refreshToken" , null).httpOnly(true).secure(true).maxAge(0).path("/").build();
+       ResponseCookie responseCookie = ResponseCookie.from("refreshToken" , null).secure(true).maxAge(0).path("/").build();
         return ResponseEntity.status(201).header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
     }
 }

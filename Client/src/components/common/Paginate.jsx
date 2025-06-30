@@ -4,9 +4,11 @@ function Paginate(props) {
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   useEffect(() => {
-    const endOffset = itemOffset + props.itemsPerPage;
-    props.setPaginatedProduct(props.product.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(props.totalProduct / props.itemsPerPage));
+    if (props.product) {
+      const endOffset = itemOffset + props.itemsPerPage;
+      props.setPaginatedProduct(props.product.slice(itemOffset, endOffset));
+      setPageCount(Math.ceil(props.totalProduct / props.itemsPerPage));
+    }
   }, [itemOffset, props.itemsPerPage, props.filters, props.totalProduct]);
   const handlePageClick = (event) => {
     const newOffset = (event.selected * props.itemsPerPage) % props.product.length;

@@ -37,6 +37,8 @@ public class Product {
     private List<ProductVariant> productVariant;
     @OneToMany(mappedBy = "product")
     private List<CartDetail> cartDetails;
+    @OneToMany(mappedBy = "product")
+    private List<InventoryImportDetail> inventoryImportDetail;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

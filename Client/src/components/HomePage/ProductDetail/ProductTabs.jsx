@@ -7,10 +7,10 @@ const ProductTabs = ({ product }) => {
     <div className="product-tabs">
       <div className="tab-navigation">
         <button className={`tab-btn ${activeTab === "description" ? "active" : ""}`} onClick={() => setActiveTab("description")}>
-          Description
+          Mô tả
         </button>
         <button className={`tab-btn ${activeTab === "specification" ? "active" : ""}`} onClick={() => setActiveTab("specification")}>
-          Specification
+          Thông tin sản phẩm
         </button>
       </div>
 
@@ -18,7 +18,6 @@ const ProductTabs = ({ product }) => {
         {activeTab === "description" && (
           <div className="description-content">
             <div className="description-section">
-              <h4 className="description-title">Modern Looking</h4>
               <p className="description-text">{product.productDescription}</p>
             </div>
           </div>

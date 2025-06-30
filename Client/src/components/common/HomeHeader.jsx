@@ -8,6 +8,7 @@ import React from "react";
 import Logo from "../../assets/Winmart.svg";
 import { FiShoppingCart } from "react-icons/fi";
 const HomeHeader = () => {
+  const [Search, setSearch] = useState(null);
   const navigate = useNavigate();
   const [Category, setCategory] = useState([]);
   const [openIdx, setIdx] = useState(null);
@@ -18,6 +19,7 @@ const HomeHeader = () => {
     const res = await handleCategories();
     setCategory(res.data.data);
   };
+  const user = JSON.parse(localStorage.getItem("user"));
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => {
     return (
       <span
@@ -70,7 +72,7 @@ const HomeHeader = () => {
                             <FaCaretRight style={{ marginLeft: "auto" }} />
                           </Dropdown.Toggle>
                           <Dropdown.Menu className="header__dropdown-Submenu">
-                            {cate.subCategories.map((item, index) => (
+                            {cate.subCategories.map((item) => (
                               <Dropdown.Item
                                 key={item.id}
                                 href={item.link}
@@ -87,12 +89,19 @@ const HomeHeader = () => {
                     </Dropdown.Menu>
                   </Dropdown>
                 </div>
-                <input type="text" placeholder="Search for products..." className="header__search-input" />
-                <button className="header__search-btn">
+                <input
+                  type="text"
+                  placeholder="Nhập tên sản phẩm..."
+                  className="header__search-input"
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                  }}
+                />
+                <Link to={`/products?search=${Search}`} className="header__search-btn">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
                   </svg>
-                </button>
+                </Link>
               </div>
             </div>
             {!localStorage.getItem("user") ? (
@@ -110,7 +119,7 @@ const HomeHeader = () => {
                 <Dropdown as={ButtonGroup} className="header__login">
                   <Dropdown.Toggle className="header__infoUser">
                     <FaRegUser className="i-user" />
-                    <span>User</span>
+                    <span>{user.name}</span>
                   </Dropdown.Toggle>
                   <Dropdown.Menu className="dropdown-animate">
                     <Dropdown.Item>Thông tin cá nhân</Dropdown.Item>

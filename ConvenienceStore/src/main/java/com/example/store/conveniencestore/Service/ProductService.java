@@ -2,6 +2,7 @@ package com.example.store.conveniencestore.Service;
 
 import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.Repository.*;
+import com.example.store.conveniencestore.Util.Specification.ProductSpec;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +81,9 @@ public class ProductService {
     }
     public Product findProductByProductName(String productName) {
         return productRepository.findByProductName(productName);
+    }
+    public List<Product> findAllProductsBySpec(String name) {
+        return productRepository.findAll(ProductSpec.productSpecification(name));
     }
     public Brand findBrandbyBrandName(String brandName) {
         return brandRepository.findByBrandName(brandName);

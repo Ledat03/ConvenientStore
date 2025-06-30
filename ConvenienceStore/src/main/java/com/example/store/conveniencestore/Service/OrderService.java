@@ -7,6 +7,8 @@ import com.example.store.conveniencestore.Domain.Payment;
 import com.example.store.conveniencestore.Repository.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class OrderService {
     private final OrderItemRepository orderItemRepository;
@@ -25,20 +27,28 @@ public class OrderService {
         this.variantRepository = variantRepository;
         this.paymentRepository = paymentRepository;
     }
-
-    public Order save(Order order) {
+    public Delivery getDeliveryById(Long deliveryId) {
+        return deliveryRepository.findByDeliveryId(deliveryId);
+    }
+    public Order saveOrder(Order order) {
         return orderRepository.save(order);
     }
-    public Delivery save(Delivery delivery) {
+    public Delivery saveDelivery(Delivery delivery) {
         return deliveryRepository.save(delivery);
     }
-    public OrderItem save(OrderItem orderItem) {
+    public OrderItem saveOrderItem(OrderItem orderItem) {
         return orderItemRepository.save(orderItem);
     }
-    public Payment save(Payment payment) {
+    public Payment savePayment(Payment payment) {
         return paymentRepository.save(payment);
     }
     public Payment findbyTransactionId(String transactionId) {
         return  paymentRepository.findByTransactionId(transactionId);
+    }
+    public List<Order> findAll() {
+        return orderRepository.findAll();
+    }
+    public Payment findbyPaymentId(long paymentId) {
+        return paymentRepository.findById(paymentId);
     }
 }

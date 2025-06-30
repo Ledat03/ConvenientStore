@@ -15,7 +15,7 @@ const AddProduct = (props) => {
   const [Ingredient, setIngredient] = useState("");
   const [HowToUse, setHowToUse] = useState("");
   const [Preserve, setPreserve] = useState("");
-  const [Brand, setBrand] = useState("LOF");
+  const [Brand, setBrand] = useState("VINAMILK");
   const [SKU, setSKU] = useState("");
   const [IsActive, setActive] = useState("true");
   const [Status, setStatus] = useState("Draft");
@@ -32,7 +32,7 @@ const AddProduct = (props) => {
     setGetCategory("Sữa Tươi");
     setStatus("Draft");
     setActive("true");
-    setBrand("LOF");
+    setBrand("VINAMILK");
     setSKU("");
     setImage(null);
     setImageURL("");

@@ -3,9 +3,7 @@ package com.example.store.conveniencestore.Service;
 import com.example.store.conveniencestore.DTO.*;
 import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.Repository.*;
-import com.example.store.conveniencestore.Util.Specification.PromotionSpec;
-import jakarta.persistence.criteria.Join;
-import org.springframework.data.jpa.domain.Specification;
+import com.example.store.conveniencestore.Util.Specification.ProductSpec;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -137,10 +135,6 @@ public class PromotionService {
     }
     public Promotion findPromotionByCode(String code) {
         return promotionRepository.findByCode(code);
-    }
-
-    public List<PromotionCategory> findAllPromotionCategory(String category) {
-        return catePromotionRepository.findAll(PromotionSpec.promotionCategorySpecification(category));
     }
     public Promotion findPromotionByCategoryPromo(PromotionCategory promotionCategory) {
         return promotionRepository.findByCouponCategories(promotionCategory);

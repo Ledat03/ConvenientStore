@@ -14,7 +14,6 @@ const Promotion = () => {
     const res = await fetchListPromotion();
     setPromotions(res.data.data);
   };
-  console.log(PromotionList);
   const scroll = (direction) => {
     const container = scrollContainerRef.current;
     const scrollAmount = 320;
@@ -58,8 +57,7 @@ const Promotion = () => {
                 <div className="promotion-left">
                   {promo.type != "PERCENTAGE" ? (
                     <span>
-                      Giảm
-                      <p>{promo.maxDiscount.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</p>
+                      <p>Giảm {promo.maxDiscount.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</p>
                     </span>
                   ) : (
                     <div className="promotion-left__text">
@@ -70,10 +68,9 @@ const Promotion = () => {
                 <div className="promotion-right">
                   <div className="promotion-header">
                     <div className="expiry-badge">HSD: {new Date(promo.endDate).toLocaleDateString("vi-Vn")}</div>
+                    <h3 className="promotion-title">{promo.name}</h3>
+                    <p className="promotion-description">{promo.description}</p>
                   </div>
-
-                  <h3 className="promotion-title">{promo.name}</h3>
-                  <p className="promotion-description">{promo.description}</p>
 
                   <div className="promotion-footer">
                     <div className="promo-info">
@@ -83,7 +80,6 @@ const Promotion = () => {
                     <Link to={`/products?promotion=${promo.code}`} className="get-now-btn">
                       Lấy Ngay
                     </Link>
-                    {console.log(promo.code)}
                   </div>
                 </div>
               </div>

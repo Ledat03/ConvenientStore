@@ -4,14 +4,11 @@ import com.example.store.conveniencestore.DTO.*;
 import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.EnumType.DiscountScope;
 import com.example.store.conveniencestore.Service.PromotionService;
-import com.example.store.conveniencestore.Util.Specification.PromotionSpec;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("promotion")

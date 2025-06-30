@@ -184,7 +184,10 @@ public class ProductController {
         return ResponseEntity.ok(productDTO);
     }
     @GetMapping("/view")
-    public ResponseEntity<Object> ViewProduct(@RequestParam(value = "category" , required = false) String category, @RequestParam(value = "subCategory",required = false) String subCategory,@RequestParam(value = "code",required = false) String code) {
+    public ResponseEntity<Object> ViewProduct(@RequestParam(value = "category" , required = false) String category,
+                                              @RequestParam(value = "subCategory",required = false) String subCategory,
+                                              @RequestParam(value = "code",required = false) String code,
+                                              @RequestParam(value = "name" ,required = false) String name) {
         if(subCategory != null){
             List<Product> productList = productService.findAllProductsBySubCategory(subCategory);
             List<ProductDTO> ListProductDTO = productList.stream().map(this::convertProductToProductDTO).toList();
@@ -219,6 +222,16 @@ public class ProductController {
                 List<ProductDTO> ListProductDTO = productList.stream().map(this::convertProductToProductDTO).toList();
                 return ResponseEntity.ok(ListProductDTO);
             }
+        }
+        if(name != null){
+            List<Product> products = productService.findAllProductsBySpec(name);
+            if(products.size() > 0){
+                List<ProductDTO> productDTOS = products.stream().map(this::convertProductToProductDTO).toList();
+                return ResponseEntity.ok(productDTOS);
+            }else{
+                return ResponseEntity.ofNullable("Product not found");
+            }
+
         }
         List<Product> ListProducts = productService.findAllProducts();
         List<ProductDTO> ListProductDTO = ListProducts.stream().map(this::convertProductToProductDTO).toList();

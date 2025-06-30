@@ -22,6 +22,12 @@ export const AdminSideBar = ({ collapse } = props) => {
         <MenuItem icon={<FaProductHunt />} href="/admin/manage-promotion">
           Quản Lí Phiếu Giảm Giá
         </MenuItem>
+        <MenuItem icon={<FaProductHunt />} href="/admin/manage-order">
+          Quản Lí Đơn Hàng
+        </MenuItem>
+        <MenuItem icon={<FaProductHunt />} href="/admin/manage-import">
+          Quản Lí Nhập Hàng
+        </MenuItem>
       </Menu>
     </Sidebar>
   );

@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Paginate from "../../common/Paginate";
 import { toast } from "react-toastify";
 import { AddToCart } from "../../../services/UserSevice";
-const ProductCard = ({ products, filters, Loading, subCate }) => {
+const ProductCard = ({ products, filters, Loading, sortBy, onSortChange }) => {
   const calSavePrice = (salePrice, price) => {
     let sale = ((salePrice - price) / price) * 100;
     return Math.round(sale);
@@ -13,18 +13,17 @@ const ProductCard = ({ products, filters, Loading, subCate }) => {
   const itemsPerPage = 9;
   const [totalProduct, setTotalProduct] = useState(0);
   const [userData, setUserData] = useState({});
-  console.log(userData);
   const navigate = useNavigate();
   useEffect(() => {
     if (ActiveProduct) {
       setTotalProduct(ActiveProduct.length);
-    } else {
+    } else if (products) {
       setTotalProduct(products.length);
     }
     IsLogIn();
   }, [filters, Loading]);
   const ActiveProduct = products
-    .filter((item) => item.Active == "true")
+    ?.filter((item) => item.Active == "true")
     .filter((item) => {
       if (filters.availability.length === 0) {
         return true;
@@ -89,7 +88,7 @@ const ProductCard = ({ products, filters, Loading, subCate }) => {
       variantId: variantId,
       productId: productId,
     };
-    const res = await AddToCart(info);
+    await AddToCart(info);
     toast.success("Thêm Vào Giỏ Hàng Thành Công");
     console.log("thông tin gửi đi - " + info.userId + " " + info.variantId + " " + info.productId);
   };

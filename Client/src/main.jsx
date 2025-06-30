@@ -17,9 +17,13 @@ import ManagePromotion from "./components/admin/ManagePromotion.jsx";
 import { ManageBrand } from "./components/admin/ManageBrand.jsx";
 import Checkout from "./components/HomePage/Checkout.jsx";
 import Thankyou from "./components/HomePage/Thankyou.jsx";
+import ScrollPage from "./components/common/ScrollPage.jsx";
+import ManageOrder from "./components/admin/ManageOrder.jsx";
+import ManageImport from "./components/admin/ManageImport.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
+      <ScrollPage />
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Home />} />
@@ -36,7 +40,9 @@ createRoot(document.getElementById("root")).render(
           <Route path="manage-user" element={<AdminManageUser />} />
           <Route path="manage-stock" element={<ManageProduct />} />
           <Route path="manage-brand" element={<ManageBrand />} />
+          <Route path="manage-order" element={<ManageOrder />} />
           <Route path="manage-promotion" element={<ManagePromotion />} />
+          <Route path="manage-import" element={<ManageImport />} />
         </Route>
       </Routes>
     </BrowserRouter>

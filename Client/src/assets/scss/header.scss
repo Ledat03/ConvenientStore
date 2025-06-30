@@ -4,7 +4,11 @@ a {
   text-decoration: none !important;
 }
 .header {
-  position: relative;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   &__dropdown-Submenu {
     position: absolute !important;
   }
@@ -185,11 +189,15 @@ a {
     padding: var.$spacing-4;
     background: transparent;
     border: none;
+    border-radius: 0 10px 10px 0;
     cursor: pointer;
-    color: var.$red-accent;
-
+    color: white;
+    background-color: var.$red-accent;
+    transition: all 0.3s ease;
     &:hover {
+      transition: all 0.4s ease;
       background: #f5f5f5;
+      color: var.$red-accent;
     }
   }
 
@@ -351,7 +359,7 @@ a {
   opacity: 0;
   transform: translateX(6px);
   transition: all 0.25s ease;
-  a{
+  a {
     color: var.$red-accent !important;
   }
   &.show {
@@ -366,9 +374,8 @@ a {
 .dropdown-item {
   font-size: 14px !important;
   margin: 5px 0;
-  a{
+  a {
     color: black;
-    
   }
   &:hover {
     background-color: var.$red-accent !important;

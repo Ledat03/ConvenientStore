@@ -1,10 +1,12 @@
 import axios from "axios";
+import { Cookies } from "react-cookie";
 import { toast } from "react-toastify";
 
 const APIsCustomize = axios.create({
   baseURL: "http://localhost:8080/",
+  withCredentials: true,
 });
-
+const cookies = new Cookies();
 APIsCustomize.interceptors.request.use(
   function (config) {
     const getToken = localStorage.getItem("accessToken");
@@ -20,13 +22,15 @@ APIsCustomize.interceptors.request.use(
 
 const handleRefreshToken = async () => {
   try {
-    const response = await instance.get("/api/check/auth/refresh");
+    const response = await APIsCustomize.get("api/check/auth/refresh");
     const { accessToken } = response.data.data;
+    console.log(accessToken);
     return accessToken;
   } catch (error) {
-    localStorage.removeItem("access_token");
+    await fetchLogOut();
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
-    window.location.href = "/login";
+    window.location.href = "/authenticate";
     toast.error("Phiên của bạn đã hết hạn !");
     return null;
   }
@@ -34,20 +38,30 @@ const handleRefreshToken = async () => {
 
 APIsCustomize.interceptors.response.use(
   (res) => {
-    console.log(res);
+    console.log("Response success:", res);
     return res;
   },
   async (error) => {
-    if (error.config && error.response && +error.response.status === 401 && error.config.url !== "/api/v1/auth/login" && !error.config.headers[NO_RETRY_HEADER]) {
-      const access_token = await handleRefreshToken();
-      error.config.headers[NO_RETRY_HEADER] = "true";
-      if (access_token) {
-        error.config.headers["Authorization"] = `Bearer ${access_token}`;
-        localStorage.setItem("access_token", access_token);
-        return instance.request(error.config);
+    console.log("Error occurred:", error);
+    if (error.response.status === 401 && !error.config._retry) {
+      error.config._retry = true;
+      const Token = cookies.get("refreshToken");
+      console.log(Token);
+      if (!Token) { 
+        return Promise.reject(error);
+      }
+      try {
+        const response = await APIsCustomize.get("api/check/auth/refresh", {params:{refreshToken: Token}});
+        console.log(response);
+      } catch (refreshError) {
+        console.error("Refresh token failed:", refreshError);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
+        cookies.remove("refreshToken");
+        window.location.href = "/authenticate";
+        return Promise.reject(refreshError);
       }
     }
-    return Promise.reject(error);
   }
 );
 

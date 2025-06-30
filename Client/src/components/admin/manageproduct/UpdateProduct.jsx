@@ -17,8 +17,6 @@ const UpdateProduct = (props) => {
   const [SKU, setSKU] = useState("");
   const [IsActive, setActive] = useState("true");
   const [Status, setStatus] = useState("Draft");
-  const [Image, setImage] = useState(null);
-  const [ImageURL, setImageURL] = useState(null);
   useEffect(() => {
     if (!_.isEmpty(props.InfoItem)) {
       setId(props.InfoItem.productId);

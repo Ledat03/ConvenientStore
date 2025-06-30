@@ -12,7 +12,7 @@ import java.util.Date;
 public class Delivery {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long delivery_id;
+    private long deliveryId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")

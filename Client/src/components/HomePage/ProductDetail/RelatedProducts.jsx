@@ -1,64 +1,115 @@
-import "../../../assets/scss/productdetail/productdetail.scss";
+import { useState, useRef, useEffect } from "react";
+import "../../../assets/scss/home.scss";
+import { Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
+const RelatedProduct = (props) => {
+  const scrollContainerRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+  const scroll = (direction) => {
+    const container = scrollContainerRef.current;
+    const scrollAmount = 320;
+    if (direction === "left") {
+      container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+    } else {
+      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+    setTimeout(() => {
+      updateScrollButtons();
+    }, 300);
+  };
+  const calSavePrice = (salePrice, price) => {
+    let sale = ((salePrice - price) / price) * 100;
+    return Math.round(sale);
+  };
 
-const RelatedProducts = () => {
-  const relatedProducts = [
-    {
-      id: 1,
-      title: 'VINGLI 56" Modern Sofa, Small Corduroy Couch Deep Seat',
-      category: "Living room • Armchair",
-      price: 259.0,
-      originalPrice: 440.0,
-      discount: "Save 50%",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 2,
-      title: "AIA Tri-Fold Wooden effect legSofa",
-      category: "Living room • Armchair",
-      price: 189.0,
-      originalPrice: 340.0,
-      discount: "Save 44%",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-    {
-      id: 3,
-      title: "Milano Accent Chair Modern Retro Leisure Chair with Solid Wood Frame",
-      category: "Living room • Armchair",
-      price: 239.0,
-      originalPrice: 410.0,
-      discount: "Save 40%",
-      image: "/placeholder.svg?height=200&width=200",
-    },
-  ];
+  const saleProduct = props.product.filter((item) => item.category === props.productData.category);
+  const updateScrollButtons = () => {
+    const container = scrollContainerRef.current;
+    if (container) {
+      setCanScrollLeft(container.scrollLeft > 0);
+      setCanScrollRight(container.scrollLeft < container.scrollWidth - container.clientWidth);
+    }
+  };
 
+  const handleScroll = () => {
+    updateScrollButtons();
+  };
   return (
-    <div className="related-products">
-      {/* <div className="section-header">
-        <h2 className="section-title">Các sản phẩm liên quan</h2>
-        <div className="navigation">
-          <button className="nav-btn">‹</button>
-          <button className="nav-btn">›</button>
+    <>
+      <div className="promotion-container">
+        <h3 className="Header-text">
+          <strong>CÁC SẢN PHẨM LIÊN QUAN</strong>
+        </h3>
+        <div className="promotion-wrapper">
+          <button className={`scroll-btn scroll-btn-left ${!canScrollLeft ? "disabled" : ""}`} onClick={() => scroll("left")} disabled={!canScrollLeft}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          <div className="promotion-scroll-container" ref={scrollContainerRef} onScroll={handleScroll}>
+            {saleProduct.map((item, index) => {
+              return (
+                <Link to={`/products/product/${item.productId}?variant=${encodeURIComponent(item.calUnit)}`} className="product-card" key={index}>
+                  {item.stock && <div className={`product-card__badge ${item.stock != 0 ? "product-card__badge--low-stock" : "product-card__badge--out-stock"}`}>{item.stock > 0 ? "Còn Hàng" : "Hết Hàng"}</div>}
+                  <div className="product-card__image-container">
+                    <img src={item.productImage[0] || "/placeholder.svg?height=200&width=200"} alt={item.productName} className="product-card__image" />
+                  </div>
+                  <div className="product-card__info">
+                    <h3 className="product-card__name">{item.productName}</h3>
+                    <div className="product-card__tags">
+                      <span className="product-card__tag">{item.subCategory}</span>
+                      <span className="product-card__tag">{item.brand}</span>
+                      <span className="product-card__tag">{item.calUnit}</span>
+                    </div>
+
+                    {item.salePrice != 0 ? (
+                      <div className="product-card__pricing">
+                        <span className="product-card__current-price">{item.salePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                        <span className="product-card__original-price">{item.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                        {item.salePrice != 0 && (
+                          <>
+                            <span className="product-card__discount">Save {calSavePrice(item.price, item.salePrice)}%</span>
+                          </>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="product-card__pricing">
+                        <span className="product-card__current-price">{item.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                      </div>
+                    )}
+
+                    <div className="Card-ButtonGroup">
+                      <Button
+                        className="Card-Button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (localStorage.getItem("user") != null) {
+                            props.handleAddToCart(item.id, item.productId);
+                          } else {
+                            navigate("/authenticate");
+                          }
+                        }}
+                      >
+                        Thêm vào giỏ hàng
+                      </Button>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+
+          <button className={`scroll-btn scroll-btn-right ${!canScrollRight ? "disabled" : ""}`} onClick={() => scroll("right")} disabled={!canScrollRight}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
       </div>
-
-      <div className="products-grid">
-        {relatedProducts.map((product) => (
-          <div key={product.id} className="product-card">
-            <img src={product.image || "/placeholder.svg"} alt={product.title} className="product-image" />
-            <div className="product-details">
-              <h3 className="product-title">{product.title}</h3>
-              <p className="category">{product.category}</p>
-              <div className="price-info">
-                <span className="current-price">${product.price.toFixed(2)}</span>
-                <span className="original-price">${product.originalPrice.toFixed(2)}</span>
-                <span className="discount">{product.discount}</span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div> */}
-    </div>
+    </>
   );
 };
 
-export default RelatedProducts;
+export default RelatedProduct;

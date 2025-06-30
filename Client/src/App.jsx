@@ -26,7 +26,6 @@ function App() {
       setLoadingState(false);
     }
   };
-  console.log(data);
   if (loadingState) {
     <LoadingAnimation />;
   }
@@ -34,7 +33,6 @@ function App() {
     <div className="main-container">
       <HomeHeader />
       <div className="body-container">
-        <div className="filter-nav"></div>
         <div className="content-container">
           <Outlet />
         </div>
