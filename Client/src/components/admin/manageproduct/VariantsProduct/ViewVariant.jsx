@@ -3,7 +3,7 @@ const ViewVariant = (props) => {
   return (
     <>
       <Modal show={props.isShowVariant} onHide={props.closeVariant}>
-        <Modal.Header closeButton>View Variant</Modal.Header>
+        <Modal.Header closeButton>Xem thông tin biến thể</Modal.Header>
       </Modal>
     </>
   );

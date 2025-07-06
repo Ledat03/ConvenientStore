@@ -7,7 +7,7 @@ import { handleCategories } from "../../services/GetAPI";
 import React from "react";
 import Logo from "../../assets/Winmart.svg";
 import { FiShoppingCart } from "react-icons/fi";
-const HomeHeader = () => {
+const HomeHeader = ({ onLogout }) => {
   const [Search, setSearch] = useState(null);
   const navigate = useNavigate();
   const [Category, setCategory] = useState([]);
@@ -40,7 +40,7 @@ const HomeHeader = () => {
           <div className="header__main-content">
             <div className="header__logo">
               <a href="/">
-                <img src={Logo} alt="Bacola" />
+                <img src={Logo} alt="Winmart_Logo" />
               </a>
             </div>
 
@@ -108,7 +108,7 @@ const HomeHeader = () => {
               <div className="header__login">
                 <a href="/authenticate" className="a-login">
                   <FaRegUser className="i-user" />
-                  <span>Login</span>
+                  <span>Đăng Nhập</span>
                 </a>
               </div>
             ) : (
@@ -122,8 +122,7 @@ const HomeHeader = () => {
                     <span>{user.name}</span>
                   </Dropdown.Toggle>
                   <Dropdown.Menu className="dropdown-animate">
-                    <Dropdown.Item>Thông tin cá nhân</Dropdown.Item>
-                    <Dropdown.Item>Đơn Hàng</Dropdown.Item>
+                    <Dropdown.Item onClick={() => navigate("/userprofile", { state: { User: user } })}>Thông tin cá nhân</Dropdown.Item>
                     <Dropdown.Item
                       onClick={async () => {
                         const res = await fetchLogOut();

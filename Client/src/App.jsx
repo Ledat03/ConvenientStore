@@ -4,9 +4,11 @@ import { Bounce, ToastContainer } from "react-toastify";
 import HomeHeader from "./components/common/HomeHeader";
 import { Outlet } from "react-router-dom";
 import "./assets/scss/header.scss";
+import ChatbotWidget from "./components/HomePage/ChatbotWidget";
 import LoadingAnimation from "./components/common/LoadingAnimation";
 import Footer from "./components/common/Footer";
 import { getMainPage } from "./services/UserSevice";
+
 function App() {
   const [data, setData] = useState([]);
   const [loadingState, setLoadingState] = useState(false);
@@ -14,6 +16,7 @@ function App() {
   useEffect(() => {
     TestAPI();
   }, []);
+
   const TestAPI = async () => {
     setError(null);
     setLoadingState(true);
@@ -27,8 +30,9 @@ function App() {
     }
   };
   if (loadingState) {
-    <LoadingAnimation />;
+    return <LoadingAnimation />;
   }
+
   return (
     <div className="main-container">
       <HomeHeader />
@@ -37,9 +41,11 @@ function App() {
           <Outlet />
         </div>
       </div>
+
       <div className="footer">
         <Footer />
       </div>
+      <ChatbotWidget />
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
     </div>
   );

@@ -7,7 +7,15 @@ const OrderDetail = (props) => {
     shippingCost: 4.49,
     total: 1636.89,
   };
+  const handlePrint = () => {
+    const printContent = document.querySelector(".order-detail");
+    const originalContents = document.body.innerHTML;
 
+    document.body.innerHTML = printContent.innerHTML;
+    window.print();
+    document.body.innerHTML = originalContents;
+    window.location.reload();
+  };
   return (
     <Modal show={props.isActive.Detail} onHide={props.close} size="xl">
       <Modal.Header closeButton></Modal.Header>
@@ -140,7 +148,13 @@ const OrderDetail = (props) => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button>Xuất hóa đơn</Button>
+        <Button
+          onClick={() => {
+            handlePrint();
+          }}
+        >
+          Xuất hóa đơn
+        </Button>
       </Modal.Footer>
     </Modal>
   );

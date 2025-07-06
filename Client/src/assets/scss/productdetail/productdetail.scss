@@ -27,7 +27,6 @@
   }
 }
 
-/* ====== Product Detail Page ====== */
 .product-detail {
   padding: 20px 0;
 
@@ -46,7 +45,6 @@
     gap: 40px;
     margin: 20px 0 40px;
 
-    /* Column helpers */
     &-left,
     &-right {
       display: flex;
@@ -55,10 +53,9 @@
   }
 }
 
-/* --------- Responsive (≤ 992px) --------- */
 @media (max-width: 992px) {
   .product-detail__layout {
-    grid-template-columns: 1fr; /* 1 cột */
+    grid-template-columns: 1fr;
   }
 }
 .product-gallery {
@@ -126,7 +123,6 @@
     }
   }
 }
-// Phần ProductInfo
 .product-info {
   padding: 0 0 0 20px;
 
@@ -365,7 +361,6 @@
     }
   }
 }
-// Phần ProductTabs
 .product-tabs {
   margin: 20px 0;
 
@@ -442,7 +437,6 @@
     }
   }
 }
-// Phần RelatedProducts
 .related-products {
   margin: 40px 0;
 

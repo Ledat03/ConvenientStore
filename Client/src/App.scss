@@ -4,6 +4,12 @@
   height: auto;
   overflow: visible !important;
 }
+.dropdown-toggle::before {
+  content: none !important;
+}
+.dropdown-toggle::after {
+  content: none !important;
+}
 .main-container {
   width: 100vw;
   min-height: fit-content;
@@ -21,6 +27,7 @@
     height: 100%;
     .content-container {
       height: 100%;
+      position: relative;
     }
   }
 }

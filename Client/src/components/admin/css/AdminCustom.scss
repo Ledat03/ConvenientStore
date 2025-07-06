@@ -11,7 +11,30 @@
     font-family: "Poppins", sans-serif;
   }
 }
-
+.user-name {
+  color: #007bff;
+}
+.logout_button {
+  background-color: white;
+  color: #64748b;
+  border: 1px solid black;
+}
+.role-custom {
+  &_red {
+    background-color: #d0224126 !important;
+    color: #b11d37 !important;
+    border: 1px solid;
+    border-radius: 10px;
+    padding: 3px;
+  }
+  &_green {
+    background-color: #099f6926 !important;
+    color: #066f49 !important;
+    border: 1px solid #099f6940;
+    border-radius: 10px;
+    padding: 3px;
+  }
+}
 .app-container {
   display: flex;
   width: 100%;
@@ -30,7 +53,6 @@
     width: 0px;
   }
 }
-// Admin Header Component
 .admin-header {
   background: white;
   border-bottom: 1px solid #e2e8f0;
@@ -46,8 +68,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
-    max-width: 1200px;
+    width: 85%;
     margin: 0 auto;
   }
 

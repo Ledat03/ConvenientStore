@@ -4,7 +4,6 @@ import BestDeal from "./BestDeal";
 import BestSeller from "./BestSeller";
 import NewProduct from "./NewProduct";
 import Promotion from "./Promotion";
-import ChatbotWidget from "./ChatbotWidget";
 import { getMainPage } from "../../services/UserSevice";
 import { AddToCart } from "../../services/UserSevice";
 import { Bounce, ToastContainer, toast } from "react-toastify";
@@ -54,7 +53,6 @@ export const Home = (props) => {
       <BestDeal product={flatVariant} handleAddToCart={handleAddToCart} />
       <BestSeller products={flatVariant} handleAddToCart={handleAddToCart} />
       <NewProduct flatVariant={flatVariant} user={userData} handleAddToCart={handleAddToCart} />
-      <ChatbotWidget />
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
     </>
   );

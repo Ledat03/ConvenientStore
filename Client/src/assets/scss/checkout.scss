@@ -126,7 +126,7 @@
 }
 
 .form-row {
-  display: flex;
+  display: flex !important;
   gap: 1rem;
   margin-bottom: 1rem;
 }
@@ -309,7 +309,7 @@
   }
 }
 
-.order-summary {
+.order-summary-checkout {
   width: 400px;
   background-color: #f9fafb;
   padding: 1.5rem;
@@ -325,7 +325,7 @@
 }
 
 .product-item {
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1.5rem;

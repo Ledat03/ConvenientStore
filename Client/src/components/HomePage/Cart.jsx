@@ -30,7 +30,7 @@ const Cart = () => {
   const handleCart = async (info) => {
     const res = await ViewCart(info);
     console.log(res);
-    if (res.data.data.cartDetailList != undefined) {
+    if (res.data.data?.cartDetailList != undefined) {
       const selectItems = res.data.data.cartDetailList.map((item) => ({ ...item, selected: false }));
       const temp = res.data.data;
       setCart({ ...temp, cartDetailList: selectItems });

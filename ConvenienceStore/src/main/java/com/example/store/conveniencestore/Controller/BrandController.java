@@ -32,9 +32,14 @@ public class BrandController {
 
     @PostMapping("/add")
     public ResponseEntity<Object> addBrand(@RequestBody BrandDTO brandDTO) {
+        Brand checkBrand  = productService.findBrandbyBrandName(brandDTO.getBrandName());
+        if(checkBrand != null) {
+            return ResponseEntity.status(400).body("Nhãn hàng đã tồn tại !");
+        }
         Brand brand = new Brand();
-        brand.setBrandName(brandDTO.getBrandName());
-      productService.addBrand(brand);
+        String brandName = brandDTO.getBrandName().toUpperCase();
+        brand.setBrandName(brandName);
+        productService.addBrand(brand);
         return ResponseEntity.ok("Success" + brand.getBrandName());
     }
 

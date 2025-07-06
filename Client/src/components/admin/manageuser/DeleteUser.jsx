@@ -4,9 +4,9 @@ import { toast } from "react-toastify";
 const DeleteUser = (props) => {
   const handleDelete = async () => {
     try {
-      const DeleteInfo = await handleDeleteUser(props.InfoUser.id);
+      await handleDeleteUser(props.InfoUser.id);
       props.closeDelete();
-      toast.success("Delete User successful ");
+      toast.success("Xóa người dùng thành công ");
       props.handleUsers();
     } catch (e) {
       toast.error("Không thể xóa do ", e);
@@ -16,14 +16,14 @@ const DeleteUser = (props) => {
   return (
     <>
       <Modal size="x" show={props.isShowDelete} onHide={props.closeDelete}>
-        <Modal.Header closeButton>Delete User</Modal.Header>
+        <Modal.Header closeButton>Xóa người dùng</Modal.Header>
         <Modal.Body>
-          <p>Are you sure that you want to delete this user ?</p>
-          <p>(Infomation of this user will no longer exist after deletion. )</p>
+          <p>Bạn có chắc chắn muốn xóa người dùng này ?</p>
+          <p>Các thông tin về người dùng này sẽ bị xóa hoàn toàn</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={handleDelete}>Confirm</Button>
-          <Button onClick={props.closeDelete}>Close</Button>
+          <Button onClick={handleDelete}>Xác nhận</Button>
+          <Button onClick={props.closeDelete}>Quay lại</Button>
         </Modal.Footer>
       </Modal>
     </>

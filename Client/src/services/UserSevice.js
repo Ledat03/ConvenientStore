@@ -1,7 +1,10 @@
 import APIsCustomize from "../utils/APIsCustomize";
 const AddToCart = async (info) => await APIsCustomize.post("cart/add", info, { headers: { "Content-Type": "application/json" } });
+const getUserProfile = async (id) => await APIsCustomize.get("user/view-user", { params: { id }, headers: { "Content-Type": "application/json" } });
+const updateInfo = async (user) => await APIsCustomize.put("user/update-user", user, { headers: { "Content-Type": "application/json" } });
+const handleChangePassword = async (changePassword) => await APIsCustomize.put("user/change-password", changePassword, { headers: { "Content-Type": "application/json" } });
 const ViewCart = async (userId) => await APIsCustomize.get("cart/view", { params: { userId }, headers: { "Content-Type": "application/json" } });
 const DeleteCartDetail = async (cartDetailId) => APIsCustomize.delete("cart/delete", { params: { cartDetailId }, headers: { "Content-Type": "application/json" } });
 const getMainPage = async () => APIsCustomize.get("/", { headers: { "Content-Type": "application/json" } });
 const addCheckout = async (order) => APIsCustomize.post("/order/add", order, { headers: { "Content-Type": "application/json" } });
-export { AddToCart, ViewCart, DeleteCartDetail, getMainPage, addCheckout };
+export { AddToCart, ViewCart, DeleteCartDetail, getMainPage, addCheckout, getUserProfile, updateInfo, handleChangePassword };

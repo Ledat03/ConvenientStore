@@ -216,6 +216,12 @@ public class OrderController {
         List<ResOrderDTO> resOrderDTOs = orders.stream().map(this::convertOrderToOrderDTO).toList();
         return ResponseEntity.ok(resOrderDTOs);
     }
+    @GetMapping("/view/id")
+    public ResponseEntity<Object> viewOrderById(@RequestParam("id") Long id) {
+        List<Order> orders = orderService.findAllByUserId(id);
+        List<ResOrderDTO> resOrderDTOs = orders.stream().map(this::convertOrderToOrderDTO).toList();
+        return ResponseEntity.ok(resOrderDTOs);
+    }
     @PutMapping("/update/delivery")
     public ResponseEntity<Object> updateDelivery(@RequestBody ResDeliveryDTO resDeliveryDTO) {
         Delivery delivery = orderService.getDeliveryById(resDeliveryDTO.getDeliveryId());

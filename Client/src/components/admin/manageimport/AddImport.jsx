@@ -2,17 +2,21 @@ import { Modal, Button, Form, Col, Row, Spinner, Table } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Select from "react-select";
-import { fetchListProduct } from "../../../services/GetAPI";
+import { fetchListProduct, addImport } from "../../../services/GetAPI";
 const AddImport = ({ isActive, close, handleReload }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [variants, setVariants] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [User, setUser] = useState({});
   const [formImport, setFormImport] = useState({
     importCode: "",
     importNote: "",
   });
-
+  const handleUser = () => {
+    const temp = localStorage.getItem("user");
+    setUser(JSON.parse(temp));
+  };
   const [newItem, setNewItem] = useState({
     product: null,
     variant: null,
@@ -28,6 +32,7 @@ const AddImport = ({ isActive, close, handleReload }) => {
   useEffect(() => {
     if (isActive.addImport) {
       fetchProducts();
+      handleUser();
     }
   }, [isActive.addImport]);
 
@@ -53,7 +58,7 @@ const AddImport = ({ isActive, close, handleReload }) => {
 
   const handleSubmit = async () => {
     if (!formImport.importCode) {
-      toast.error("Vui lòng nhập Mã phiếu nhập");
+      toast.error("Vui lòng nhập Mã phiếu nhập hàng");
       return;
     }
 
@@ -63,11 +68,13 @@ const AddImport = ({ isActive, close, handleReload }) => {
     }
 
     const payload = {
+      importId: 0,
       importCode: formImport.importCode,
       importNote: formImport.importNote,
+      userId: User.id,
       inventoryImportDetails: selectedItems.map((item) => ({
         productId: item.product.productId,
-        variantId: item.variant.variantId,
+        variantId: item.variant.id,
         quantity: item.quantity,
         cost_price: item.cost_price,
         total_cost: item.quantity * item.cost_price,
@@ -75,8 +82,9 @@ const AddImport = ({ isActive, close, handleReload }) => {
     };
 
     try {
+      const res = await addImport(payload);
       setIsLoading(true);
-      console.log(">> Gửi server payload:", payload);
+      console.log(">> Gửi server payload:", res);
       toast.success("Thêm đơn nhập hàng thành công!");
       close();
       handleReload && handleReload();

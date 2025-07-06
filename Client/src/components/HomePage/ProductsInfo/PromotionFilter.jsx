@@ -58,7 +58,7 @@ const PromotionFilter = (props) => {
 
   return (
     <>
-      {PromotionList && (
+      {PromotionList.length != 0 && (
         <div className="promotion-container">
           <h2 className="Header-text">Các Voucher Liên Quan</h2>
           <div className="promotion-wrapper">

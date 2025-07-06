@@ -72,7 +72,9 @@
 .promotion-scroll-container::-webkit-scrollbar {
   display: none;
 }
-
+.dropdown-toggle::before {
+  content: none !important;
+}
 .promotion-card {
   min-width: 500px;
   display: flex;
@@ -251,7 +253,6 @@
     }
   }
 }
-/* Responsive design */
 @media (max-width: 768px) {
   .promotion-wrapper {
     padding: 0 50px;

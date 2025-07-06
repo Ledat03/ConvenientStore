@@ -9,7 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AdminPage } from "./components/admin/AdminPage.jsx";
 import { AdminManageUser } from "./components/admin/AdminManageUser.jsx";
 import { ManageProduct } from "./components/admin/ManageProduct.jsx";
-import { MainPage } from "./components/admin/MainPage.jsx";
+import MainPage from "./components/admin/MainPage.jsx";
 import ProductPage from "./components/HomePage/ProductDetail/ProductPage.jsx";
 import ProductInfo from "./components/HomePage/ProductsInfo/ProductInfo.jsx";
 import Cart from "./components/HomePage/Cart.jsx";
@@ -20,6 +20,8 @@ import Thankyou from "./components/HomePage/Thankyou.jsx";
 import ScrollPage from "./components/common/ScrollPage.jsx";
 import ManageOrder from "./components/admin/ManageOrder.jsx";
 import ManageImport from "./components/admin/ManageImport.jsx";
+import UserProfile from "./components/HomePage/UserProfile.jsx";
+import RePassword from "./components/auth/RePassword.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
@@ -34,7 +36,8 @@ createRoot(document.getElementById("root")).render(
           <Route path="/ordercheck" element={<Thankyou />} />
         </Route>
         <Route path="/authenticate" element={<Authentication />} />
-
+        <Route path="/userprofile" element={<UserProfile />} />
+        <Route path="/re-password" element={<RePassword />} />
         <Route path="/admin" element={<AdminPage />}>
           <Route index element={<MainPage />} />
           <Route path="manage-user" element={<AdminManageUser />} />

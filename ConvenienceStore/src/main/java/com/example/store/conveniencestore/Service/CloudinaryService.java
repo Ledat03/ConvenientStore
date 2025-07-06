@@ -16,15 +16,9 @@ import java.util.UUID;
 
 @Service
 public class CloudinaryService {
-
     private static final Logger logger = LoggerFactory.getLogger(CloudinaryService.class);
-
     @Autowired
     private Cloudinary cloudinary;
-
-    /**
-     * Upload ảnh lên Cloudinary
-     */
     public UploadResult uploadImage(MultipartFile file, String folder) throws IOException {
         try {
             String publicId = generatePublicId(file.getOriginalFilename());

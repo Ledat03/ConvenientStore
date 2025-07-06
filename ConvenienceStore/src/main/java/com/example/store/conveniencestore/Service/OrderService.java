@@ -51,4 +51,7 @@ public class OrderService {
     public Payment findbyPaymentId(long paymentId) {
         return paymentRepository.findById(paymentId);
     }
+    public List<Order> findAllByUserId(long id) {
+        return orderRepository.findByUser_Id(id);
+    }
 }

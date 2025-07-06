@@ -22,6 +22,7 @@ const AddProduct = (props) => {
   const [SubCategory, setSubCategory] = useState([]);
   const [Image, setImage] = useState(null);
   const [ImageURL, setImageURL] = useState(null);
+  const [Validate, setValidate] = useState({});
   const clearInput = () => {
     setProductName("");
     setProductDescription("");
@@ -46,6 +47,7 @@ const AddProduct = (props) => {
     setListBrand(dataBrands.data.data);
     setSubCategory(dataSubCate.data.data);
   };
+
   const handleImage = (e) => {
     try {
       const file = e.target.files[0];
@@ -73,6 +75,20 @@ const AddProduct = (props) => {
     if (Image) {
       formData.append("image", Image);
     }
+    const checkValidate = () => {
+      const error = {};
+      if (!formData.get("productName").trim()) error.productName = "Trường này không được trống";
+      if (!formData.get("productDescription").trim()) error.descrip = "Trường này không được trống";
+      if (!formData.get("origin").trim()) error.origin = "Trường này không được trống";
+      if (!formData.get("ingredient").trim()) error.ingredient = "Trường này không được trống";
+      if (!formData.get("howToUse").trim()) error.howToUse = "Trường này không được trống";
+      if (!formData.get("preserve").trim()) error.preserve = "Trường này không được trống";
+      if (!formData.get("sku").trim()) error.sku = "Trường này không được trống";
+      if (!Image) error.image = "Bạn cần thêm hình ảnh để minh họa cho sản phẩm";
+      setValidate(error);
+      return Object.keys(error).length === 0;
+    };
+    if (!checkValidate()) return;
     try {
       await addNewProduct(formData);
       toast.success("Product Information Successful Added");
@@ -94,36 +110,49 @@ const AddProduct = (props) => {
       >
         Thêm sản phẩm
       </Button>
-      <Modal size="xl" show={isShow} onHide={close}>
+      <Modal
+        size="xl"
+        show={isShow}
+        onHide={() => {
+          clearInput();
+          setValidate({});
+          close();
+        }}
+      >
         <Modal.Header closeButton> Thêm Sản Phẩm</Modal.Header>
         <Modal.Body>
           <Form>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridProductName">
                 <Form.Label>Tên Sản Phẩm</Form.Label>
-                <Form.Control type="text" placeholder="Tên Sản Phẩm" value={ProductName} onChange={(e) => setProductName(e.target.value)} />
+                <Form.Control type="text" placeholder="Tên Sản Phẩm" value={ProductName} onChange={(e) => setProductName(e.target.value)} isInvalid={!!Validate.productName} />
+                <Form.Control.Feedback type="invalid">{Validate.productName}</Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group as={Col} controlId="formGridOrigin">
                 <Form.Label>Xuất Xứ</Form.Label>
-                <Form.Control type="text" placeholder="Xuất Xứ" value={Origin} onChange={(e) => setOrigin(e.target.value)} />
+                <Form.Control type="text" placeholder="Xuất Xứ" value={Origin} onChange={(e) => setOrigin(e.target.value)} isInvalid={!!Validate.origin} />
+                <Form.Control.Feedback type="invalid">{Validate.origin}</Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formHowToUse">
                 <Form.Label>Cách Sử Dụng</Form.Label>
-                <Form.Control type="text" placeholder="Cách Sử Dụng" value={HowToUse} onChange={(e) => setHowToUse(e.target.value)} />
+                <Form.Control type="text" placeholder="Cách Sử Dụng" value={HowToUse} onChange={(e) => setHowToUse(e.target.value)} isInvalid={!!Validate.howToUse} />
+                <Form.Control.Feedback type="invalid">{Validate.howToUse}</Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group as={Col} controlId="formPreserve">
                 <Form.Label>Bảo Quản</Form.Label>
-                <Form.Control type="text" placeholder="Bảo Quản" value={Preserve} onChange={(e) => setPreserve(e.target.value)} />
+                <Form.Control type="text" placeholder="Bảo Quản" value={Preserve} onChange={(e) => setPreserve(e.target.value)} isInvalid={!!Validate.preserve} />
+                <Form.Control.Feedback type="invalid">{Validate.preserve}</Form.Control.Feedback>
               </Form.Group>
             </Row>
             <Row className="mb-3">
               <Form.Group as={Col} className="mb-3" controlId="formIngredient">
                 <Form.Label>Dinh Dưỡng</Form.Label>
-                <Form.Control type="text" placeholder="Dinh Dưỡng" value={Ingredient} onChange={(e) => setIngredient(e.target.value)} />
+                <Form.Control type="text" placeholder="Dinh Dưỡng" value={Ingredient} onChange={(e) => setIngredient(e.target.value)} isInvalid={!!Validate.ingredient} />
+                <Form.Control.Feedback type="invalid">{Validate.ingredient}</Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} controlId="formSubCategory">
                 <Form.Label>Loại Sản Phẩm</Form.Label>
@@ -137,7 +166,8 @@ const AddProduct = (props) => {
             <Row className="mb-3">
               <Form.Group as={Col} className="mb-3" controlId="formIngredient">
                 <Form.Label>Mã SKU</Form.Label>
-                <Form.Control type="text" placeholder="Nhập Mã" value={SKU} onChange={(e) => setSKU(e.target.value)} />
+                <Form.Control type="text" placeholder="Nhập Mã" value={SKU} onChange={(e) => setSKU(e.target.value)} isInvalid={!!Validate.sku} />
+                <Form.Control.Feedback type="invalid">{Validate.sku}</Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} controlId="formSubCategory">
                 <Form.Label>Hãng Sản Phẩm</Form.Label>
@@ -167,11 +197,13 @@ const AddProduct = (props) => {
             </Row>
             <Form.Group className="mb-3" controlId="formDescription">
               <Form.Label>Mô Tả Sản Phẩm</Form.Label>
-              <Form.Control as="textarea" rows="4" placeholder="Enter Description" value={ProductDescription} onChange={(e) => setProductDescription(e.target.value)} />
+              <Form.Control as="textarea" rows="4" placeholder="Enter Description" value={ProductDescription} onChange={(e) => setProductDescription(e.target.value)} isInvalid={!!Validate.descrip} />
+              <Form.Control.Feedback type="invalid">{Validate.descrip}</Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formGridProductImage">
               <Form.Label>Hình Ảnh Minh Họa</Form.Label>
-              <Form.Control type="file" rows="4" placeholder="Enter Description" onChange={(e) => handleImage(e)} />
+              <Form.Control type="file" rows="4" placeholder="Enter Description" onChange={(e) => handleImage(e)} isInvalid={Validate.image} />
+              <Form.Control.Feedback type="invalid">{Validate.image}</Form.Control.Feedback>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formGridPreviews">
               <div className="preview-image">
@@ -181,7 +213,14 @@ const AddProduct = (props) => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={close}>Hủy</Button>
+          <Button
+            onClick={() => {
+              setValidate({});
+              close();
+            }}
+          >
+            Hủy
+          </Button>
           <Button onClick={handleAddProduct}>Thêm</Button>
         </Modal.Footer>
       </Modal>

@@ -92,6 +92,7 @@ const ProductCard = ({ products, filters, Loading, sortBy, onSortChange }) => {
     toast.success("Thêm Vào Giỏ Hàng Thành Công");
     console.log("thông tin gửi đi - " + info.userId + " " + info.variantId + " " + info.productId);
   };
+  console.log(PaginatedProduct);
   return (
     <>
       <div className="product-grid">
@@ -99,7 +100,13 @@ const ProductCard = ({ products, filters, Loading, sortBy, onSortChange }) => {
           PaginatedProduct.map((item, index) => {
             return (
               <Link to={`product/${item.productId}?variant=${item.calUnit}`} className="product-card" key={index}>
-                {item.stock && <div className={`product-card__badge ${item.stock != 0 ? "product-card__badge--low-stock" : "product-card__badge--out-stock"}`}>{item.stock > 0 ? "Còn Hàng" : "Hết Hàng"}</div>}
+                {item.stock >= 0 && (
+                  <div className={`product-card__badge ${item.stock > 20 && "product-card__badge--high-stock"} ${item.stock === 0 && "product-card__badge--out-stock"}`}>
+                    {item.stock > 20 && "Còn Hàng"}
+                    {item.stock === 0 && "Hết Hàng"}
+                    {item.stock > 0 && item.stock <= 20 && "Sắp Hết Hàng"}
+                  </div>
+                )}
                 <div className="product-card__image-container">
                   <img src={item.productImage[0] || "/placeholder.svg?height=200&width=200"} alt={item.productName} className="product-card__image" />
                 </div>
@@ -138,10 +145,10 @@ const ProductCard = ({ products, filters, Loading, sortBy, onSortChange }) => {
                           navigate("/authenticate");
                         }
                       }}
+                      disabled={item.stock === 0}
                     >
-                      Thêm vào giỏ hàng
+                      {item.stock === 0 ? "Hết Hàng" : "Thêm vào giỏ hàng"}
                     </Button>
-                    {/* <Button className="Card-Button">Mua</Button> */}
                   </div>
                 </div>
               </Link>

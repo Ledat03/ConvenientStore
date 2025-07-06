@@ -48,16 +48,16 @@ const ManageOrder = () => {
     <div className="manage-order">
       <div className="header">
         <div className="breadcrumb">
-          <span className="breadcrumb-item">Home</span>
+          <span className="breadcrumb-item">Trang chủ</span>
           <span className="breadcrumb-separator">/</span>
-          <span className="breadcrumb-item active">Order list</span>
+          <span className="breadcrumb-item active">Quản lí đơn hàng</span>
         </div>
         <div className="header-actions">
           <button className="btn-secondary">Export</button>
           <button className="btn-secondary">Import</button>
         </div>
       </div>
-      <h1 className="page-title">Order list</h1>
+      <h1 className="page-title">Quản lí đơn hàng</h1>
       <div className="controls">
         <div className="controls-left">
           <div className="search-container">
@@ -80,13 +80,13 @@ const ManageOrder = () => {
               <th>
                 <input type="checkbox" />
               </th>
-              <th>Order</th>
-              <th>Date</th>
-              <th>Customer</th>
-              <th>Payment status</th>
-              <th>Fulfillment status</th>
-              <th>Shipping method</th>
-              <th>Total</th>
+              <th>Đơn hàng</th>
+              <th>Ngày đặt hàng</th>
+              <th>Tên người dùng</th>
+              <th>Trạng thái thanh toán</th>
+              <th>Trạng thái giao hàng</th>
+              <th>Phương thức thanh toán</th>
+              <th>Tổng tiền</th>
             </tr>
           </thead>
           <tbody>

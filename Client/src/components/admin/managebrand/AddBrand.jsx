@@ -8,18 +8,28 @@ const AddBrand = (props) => {
   const close = () => setShow(false);
   const open = () => setShow(true);
   const [NameBrand, setNameBrand] = useState("");
+  const [Validate, setValidate] = useState({});
   const handleNewBrand = async () => {
     let newBrand = {
       brandName: NameBrand,
     };
+    const checkValidate = () => {
+      const error = {};
+      if (!newBrand.brandName.trim()) error.brand = "Bạn cần nhập đầy đủ tên nhãn hàng !";
+      setValidate(error);
+      return Object.keys(error).length === 0;
+    };
+    if (!checkValidate()) return;
     try {
       let response = await addBrand(newBrand);
       console.log(response);
-      toast.success("Thêm mới nhãn hàng thành công");
-      close();
-      await props.handleBrands();
+      if (response.status < 400) {
+        toast.success("Thêm mới nhãn hàng thành công");
+        close();
+        await props.handleBrands();
+      }
     } catch (e) {
-      toast.error("Xảy ra lỗi khi thêm mới " + e.message);
+      toast.error("Nhãn hàng này đã tồn tại !");
     }
   };
   const clearInput = () => {
@@ -41,7 +51,8 @@ const AddBrand = (props) => {
           <Form>
             <Form.Group controlId="formGridBrand">
               <Form.Label>Tên Nhãn Hàng</Form.Label>
-              <Form.Control type="text" placeholder="Nhập tên hãng" value={NameBrand} onChange={(e) => setNameBrand(e.target.value)} />
+              <Form.Control type="text" placeholder="Nhập tên hãng" value={NameBrand} onChange={(e) => setNameBrand(e.target.value)} isInvalid={!!Validate.brand} />
+              <Form.Control.Feedback type="invalid">{Validate.brand}</Form.Control.Feedback>
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -52,7 +63,7 @@ const AddBrand = (props) => {
               clearInput();
             }}
           >
-            Cancel
+            Quay lại
           </Button>
           <Button
             onClick={() => {
@@ -60,7 +71,7 @@ const AddBrand = (props) => {
               clearInput();
             }}
           >
-            Add
+            Thêm
           </Button>
         </Modal.Footer>
       </Modal>

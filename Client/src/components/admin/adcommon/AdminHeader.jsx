@@ -1,10 +1,10 @@
 import { VscClose } from "react-icons/vsc";
 import { FaBars } from "react-icons/fa";
-import { LuUserRound } from "react-icons/lu";
 import { fetchLogOut } from "../../../services/AuthAPI";
 import { useNavigate } from "react-router-dom";
+import { FaUserCircle } from "react-icons/fa";
 import { Dropdown, DropdownMenu, DropdownToggle } from "react-bootstrap";
-export const AdminHeader = ({ setCollapse, collapse } = props) => {
+export const AdminHeader = ({ setCollapse, collapse, user } = props) => {
   const navigate = useNavigate();
   return (
     <header className="admin-header">
@@ -25,10 +25,12 @@ export const AdminHeader = ({ setCollapse, collapse } = props) => {
 
         <div className="admin-header__user">
           <Dropdown drop="down">
-            <DropdownToggle>
-              <LuUserRound />
+            <DropdownToggle className="logout_button">
+              <FaUserCircle size={30} />
+              <span> Xin chào , {user?.name}</span>
             </DropdownToggle>
             <DropdownMenu>
+              <Dropdown.Item onClick={() => navigate("/userprofile", { state: { User: user } })}>Thông tin cá nhân</Dropdown.Item>
               <Dropdown.Item
                 onClick={async () => {
                   await fetchLogOut();

@@ -7,7 +7,7 @@ const DeletePromotion = (props) => {
       await deleteProduct(props.InfoItem.productId);
       props.closeDelete();
       props.handleProductsList();
-      toast.success("Delete User successful ");
+      toast.success("Xóa mã giảm giá thành công !");
     } catch (e) {
       toast.error("Không thể xóa do ", e);
       throw e;
@@ -16,14 +16,13 @@ const DeletePromotion = (props) => {
   return (
     <>
       <Modal size="x" show={props.isShowDelete} onHide={props.closeDelete}>
-        <Modal.Header closeButton>Delete Product</Modal.Header>
+        <Modal.Header closeButton>Xóa mã giảm giá</Modal.Header>
         <Modal.Body>
-          <p>Are you sure that you want to delete this product ?</p>
-          <p>(Infomation of this product will no longer exist after deletion. )</p>
+          <p>Bạn có chắc chắn muốn xóa phiếu giảm giá này hay không</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={handleDelete}>Confirm</Button>
-          <Button onClick={props.closeDelete}>Close</Button>
+          <Button onClick={handleDelete}>Xác nhận</Button>
+          <Button onClick={props.closeDelete}>Quay lại</Button>
         </Modal.Footer>
       </Modal>
     </>

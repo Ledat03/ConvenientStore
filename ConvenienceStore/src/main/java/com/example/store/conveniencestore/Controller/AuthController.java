@@ -6,8 +6,10 @@ import com.example.store.conveniencestore.DTO.UserDTO;
 import com.example.store.conveniencestore.Domain.RestRestponse;
 import com.example.store.conveniencestore.Domain.Role;
 import com.example.store.conveniencestore.Domain.User;
+import com.example.store.conveniencestore.Service.GmailService;
 import com.example.store.conveniencestore.Service.UserService;
 import com.example.store.conveniencestore.Util.SecurityToken;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
+import java.util.Random;
 
 @RestController
 @RequestMapping("api/check")
@@ -27,6 +30,7 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityToken securityToken;
     private final UserService userService;
+    private final GmailService gmailService;
     private final PasswordEncoder passwordEncoder;
     @Value("${store.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
@@ -52,11 +56,12 @@ public class AuthController {
 
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityToken securityToken,
-                          UserService userService, PasswordEncoder passwordEncoder) {
+                          UserService userService, PasswordEncoder passwordEncoder, GmailService gmailService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityToken = securityToken;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.gmailService = gmailService;
     }
 
     @PostMapping("/signup")
@@ -65,9 +70,9 @@ public class AuthController {
         if (CheckExist != null && user.getEmail().equals(CheckExist.getEmail())) {
             RestRestponse<Object> ErrorRestRestponse = new RestRestponse<>();
             ErrorRestRestponse.setMessage("Tài khoản đã tồn tại !");
-            ErrorRestRestponse.setError("Email is conflict");
+            ErrorRestRestponse.setError("Email đã tồn tại");
             ErrorRestRestponse.setStatusCode(HttpStatus.valueOf(400).value());
-            return ResponseEntity.ok().body(ErrorRestRestponse);
+            return ResponseEntity.status(400).body(ErrorRestRestponse);
         }
         User newUser = convertUserDTOToUser(user);
         userService.save(newUser);
@@ -128,5 +133,21 @@ public class AuthController {
        userService.updateUserToken(null,email);
        ResponseCookie responseCookie = ResponseCookie.from("refreshToken" , null).secure(true).maxAge(0).path("/").build();
         return ResponseEntity.status(201).header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
+    }
+    @PostMapping("/forgot")
+    public ResponseEntity<Object> forgotPassword(@RequestBody String email) {
+        User user = userService.findByEmail("test1@gmail.com");
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng");
+        }
+        try {
+            Random random = new Random();
+            long number = random.nextLong(90000)+10000;
+            String code = String.valueOf(number);
+            gmailService.sendCodeResetPassword("KrytosVN@gmail.com",code);
+            return ResponseEntity.ok().body(code);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

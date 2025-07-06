@@ -67,7 +67,7 @@ export const TableBrand = (props) => {
                             handleBrand(item);
                           }}
                         >
-                          Update
+                          Cập nhật
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => {
@@ -75,7 +75,7 @@ export const TableBrand = (props) => {
                             handleBrand(item);
                           }}
                         >
-                          Delete
+                          Xóa
                         </Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown>

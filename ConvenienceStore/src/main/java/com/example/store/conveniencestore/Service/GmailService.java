@@ -55,4 +55,12 @@ public class GmailService {
         helper.setText(content, true);
         mailSender.send(message);
     }
+    public void sendCodeResetPassword(String gmail , String number) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setTo(gmail);
+        helper.setSubject("Lấy lại mật khẩu " + gmail);
+        helper.setText("Mã khôi phục của bạn là", number);
+        mailSender.send(message);
+    }
 }

@@ -5,10 +5,10 @@ import "../../assets/scss/checkout.scss";
 import { fetchListPromotion } from "../../services/GetAPI";
 import Logo from "../../assets/v-vnpay.svg";
 import { addCheckout } from "../../services/UserSevice";
+import { toast } from "react-toastify";
 export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [Redirect, setRedirect] = useState();
   const user = location.state.userInfo;
   const checkoutInfo = location.state?.checkoutItems;
   const [isShow, setShow] = useState(false);
@@ -19,6 +19,7 @@ export default function Checkout() {
   const [Category, setCategory] = useState([]);
   const [ProductName, setProductName] = useState([]);
   const [selectedPromotion, setSelected] = useState(null);
+  // const [Validate, setValidate] = useState();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -49,11 +50,26 @@ export default function Checkout() {
         unitPrice: item.productVariant.salePrice != 0 ? item.productVariant.salePrice : item.productVariant.price,
       })),
     };
-    const res = await addCheckout(order);
-    if (formData.paymentMethod === "COD") {
-      navigate("/ordercheck");
-    } else {
-      window.location.href = res.data;
+    // const error = {};
+    // if (!formData.firstName.trim()) error.firstName = "Bạn cần nhập họ !";
+    // if (!formData.lastName.trim()) error.lastName = "Bạn cần nhập tên !";
+    // if (!formData.address.trim()) error.address = "Bạn cần nhập địa chỉ !";
+    // if (!formData.city.trim()) error.city = "Trường này không được trống !";
+    // if (!formData.phoneNumber.trim()) error.phoneNumber = "Bạn cần nhập số điện thoại!";
+    // if (error != undefined) {
+    //   toast.error("Bạn cần nhập đầy đủ các trường thông tin");
+    //   console.log(Validate);
+    //   return;
+    // }
+    try {
+      const res = await addCheckout(order);
+      if (formData.paymentMethod === "COD") {
+        navigate("/ordercheck");
+      } else {
+        window.location.href = res.data;
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   const fetchRelativePromo = async () => {
@@ -118,13 +134,58 @@ export default function Checkout() {
 
             <div className="address-form">
               <div className="form-row">
-                <input type="text" name="firstName" placeholder="Họ" value={formData.firstName} onChange={handleInputChange} className="form-input half-width" />
-                <input type="text" name="lastName" placeholder="Tên" value={formData.lastName} onChange={handleInputChange} className="form-input half-width" />
+                <input
+                  type="text"
+                  name="firstName"
+                  placeholder="Họ"
+                  value={formData.firstName}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                  }}
+                  className="form-input half-width"
+                />
+                <input
+                  type="text"
+                  name="lastName"
+                  placeholder="Tên"
+                  value={formData.lastName}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                  }}
+                  className="form-input half-width"
+                />
               </div>
-              <input type="text" name="address" placeholder="Địa Chỉ Nhận Hàng" value={formData.address} onChange={handleInputChange} className="form-input" />
+              <input
+                type="text"
+                name="address"
+                placeholder="Địa Chỉ Nhận Hàng"
+                value={formData.address}
+                onChange={(e) => {
+                  handleInputChange(e);
+                }}
+                className="form-input"
+              />
               <div className="form-row">
-                <input type="text" name="city" placeholder="Tỉnh (Thành Phố)" value={formData.city} onChange={handleInputChange} className="form-input half-width" />
-                <input type="text" name="phoneNumber" placeholder="Số Điện Thoại" value={formData.phoneNumber} onChange={handleInputChange} className="form-input half-width" />
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="Tỉnh (Thành Phố)"
+                  value={formData.city}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                  }}
+                  className="form-input half-width"
+                />
+                <input
+                  type="text"
+                  name="phoneNumber"
+                  placeholder="Số Điện Thoại"
+                  value={formData.phoneNumber}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                  }}
+                  className="form-input half-width"
+                />
               </div>
             </div>
           </section>
@@ -150,7 +211,7 @@ export default function Checkout() {
           </section>
         </div>
       </div>
-      <div className="order-summary">
+      <div className="order-summary-checkout">
         {checkoutInfo.map((item) => {
           return (
             <div>
@@ -191,7 +252,6 @@ export default function Checkout() {
                 }
               };
               const totalCart = handleTotalPrice();
-
               if (totalCart >= promo.minOrderValue) {
                 return (
                   <div

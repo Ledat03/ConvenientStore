@@ -39,8 +39,8 @@ const UpdateBrand = (props) => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={props.closeUpdate}>Cancel</Button>
-          <Button onClick={handleUpdate}>Update</Button>
+          <Button onClick={props.closeUpdate}>Quay lại</Button>
+          <Button onClick={handleUpdate}>Cập nhật</Button>
         </Modal.Footer>
       </Modal>
       {}

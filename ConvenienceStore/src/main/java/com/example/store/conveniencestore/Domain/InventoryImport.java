@@ -18,6 +18,6 @@ public class InventoryImport {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    @OneToMany(mappedBy = "InventImport", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "InventImport", fetch = FetchType.LAZY ,cascade = CascadeType.ALL , orphanRemoval = true)
     private List<InventoryImportDetail> inventoryImportDetails;
 }

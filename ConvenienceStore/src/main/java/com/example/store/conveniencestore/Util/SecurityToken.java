@@ -84,10 +84,6 @@ public class SecurityToken {
             throw e;
         }
     }
-    /**
-     * Get the JWT of the current user.
-     * @return the JWT of the current user.
-     */
     public static Optional<String> getCurrentUserJWT() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
@@ -98,10 +94,7 @@ public class SecurityToken {
         byte[] keyBytes = Base64.from(jwtPrivateKey).decode();
         return new SecretKeySpec(keyBytes, 0, keyBytes.length, JWT_ALGORITHM.getName());
     }
-    /**
-     * Check if a user is authenticated.
-     * @return true if the user is authenticated, false otherwise.
-     */
+
     public static boolean isAuthenticated() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
@@ -109,10 +102,6 @@ public class SecurityToken {
                 .orElse(false);
     }
 
-    /**
-     * Get the login of the current user.
-     * @return the login of the current user.
-     */
     public static Optional<String> getCurrentUserLogin() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication())
@@ -128,11 +117,6 @@ public class SecurityToken {
                     return null;
                 });
     }
-
-    /**
-     * Get the roles of the current user.
-     * @return the roles of the current user.
-     */
     public static Set<String> getCurrentUserRoles() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
@@ -145,12 +129,6 @@ public class SecurityToken {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toSet());
     }
-
-    /**
-     * Check if the current user has a specific role.
-     * @param role the role to check
-     * @return true if the current user has the role, false otherwise.
-     */
     public static boolean hasRole(String role) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
@@ -163,11 +141,6 @@ public class SecurityToken {
                 .anyMatch(authority -> authority.getAuthority().equals(role));
     }
 
-    /**
-     * Check if the current user has any of the given roles.
-     * @param roles the roles to check
-     * @return true if the current user has any of the roles, false otherwise.
-     */
     public static boolean hasAnyRole(String... roles) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
@@ -182,11 +155,6 @@ public class SecurityToken {
                 .anyMatch(roleSet::contains);
     }
 
-    /**
-     * Check if the current user has all of the given roles.
-     * @param roles the roles to check
-     * @return true if the current user has all of the roles, false otherwise.
-     */
     public static boolean hasAllRoles(String... roles) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
@@ -202,35 +170,20 @@ public class SecurityToken {
         return userRoles.containsAll(Arrays.asList(roles));
     }
 
-    /**
-     * Get the current user's authentication object.
-     * @return the current authentication object.
-     */
     public static Optional<Authentication> getCurrentAuthentication() {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         return Optional.ofNullable(securityContext.getAuthentication());
     }
 
-    /**
-     * Get the current user's principal object.
-     * @return the current principal object.
-     */
     public static Optional<Object> getCurrentUserPrincipal() {
         return getCurrentAuthentication()
                 .map(Authentication::getPrincipal);
     }
 
-    /**
-     * Check if the current user is anonymous.
-     * @return true if the current user is anonymous, false otherwise.
-     */
     public static boolean isAnonymous() {
         return !isAuthenticated() || hasRole("ROLE_ANONYMOUS");
     }
 
-    /**
-     * Clear the security context.
-     */
     public static void clearSecurityContext() {
         SecurityContextHolder.clearContext();
     }

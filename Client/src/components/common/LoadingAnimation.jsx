@@ -1,4 +1,3 @@
-import React from "react";
 import Lottie from "lottie-react";
 import loadingAnimation from "../../../loadingV2.json";
 import "../../assets/scss/loading.scss";

@@ -1,18 +1,16 @@
 import { useState } from "react";
-import { Table, Button, DropdownButton, Dropdown, ButtonGroup } from "react-bootstrap";
+import { Dropdown, ButtonGroup } from "react-bootstrap";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import AddPromotion from "./AddPromotion";
 import UpdatePromotion from "./UpdatePromotion";
 import ViewPromotion from "./ViewPromotion";
-import { GetListVariant } from "../../../services/GetAPI";
 import "../css/productCustom.scss";
 import DeletePromotion from "./DeletePromotion";
 const TablePromotion = (props) => {
-  const [HandleProductState, setState] = useState({
+  const [HandlePromotion, setState] = useState({
     ProdView: false,
     ProdUpdate: false,
     ProdDelete: false,
-    ProdVariant: false,
   });
   const openModal = (modalName) => {
     setState((prev) => ({ ...prev, [modalName]: true }));
@@ -21,17 +19,8 @@ const TablePromotion = (props) => {
     setState((prev) => ({ ...prev, [modalName]: false }));
   };
   const [InfoItem, setInfoItem] = useState({});
-  const handleProduct = (product) => {
-    setInfoItem(product);
-  };
-
-  const getVariants = async (id) => {
-    try {
-      const handleVariants = await GetListVariant(id);
-      setListVariants(handleVariants.data.data);
-    } catch (error) {
-      throw error;
-    }
+  const handlePromotion = (promotion) => {
+    setInfoItem(promotion);
   };
   const [filters, setFilters] = useState({
     vendor: "",
@@ -68,7 +57,7 @@ const TablePromotion = (props) => {
     <div className="product-list-container">
       <nav className="breadcrumb">
         <a href="#" className="breadcrumb-link">
-          Home
+          Trang chủ
         </a>
         <span className="breadcrumb-separator">/</span>
         <span className="breadcrumb-current">Mã Giảm Giá</span>
@@ -76,10 +65,6 @@ const TablePromotion = (props) => {
 
       <div className="product-list-header">
         <h1 className="page-title">Danh Sách Mã Giảm Giá</h1>
-        <div className="header-buttons">
-          <button className="secondary-button">Export</button>
-          <button className="secondary-button">Import</button>
-        </div>
       </div>
 
       <div className="product-list-filters">
@@ -106,32 +91,23 @@ const TablePromotion = (props) => {
 
         <div className="filters-right">
           <select className="filter-select" value={filters.vendor} onChange={(e) => setFilters({ ...filters, vendor: e.target.value })}>
-            <option value="">Vendor</option>
-            <option value="fotobi">Fotobi Furniture</option>
-            <option value="mojar">Mojar Furniture</option>
+            <option value="">Loại mã</option>
+            <option value="product">Giảm giá sản phẩm </option>
+            <option value="category">Giảm giá danh mục</option>
+            <option value="brand">Giảm giá nhãn hàng</option>
           </select>
 
           <select className="filter-select" value={filters.taggedWith} onChange={(e) => setFilters({ ...filters, taggedWith: e.target.value })}>
-            <option value="">Tagged With</option>
-            <option value="furniture">Furniture</option>
-            <option value="chair">Chair</option>
+            <option value="">Lọc với</option>
+            <option value="percent">Giảm theo %</option>
+            <option value="fixed">Giảm giá cố định</option>
           </select>
 
           <select className="filter-select" value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
-            <option value="">Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="draft">Draft</option>
+            <option>Trạng thái</option>
+            <option value="active">Kích hoạt</option>
+            <option value="inactive">Ẩn</option>
           </select>
-
-          <button className="filter-button-text">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
-            </svg>
-            Saved
-          </button>
-
-          <button className="filter-button-text">More Filters</button>
         </div>
       </div>
       <div className="product-table-container">
@@ -176,27 +152,27 @@ const TablePromotion = (props) => {
                       <Dropdown.Item
                         onClick={() => {
                           openModal("ProdView");
-                          handleProduct(product);
+                          handlePromotion(promotion);
                         }}
                       >
-                        Infomation
+                        Thông tin
                       </Dropdown.Item>
 
                       <Dropdown.Item
                         onClick={() => {
                           openModal("ProdUpdate");
-                          handleProduct(product);
+                          handlePromotion(promotion);
                         }}
                       >
-                        Update
+                        Cập nhật
                       </Dropdown.Item>
                       <Dropdown.Item
                         onClick={() => {
                           openModal("ProdDelete");
-                          handleProduct(product);
+                          handlePromotion(promotion);
                         }}
                       >
-                        Delete
+                        Xóa
                       </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
@@ -207,9 +183,9 @@ const TablePromotion = (props) => {
         </table>
       </div>
       <>
-        <UpdatePromotion isShowUpdate={HandleProductState.ProdUpdate} closeUpdate={() => closeModal("ProdUpdate")} openUpdate={() => openModal("ProdUpdate")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
-        <ViewPromotion isShowView={HandleProductState.ProdView} closeView={() => closeModal("ProdView")} openView={() => openModal("ProdView")} InfoItem={InfoItem} />
-        <DeletePromotion isShowDelete={HandleProductState.ProdDelete} closeDelete={() => closeModal("ProdDelete")} openDelete={() => openModal("ProdDelete")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
+        <UpdatePromotion isShowUpdate={HandlePromotion.ProdUpdate} closeUpdate={() => closeModal("ProdUpdate")} openUpdate={() => openModal("ProdUpdate")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
+        <ViewPromotion isShowView={HandlePromotion.ProdView} closeView={() => closeModal("ProdView")} openView={() => openModal("ProdView")} InfoItem={InfoItem} />
+        <DeletePromotion isShowDelete={HandlePromotion.ProdDelete} closeDelete={() => closeModal("ProdDelete")} openDelete={() => openModal("ProdDelete")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
       </>
     </div>
   );

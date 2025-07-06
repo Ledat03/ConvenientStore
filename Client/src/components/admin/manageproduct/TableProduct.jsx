@@ -55,7 +55,7 @@ const TableProduct = (props) => {
     <div className="product-list-container">
       <nav className="breadcrumb">
         <a href="#" className="breadcrumb-link">
-          Home
+          Trang chủ
         </a>
         <span className="breadcrumb-separator">/</span>
         <span className="breadcrumb-current">Sản Phẩm</span>
@@ -151,10 +151,15 @@ const TableProduct = (props) => {
                 <td className="table-cell">{product.category}</td>
 
                 <td className="table-cell">
-                  <span className={getStatusStyle("active")}>Active</span>
+                  <span className={getStatusStyle("active")}>{product.isActive == true ? "hiển thị" : "đang ẩn"}</span>
                 </td>
+                {console.log(product)}
                 <td className="table-cell">{product.updateAt}</td>
-                <td className="table-cell">{product.status}</td>
+                <td className="table-cell">
+                  {product.status == "Draft" && "Chưa hoàn thành"}
+                  {product.status == "Published" && "Đang bán"}
+                  {product.status == "NotAvailable" && "Ngừng kinh doanh"}
+                </td>
                 <td className="table-cell">
                   <Dropdown drop="down">
                     <Dropdown.Toggle as={ButtonGroup} className="action-button">

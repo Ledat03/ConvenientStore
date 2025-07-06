@@ -15,12 +15,16 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final VariantRepository variantRepository;
     private final BrandRepository brandRepository;
-    public ProductService(SubCategoryRepository subCategoryRepository, ProductRepository productRepository, CategoryRepository categoryRepository, VariantRepository variantRepository, BrandRepository brandRepository) {
+    private final ImportRepository importRepository;
+    private final ImportDetailRepository importDetailRepository;
+    public ProductService(SubCategoryRepository subCategoryRepository, ProductRepository productRepository, CategoryRepository categoryRepository, VariantRepository variantRepository, BrandRepository brandRepository, ImportRepository importRepository, ImportDetailRepository importDetailRepository) {
         this.subCategoryRepository = subCategoryRepository;
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.variantRepository = variantRepository;
         this.brandRepository = brandRepository;
+        this.importRepository = importRepository;
+        this.importDetailRepository = importDetailRepository;
     }
 
     public Category findCategoriesByCategory_id(long id) {
@@ -97,7 +101,20 @@ public class ProductService {
     public Brand addBrand(Brand brand) {
         return brandRepository.save(brand);
     }
-   public void deleteBrand(long id) {
+    public void deleteBrand(long id) {
         brandRepository.deleteById(id);
+   }
+    @Transactional
+   public InventoryImport saveInventoryImport(InventoryImport inventoryImport) {
+        return importRepository.save(inventoryImport);
+   }
+   public InventoryImportDetail saveImportDetail(InventoryImportDetail inventoryImportDetail){
+            return importDetailRepository.save(inventoryImportDetail);
+   }
+   public List<InventoryImport> findAllInventoryImports() {
+        return importRepository.findAll();
+   }
+   public InventoryImport findInventoryImportById(long id) {
+        return importRepository.findById(id);
    }
 }

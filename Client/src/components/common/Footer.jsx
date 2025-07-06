@@ -51,7 +51,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Footer Links */}
         <div className="footer__main">
           <div className="footer__section">
             <h5 className="footer__section-title">FRUIT & VEGETABLES</h5>

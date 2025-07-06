@@ -37,12 +37,10 @@ const UpdateVariant = (props) => {
       formData.append(`productImage`, item);
     });
     try {
-      console.log(formData.entries());
       await UpdateVariantItem(formData);
       toast.success("Sửa thành công");
       props.getVariants(props.InfoItem.productId);
       props.closeVariant();
-      ClearInput();
     } catch (e) {
       toast.error("có lỗi xảy ra", e);
       throw e;
@@ -54,8 +52,6 @@ const UpdateVariant = (props) => {
     setImage(files);
     const previewImage = files.map((image) => URL.createObjectURL(image));
     setImagePreviewURL(previewImage);
-    console.log(previewImage);
-    console.log(Image);
   };
   return (
     <>

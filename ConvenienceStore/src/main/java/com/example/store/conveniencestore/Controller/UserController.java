@@ -1,5 +1,6 @@
 package com.example.store.conveniencestore.Controller;
 
+import com.example.store.conveniencestore.DTO.ChangePassword;
 import com.example.store.conveniencestore.DTO.RoleDTO;
 import com.example.store.conveniencestore.DTO.UserDTO;
 import com.example.store.conveniencestore.Domain.Role;
@@ -66,6 +67,7 @@ public class UserController {
         user.setCreatedBy(TempUser.getCreatedBy());
         user.setUpdatedAt(Instant.now());
         user.setUpdatedBy("admin");
+        user.setRefreshToken(user.getRefreshToken());
         return user;
     }
     private Role convertRoleDTOToRole(String roleName) {
@@ -80,7 +82,30 @@ public class UserController {
             usersResponse.setData(userDTOs);
             return ResponseEntity.ok().body(userDTOs);
     }
-
+    @GetMapping("/view-user")
+    public ResponseEntity<Object> getUser(@RequestParam("id") Long id) {
+        User user = userService.findById(id);
+        UserDTO userDTO = convertUserToDTO(user);
+        return ResponseEntity.ok().body(userDTO);
+    }
+    @PutMapping("/update-user")
+    public ResponseEntity<Object> updateUserProfile(@RequestBody UserDTO userDTO) {
+        User user = userService.findById(userDTO.getId());
+        if(user != null) {
+            user.setFirstName(userDTO.getFirstName());
+            user.setLastName(userDTO.getLastName());
+            user.setEmail(userDTO.getEmail());
+            user.setUsername(userDTO.getUsername());
+            user.setAddress(userDTO.getAddress());
+            user.setPhone(userDTO.getPhone());
+            user.setRole(convertRoleDTOToRole(userDTO.getRole()));
+            user.setUpdatedAt(Instant.now());
+            user.setUpdatedBy("user");
+            user.setRefreshToken(user.getRefreshToken());
+            userService.save(user);
+        }
+        return ResponseEntity.ok().body(userDTO);
+    }
     @PutMapping("/update")
     public ResponseEntity<Object> updateUser(@RequestBody UserDTO userDTO) {
             User user = convertUserDTOToUser(userDTO);
@@ -89,6 +114,29 @@ public class UserController {
         }
         return ResponseEntity.ok().body(userDTO);
 }
+    @PutMapping("/change-password")
+    public ResponseEntity<Object> changePassword(@RequestBody ChangePassword changePassword) {
+        User user = userService.findById(changePassword.getId());
+        if(user != null) {
+            if(passwordEncoder.matches(changePassword.getCurrentPassword(), user.getPasswordHash())) {
+                String hash = passwordEncoder.encode(changePassword.getPassword());
+                user.setPasswordHash(hash);
+                userService.save(user);
+                return ResponseEntity.ok().body("Thay mật khẩu thành công");
+            }else{
+                return ResponseEntity.ok().body("Mật khẩu cũ không trùng khớp");
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+    @PutMapping("/re-password")
+    public ResponseEntity<Object> changePassword(@RequestParam(name = "password") String password, @RequestParam(name = "email") String email) {
+        User user = userService.findByEmail(email);
+        String hash = passwordEncoder.encode(password);
+        user.setPasswordHash(hash);
+        userService.save(user);
+        return ResponseEntity.ok().body("Đổi mật khẩu thành công ");
+    }
     @PostMapping("/create")
     public ResponseEntity<RestRestponse<Object>> createUser(@RequestBody UserDTO user) {
         RestRestponse<Object> restRestponse = new RestRestponse<>();

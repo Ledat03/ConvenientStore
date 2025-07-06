@@ -65,38 +65,38 @@ const UpdateProduct = (props) => {
   return (
     <>
       <Modal size="xl" show={props.isShowUpdate} onHide={props.closeUpdate}>
-        <Modal.Header closeButton> Update Product</Modal.Header>
+        <Modal.Header closeButton> Cập nhật sản phẩm</Modal.Header>
         <Modal.Body>
           <Form>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridProductName">
-                <Form.Label>Product Name</Form.Label>
+                <Form.Label>Tên Sản Phẩm</Form.Label>
                 <Form.Control type="text" placeholder="Enter Product name" onChange={(e) => setProductName(e.target.value)} defaultValue={props.InfoItem.productName} />
               </Form.Group>
 
               <Form.Group as={Col} controlId="formGridOrigin">
-                <Form.Label>Origin</Form.Label>
-                <Form.Control type="text" placeholder="Origin" onChange={(e) => setOrigin(e.target.value)} defaultValue={props.InfoItem.origin} />
+                <Form.Label>Xuất xứ</Form.Label>
+                <Form.Control type="text" placeholder="Xuất xứ" onChange={(e) => setOrigin(e.target.value)} defaultValue={props.InfoItem.origin} />
               </Form.Group>
             </Row>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formHowToUse">
-                <Form.Label>How To Use</Form.Label>
+                <Form.Label>Cách sử dụng</Form.Label>
                 <Form.Control type="text" placeholder="" onChange={(e) => setHowToUse(e.target.value)} defaultValue={props.InfoItem.howToUse} />
               </Form.Group>
 
               <Form.Group as={Col} controlId="formPreserve">
-                <Form.Label>Preserve</Form.Label>
+                <Form.Label>Hướng dẫn bảo quản</Form.Label>
                 <Form.Control type="text" placeholder="Last Name" onChange={(e) => setPreserve(e.target.value)} defaultValue={props.InfoItem.preserve} />
               </Form.Group>
             </Row>
             <Row className="mb-3">
               <Form.Group as={Col} className="mb-3" controlId="formIngredient">
-                <Form.Label>Ingredient</Form.Label>
+                <Form.Label>Thành phần</Form.Label>
                 <Form.Control type="text" placeholder="Enter Ingredient" onChange={(e) => setIngredient(e.target.value)} defaultValue={props.InfoItem.ingredient} />
               </Form.Group>
               <Form.Group as={Col} controlId="formSubCategory">
-                <Form.Label>SubCategory</Form.Label>
+                <Form.Label>Danh mục</Form.Label>
                 <Form.Select
                   defaultValue={props.InfoItem.subCategory}
                   onChange={(e) => {

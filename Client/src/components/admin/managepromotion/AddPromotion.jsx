@@ -124,11 +124,10 @@ const AddPromotion = (props) => {
     if (formData.scope === "PRODUCT" && selectedProducts.length === 0) {
       errors.scope = "Vui lòng chọn ít nhất một sản phẩm";
     }
-
+    console.log(errors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
-  console.log(selectedBrand);
   const handleSubmit = async () => {
     if (!validateForm()) return;
     setIsSubmitting(true);

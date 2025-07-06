@@ -1,17 +1,8 @@
+import { Await } from "react-router-dom";
 import APIsCustomize from "../utils/APIsCustomize";
 
 //User Controller
-const createNewUser = async (Email, Password, FirstName, LastName, UserName, Phone, Address, Role) => {
-  let user = {
-    email: Email,
-    passwordHash: Password,
-    firstName: FirstName,
-    lastName: LastName,
-    username: UserName,
-    phone: Phone,
-    address: Address,
-    role: "user",
-  };
+const createNewUser = async (user) => {
   try {
     const responseData = await APIsCustomize.post("user/create", user, {
       headers: { "Content-Type": "application/json" },
@@ -38,7 +29,6 @@ const handleUpdate = async (Id, Email, Password, FirstName, LastName, UserName, 
     firstName: FirstName,
     lastName: LastName,
   };
-  console.log(UpdateUser);
   try {
     const responseUpdate = await APIsCustomize.put("user/update", UpdateUser, { headers: { "Content-Type": "application/json" } });
     return responseUpdate.data;
@@ -82,8 +72,12 @@ const fetchListPromotionByFilter = async (code) => await APIsCustomize.get("/pro
 
 //OrderController
 const fetchListOrder = async () => await APIsCustomize.get("/order/view");
+const fetchListOrderById = async (id) => await APIsCustomize.get(`/order/view/id`, { params: { id }, headers: { "Content-Type": "application/json" } });
 const updateDelivery = async (delivery) => await APIsCustomize.put("/order/update/delivery", delivery, { headers: { "Content-Type": "application/json" } });
 const updatePayment = async (payment) => await APIsCustomize.put("/order/update/payment", payment, { headers: { "Content-Type": "application/json" } });
 //InventoryImport
 
-export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, fetchListPromotionByFilter, fetchListOrder, updateDelivery, updatePayment };
+const addImport = async (inventImport) => await APIsCustomize.post("/import/add", inventImport, { headers: { "Content-Type": "application/json" } });
+const viewImport = async () => await APIsCustomize.get("/import/view");
+const updateImport = async (inventImport) => await APIsCustomize.put("/import/update", inventImport, { headers: { "Content-Type": "application/json" } });
+export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, fetchListPromotionByFilter, fetchListOrder, fetchListOrderById, updateDelivery, updatePayment, addImport, viewImport, updateImport };

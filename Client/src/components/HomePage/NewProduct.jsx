@@ -61,7 +61,6 @@ const NewProduct = (props) => {
                     >
                       Thêm vào giỏ hàng
                     </Button>
-                    {/* <Button className="Card-Button">Mua</Button> */}
                   </div>
                 </div>
               </Link>

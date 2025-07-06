@@ -1,3 +1,7 @@
+.dropdown-toggle::before {
+  content: none !important;
+}
+
 .breadcrumb {
   display: flex;
   align-items: center;

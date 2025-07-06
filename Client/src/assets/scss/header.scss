@@ -363,7 +363,6 @@ a {
     color: var.$red-accent !important;
   }
   &.show {
-    /* React-Bootstrap tự thêm .show */
     opacity: 1;
     transform: translateX(0);
   }
@@ -398,7 +397,6 @@ a {
     top: 7px;
   }
 }
-// Mobile responsive
 @media (max-width: var.$breakpoint-lg) {
   .header {
     &__top-bar {
@@ -425,7 +423,7 @@ a {
     }
 
     &__nav {
-      display: none; // Hide navigation on mobile for now
+      display: none;
     }
   }
 }

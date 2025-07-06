@@ -153,7 +153,7 @@ public class UserService {
     }
 
     @Transactional
-    public synchronized Cart getOrCreateUserCart(long userId) {
+    public Cart getOrCreateUserCart(long userId) {
         Cart cart = cartRepository.findByUser_Id(userId);
         if (cart == null) {
             cart = new Cart();
@@ -161,6 +161,7 @@ public class UserService {
             cart.setUser(user);
             cart.setSumQuantity(0);
             cart = cartRepository.save(cart);
+
         }
         return cart;
     }

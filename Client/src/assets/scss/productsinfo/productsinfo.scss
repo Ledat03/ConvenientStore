@@ -222,12 +222,15 @@
     font-size: 12px;
     font-weight: 500;
     z-index: 1;
-  }
-
-  &__badge--low-stock {
     background-color: #fff3cd;
     color: #856404;
     border: 1px solid #ffeaa7;
+  }
+
+  &__badge--high-stock {
+    background-color: #acf7a9;
+    color: green;
+    border: 1px solid white;
   }
 
   &__badge--out-stock {

@@ -46,10 +46,9 @@ export const UserTable = (props) => {
         <thead>
           <tr>
             <td>ID</td>
-            <td>Username</td>
+            <td>Tên người dùng</td>
             <td>Email</td>
-            <td>Role</td>
-            <td>Action</td>
+            <td>Quyền hạn</td>
           </tr>
         </thead>
         <tbody>
@@ -58,9 +57,18 @@ export const UserTable = (props) => {
               return (
                 <tr key={item.id}>
                   <td>{item.id}</td>
-                  <td>{item.username}</td>
+                  <td>
+                    {" "}
+                    <span className="user-name">{item.username} </span>{" "}
+                  </td>
                   <td>{item.email}</td>
-                  <td>{item.role}</td>
+                  <td>
+                    <span className={item.role == "admin" ? "role-custom_red" : "role-custom_green"}>
+                      {item.role == "admin" && "Quản trị viên"}
+                      {item.role == "employee" && "Nhân viên"}
+                      {item.role == "user" && "Người dùng"}
+                    </span>
+                  </td>
                   <td className="crud-group-btn">
                     <Dropdown>
                       <Dropdown.Toggle as={CustomToggle}>
@@ -73,7 +81,7 @@ export const UserTable = (props) => {
                             handleUser(item);
                           }}
                         >
-                          Infomation
+                          Thông tin
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => {
@@ -81,7 +89,7 @@ export const UserTable = (props) => {
                             handleUser(item);
                           }}
                         >
-                          Update
+                          Cập nhật
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => {
@@ -89,7 +97,7 @@ export const UserTable = (props) => {
                             handleUser(item);
                           }}
                         >
-                          Delete
+                          Xóa người dùng
                         </Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown>

@@ -13,7 +13,7 @@ public class Cart {
     private long id;
     private long sumQuantity;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",unique = true)
     private User user;
     @OneToMany(mappedBy = "cart")
     private List<CartDetail> details;

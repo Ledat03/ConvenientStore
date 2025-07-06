@@ -46,7 +46,6 @@ const FilterProducts = ({ filters, onFilterChange, filterSubCategory, filterUnit
 
   const saleOptions = [
     { id: "clearance", label: "Giá Siêu Ưu Đãi" },
-    { id: "voucher", label: "Mua Với Voucher" },
     { id: "regular", label: "Mua Với Giá Gốc" },
   ];
 
