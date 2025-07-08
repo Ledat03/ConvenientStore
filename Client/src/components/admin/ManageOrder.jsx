@@ -6,6 +6,7 @@ import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import OrderDetail from "./manageorder/OrderDetail";
 import UpdatePayment from "./manageorder/UpdatePayment";
 import UpdateDelivery from "./manageorder/UpdateDelivery";
+import DeleteOrder from "./manageorder/DeleteOrder";
 const ManageOrder = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [timeFilter, setTimeFilter] = useState("Last 30 days");
@@ -14,6 +15,7 @@ const ManageOrder = () => {
     Detail: false,
     UpdateDelivery: false,
     UpdatePayment: false,
+    Delete: false,
   });
   const [selectedOrder, setSelectedOrder] = useState();
   useEffect(() => {
@@ -22,6 +24,20 @@ const ManageOrder = () => {
   const getListOrder = async () => {
     const res = await fetchListOrder();
     setListOrder(res.data.data);
+  };
+  const setStatus = (status) => {
+    switch (status) {
+      case "PENDING":
+        return "Chưa giao hàng";
+      case "SHIPPED":
+        return "Đang giao hàng";
+      case "DELIVERED":
+        return "Đã giao hàng";
+      case "FAILED":
+        return "Đã hủy";
+      case "RETURNED":
+        return "Đã hoàn tiền";
+    }
   };
   const getStatusClass = (status, type) => {
     const statusMap = {
@@ -112,7 +128,7 @@ const ManageOrder = () => {
                   <span className={`status-badge ${getStatusClass(order.paymentStatus, "payment")}`}>{order.payment.paymentStatus}</span>
                 </td>
                 <td>
-                  <span className={`status-badge ${getStatusClass(order.fulfillmentStatus, "fulfillment")}`}>{order.delivery.deliveryMethod == "ship" ? "Giao hàng" : "Nhận tại cửa hàng"}</span>
+                  <span className={`status-badge ${getStatusClass(order.fulfillmentStatus, "fulfillment")}`}>{setStatus(order.delivery.deliveryStatus)}</span>
                 </td>
                 <td>
                   <span className={`status-badge ${getStatusClass(order.shippingMethod, "shipping")}`}>{order.payment.paymentMethod == "COD" ? "COD" : "VNPay"}</span>
@@ -153,7 +169,14 @@ const ManageOrder = () => {
                         </div>
                       </div>
 
-                      <Dropdown.Item>Xóa</Dropdown.Item>
+                      <Dropdown.Item
+                        onClick={() => {
+                          setSelectedOrder(order);
+                          setActive({ ...isActive, Delete: true });
+                        }}
+                      >
+                        Xóa
+                      </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
                 </td>
@@ -183,6 +206,14 @@ const ManageOrder = () => {
           }}
           isActive={isActive}
           Order={selectedOrder}
+        />
+        <DeleteOrder
+          Order={selectedOrder}
+          reload={getListOrder}
+          close={() => {
+            setActive({ ...isActive, Delete: false });
+          }}
+          isActive={isActive.Delete}
         />
       </>
     </div>

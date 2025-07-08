@@ -10,5 +10,7 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUser_Id(long userId);
     List<Order> findAll();
+    Order findById(long orderId);
+    void deleteById(long id);
     Order save(Order order);
 }

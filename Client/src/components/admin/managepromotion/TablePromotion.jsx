@@ -8,9 +8,9 @@ import "../css/productCustom.scss";
 import DeletePromotion from "./DeletePromotion";
 const TablePromotion = (props) => {
   const [HandlePromotion, setState] = useState({
-    ProdView: false,
-    ProdUpdate: false,
-    ProdDelete: false,
+    ProView: false,
+    ProUpdate: false,
+    ProDelete: false,
   });
   const openModal = (modalName) => {
     setState((prev) => ({ ...prev, [modalName]: true }));
@@ -69,7 +69,7 @@ const TablePromotion = (props) => {
 
       <div className="product-list-filters">
         <div className="filters-left">
-          <AddPromotion handleProductsList={props.handleProductsList} />
+          <AddPromotion handlePromotionList={props.handlePromotionList} categories={props.categories} subCategories={props.subCategories} brands={props.brands} products={props.products} />
           <div className="search-container">
             <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8"></circle>
@@ -141,7 +141,7 @@ const TablePromotion = (props) => {
                 <td className="table-cell">
                   <span className={getStatusStyle(promotion.active)}>{promotion.active ? "Đang Kích Hoạt" : "Vô Hiệu"}</span>
                 </td>
-                {console.log(promotion)}
+
                 <td className="table-cell">{getScope(promotion.scope)}</td>
                 <td className="table-cell">
                   <Dropdown drop="down">
@@ -151,8 +151,8 @@ const TablePromotion = (props) => {
                     <Dropdown.Menu>
                       <Dropdown.Item
                         onClick={() => {
-                          openModal("ProdView");
                           handlePromotion(promotion);
+                          openModal("ProView");
                         }}
                       >
                         Thông tin
@@ -160,16 +160,16 @@ const TablePromotion = (props) => {
 
                       <Dropdown.Item
                         onClick={() => {
-                          openModal("ProdUpdate");
                           handlePromotion(promotion);
+                          openModal("ProUpdate");
                         }}
                       >
                         Cập nhật
                       </Dropdown.Item>
                       <Dropdown.Item
                         onClick={() => {
-                          openModal("ProdDelete");
                           handlePromotion(promotion);
+                          openModal("ProDelete");
                         }}
                       >
                         Xóa
@@ -183,9 +183,9 @@ const TablePromotion = (props) => {
         </table>
       </div>
       <>
-        <UpdatePromotion isShowUpdate={HandlePromotion.ProdUpdate} closeUpdate={() => closeModal("ProdUpdate")} openUpdate={() => openModal("ProdUpdate")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
-        <ViewPromotion isShowView={HandlePromotion.ProdView} closeView={() => closeModal("ProdView")} openView={() => openModal("ProdView")} InfoItem={InfoItem} />
-        <DeletePromotion isShowDelete={HandlePromotion.ProdDelete} closeDelete={() => closeModal("ProdDelete")} openDelete={() => openModal("ProdDelete")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
+        <UpdatePromotion isShowUpdate={HandlePromotion.ProUpdate} closeUpdate={() => closeModal("ProUpdate")} InfoItem={InfoItem} categories={props.categories} subCategories={props.subCategories} brands={props.brands} products={props.products} handlePromotionList={props.handlePromotionList} />
+        <ViewPromotion isShowView={HandlePromotion.ProView} closeView={() => closeModal("ProView")} InfoItem={InfoItem} />
+        <DeletePromotion isShowDelete={HandlePromotion.ProDelete} closeDelete={() => closeModal("ProDelete")} InfoItem={InfoItem} handlePromotionList={props.handlePromotionList} />
       </>
     </div>
   );

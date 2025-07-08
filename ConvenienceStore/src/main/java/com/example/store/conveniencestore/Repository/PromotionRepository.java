@@ -15,6 +15,7 @@ public interface PromotionRepository extends JpaRepository<Promotion,Long> {
     Promotion findByCouponId(long couponId);
     Promotion findByCode(String code);
     Promotion findByCouponCategories(PromotionCategory couponCategory);
+    void deleteByCouponId(long couponId);
     List<Promotion> findAll();
     @Transactional
     Promotion save(Promotion promotion);

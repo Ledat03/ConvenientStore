@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import _ from "lodash";
 import { fetchListProduct, updateImport } from "../../../services/GetAPI";
-const UpdateImport = ({ isActive, close, handleReload, Import }) => {
+const UpdateImport = ({ isActive, close, handleReload, Import, getListImport }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [variants, setVariants] = useState([]);
@@ -94,9 +94,9 @@ const UpdateImport = ({ isActive, close, handleReload, Import }) => {
     };
 
     try {
-      const res = await updateImport(payload);
+      await updateImport(payload);
       setIsLoading(true);
-      console.log(">> Gửi server payload:", res);
+      getListImport();
       toast.success("Cập nhật đơn nhập hàng thành công!");
       close();
       handleReload && handleReload();

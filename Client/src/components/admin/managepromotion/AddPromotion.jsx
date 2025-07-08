@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import { Modal, Button, Form, Col, Row, Spinner } from "react-bootstrap";
-import { useEffect, useState } from "react";
-import { handleCategories, handleListSubCate, fetchListProduct, addNewPromotion, viewBrand } from "../../../services/GetAPI";
+import { useState } from "react";
+import { addNewPromotion } from "../../../services/GetAPI";
 import "../css/promotion.scss";
 import Select from "react-select";
 const AddPromotion = (props) => {
@@ -22,81 +22,28 @@ const AddPromotion = (props) => {
     endDate: "",
     active: true,
   });
-  const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [brands, setBrands] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState([]);
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  useEffect(() => {
-    if (isShow) {
-      loadInitialData();
-    }
-  }, [isShow]);
-  const selectSubcategories = subCategories.map((item) => ({
+  const selectSubcategories = props.subCategories.map((item) => ({
     value: item.id,
     label: item.subCategoryName,
   }));
-  const selectBrand = brands.map((item) => ({
+  const selectBrand = props.brands.map((item) => ({
     value: item.brandId,
     label: item.brandName,
   }));
-  const selectCategories = categories.map((item) => ({
+  const selectCategories = props.categories.map((item) => ({
     value: item.categoryId,
     label: item.categoryName,
   }));
-  const selectProducts = products.map((item) => ({
+  const selectProducts = props.products.map((item) => ({
     value: item.productId,
     label: item.productName,
   }));
-  const loadInitialData = async () => {
-    setIsLoading(true);
-    try {
-      await getListCategories();
-      await getListSubCategories();
-      await getListProducts();
-      await getListBrands();
-    } catch (error) {
-      toast.error("Lỗi khi tải dữ liệu");
-    }
-    setIsLoading(false);
-  };
-  const getListCategories = async () => {
-    try {
-      const response = await handleCategories();
-      setCategories(response.data.data);
-    } catch (error) {
-      console.error("Lỗi Khi Lấy Thông tin Phân Loại:", error);
-    }
-  };
-  const getListSubCategories = async () => {
-    try {
-      const response = await handleListSubCate();
-      setSubCategories(response.data.data);
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin subCategory:", error);
-    }
-  };
-  const getListProducts = async () => {
-    try {
-      const response = await fetchListProduct();
-      setProducts(response.data.data);
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin sản phẩm:", error);
-    }
-  };
-  const getListBrands = async () => {
-    try {
-      const response = await viewBrand();
-      setBrands(response.data.data);
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin sản phẩm:", error);
-    }
-  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -144,8 +91,7 @@ const AddPromotion = (props) => {
       console.log(promotionData);
       await addNewPromotion(promotionData);
       toast.success("Thêm mã giảm giá thành công");
-      // handleClose();
-      // setShow(false);
+      setShow(false);
       props.handlePromotionList();
     } catch (error) {
       toast.error("Thêm mã giảm giá thất bại");

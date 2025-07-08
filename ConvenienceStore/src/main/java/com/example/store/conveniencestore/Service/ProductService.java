@@ -111,10 +111,14 @@ public class ProductService {
    public InventoryImportDetail saveImportDetail(InventoryImportDetail inventoryImportDetail){
             return importDetailRepository.save(inventoryImportDetail);
    }
+   public void deleteInventoryImport(InventoryImport inventoryImport) {
+        importRepository.delete(inventoryImport);
+    }
    public List<InventoryImport> findAllInventoryImports() {
         return importRepository.findAll();
    }
    public InventoryImport findInventoryImportById(long id) {
         return importRepository.findById(id);
    }
+
 }

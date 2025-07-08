@@ -256,6 +256,15 @@ public class OrderController {
         }
         return ResponseEntity.notFound().build();
     }
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> deleteOrder(@RequestParam(name = "id") long id) {
+        Order order = orderService.findbyOrderId(id);
+        if (order != null) {
+            orderService.deleteOrder(order);
+            return ResponseEntity.ok().body("Xóa đơn hàng thành công ");
+        }
+        return ResponseEntity.notFound().build();
+    }
     @GetMapping("/vnpay_jsp/vnpay_return")
     public void handleVNPayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
         TransactionDTO transactionDTO = new TransactionDTO();

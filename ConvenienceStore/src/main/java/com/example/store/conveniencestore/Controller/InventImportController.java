@@ -153,4 +153,13 @@ public class InventImportController {
         }
         return ResponseEntity.ok("Sửa thất bại");
     }
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> deleteInventory(@RequestParam("id") long id) {
+        InventoryImport inventoryImport = productService.findInventoryImportById(id);
+        if (inventoryImport != null) {
+            productService.deleteInventoryImport(inventoryImport);
+            return ResponseEntity.ok("Xóa thông tin thành công !");
+        }
+        return ResponseEntity.badRequest().build();
+    }
 }

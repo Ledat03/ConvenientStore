@@ -2,17 +2,36 @@ import "../../assets/scss/dashboard.scss";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { FaUserCircle } from "react-icons/fa";
+import { NumberOfUsers, NumberOfProducts } from "../../services/ManageAPI";
+import { fetchListOrder } from "../../services/GetAPI";
+import { useEffect, useState } from "react";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const MainPage = () => {
-  const statsData = {
-    users: 20,
-    products: 125,
-    orders: 38,
+  const [statsData, setStatsData] = useState({
+    users: "",
+    products: "",
+    orders: "",
     totalRevenue: 2450000,
     purchaseCost: 1680000,
+  });
+  const [orderData, setOrderData] = useState([]);
+  const handleData = async () => {
+    const users = await NumberOfUsers();
+    const products = await NumberOfProducts();
+    const orders = await fetchListOrder();
+    setStatsData((prevData) => ({
+      ...prevData,
+      orders: orders.data.data.length,
+      users: users.data.data,
+      products: products.data.data,
+    }));
+    setOrderData(orders.data.data);
   };
-
+  console.log(orderData);
+  useEffect(() => {
+    handleData();
+  }, []);
   const monthlyRevenueData = [
     { month: "T1", value: 180000 },
     { month: "T2", value: 220000 },

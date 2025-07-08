@@ -55,11 +55,11 @@ const UpdateProduct = (props) => {
         status: Status,
       };
       await updateProduct(Product);
-      toast.success("Product Information is Updated");
+      toast.success("Cập nhật sản phẩm thành công");
       props.handleProductsList();
       props.closeUpdate();
     } catch (error) {
-      toast.error("Fail");
+      toast.error("Cập nhật sản phẩm thất bại");
     }
   };
   return (

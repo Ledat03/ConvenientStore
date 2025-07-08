@@ -183,6 +183,11 @@ public class ProductController {
         ProductDTO productDTO = new ProductDTO();
         return ResponseEntity.ok(productDTO);
     }
+    @GetMapping("/count_product")
+    public ResponseEntity<Object> countUser() {
+        long count = productService.findAllProducts().size();
+        return ResponseEntity.ok().body(count);
+    }
     @GetMapping("/view")
     public ResponseEntity<Object> ViewProduct(@RequestParam(value = "category" , required = false) String category,
                                               @RequestParam(value = "subCategory",required = false) String subCategory,

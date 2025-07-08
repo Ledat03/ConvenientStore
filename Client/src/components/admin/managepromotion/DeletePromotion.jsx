@@ -1,18 +1,19 @@
 import { Modal, Button } from "react-bootstrap";
-import { deleteProduct } from "../../../services/GetAPI";
+import { deletePromotion } from "../../../services/GetAPI";
 import { toast } from "react-toastify";
 const DeletePromotion = (props) => {
   const handleDelete = async () => {
     try {
-      await deleteProduct(props.InfoItem.productId);
+      await deletePromotion(props.InfoItem.id);
       props.closeDelete();
-      props.handleProductsList();
+      props.handlePromotionList();
       toast.success("Xóa mã giảm giá thành công !");
     } catch (e) {
       toast.error("Không thể xóa do ", e);
       throw e;
     }
   };
+  console.log(props.InfoItem);
   return (
     <>
       <Modal size="x" show={props.isShowDelete} onHide={props.closeDelete}>

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Select from "react-select";
 import { fetchListProduct, addImport } from "../../../services/GetAPI";
-const AddImport = ({ isActive, close, handleReload }) => {
+const AddImport = ({ isActive, close, handleReload, getListImport }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [variants, setVariants] = useState([]);
@@ -49,7 +49,6 @@ const AddImport = ({ isActive, close, handleReload }) => {
       cost_price: 0,
     });
   };
-  console.log(selectedItems);
   const handleRemoveItem = (index) => {
     const list = [...selectedItems];
     list.splice(index, 1);
@@ -82,9 +81,9 @@ const AddImport = ({ isActive, close, handleReload }) => {
     };
 
     try {
-      const res = await addImport(payload);
+      await addImport(payload);
       setIsLoading(true);
-      console.log(">> Gửi server payload:", res);
+      getListImport();
       toast.success("Thêm đơn nhập hàng thành công!");
       close();
       handleReload && handleReload();

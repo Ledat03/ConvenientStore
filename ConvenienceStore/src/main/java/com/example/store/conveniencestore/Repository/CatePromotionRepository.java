@@ -13,4 +13,5 @@ public interface CatePromotionRepository extends JpaRepository<PromotionCategory
     PromotionCategory findById(long id);
     List<PromotionCategory> findAll(Specification<PromotionCategory> spec);
     PromotionCategory save(PromotionCategory promotionCategory);
+    void deleteAllByPromotion_CouponId(long id);
 }

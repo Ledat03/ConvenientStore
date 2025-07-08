@@ -54,4 +54,10 @@ public class OrderService {
     public List<Order> findAllByUserId(long id) {
         return orderRepository.findByUser_Id(id);
     }
+    public Order findbyOrderId(long orderId) {
+        return orderRepository.findById(orderId);
+    }
+    public void deleteOrder(Order order) {
+        orderRepository.deleteById(order.getId());
+    }
 }

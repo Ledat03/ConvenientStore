@@ -1,11 +1,12 @@
 import { toast } from "react-toastify";
 import { Modal, Button, Form, Col, Row, Spinner } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { handleCategories, handleListSubCate, fetchListProduct, addNewPromotion, viewBrand } from "../../../services/GetAPI";
+import { updatePromotion } from "../../../services/GetAPI";
 import "../css/promotion.scss";
 import Select from "react-select";
+import _ from "lodash";
+import LoadingAnimation from "../../common/LoadingAnimation";
 const UpdatePromotion = (props) => {
-  const [isShow, setShow] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     code: "",
@@ -22,10 +23,7 @@ const UpdatePromotion = (props) => {
     endDate: "",
     active: true,
   });
-  const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [brands, setBrands] = useState([]);
+
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -33,70 +31,57 @@ const UpdatePromotion = (props) => {
   const [validationErrors, setValidationErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
-    if (isShow) {
-      loadInitialData();
+    setIsLoading(true);
+    if (!_.isEmpty(props.InfoItem) && props.isShowUpdate) {
+      if (!_.isEmpty(props.InfoItem.promotionBrand)) {
+        setSelectedBrand(props.InfoItem.promotionBrand.map((brand) => brand.id));
+      }
+      if (!_.isEmpty(props.InfoItem.promotionCategories)) {
+        setSelectedCategories(props.InfoItem.promotionCategories.map((cate) => cate.categoryId));
+      }
+      if (!_.isEmpty(props.InfoItem.promotionProducts)) {
+        setSelectedProducts(
+          props.InfoItem.promotionProducts.map((prod) => {
+            return prod.productId;
+          })
+        );
+      }
+      setFormData({
+        id: props.InfoItem.id,
+        code: props.InfoItem.code,
+        name: props.InfoItem.name,
+        description: props.InfoItem.description,
+        type: props.InfoItem.type,
+        scope: props.InfoItem.scope,
+        discountValue: props.InfoItem.discountValue,
+        maxDiscount: props.InfoItem.maxDiscount,
+        minOrderValue: props.InfoItem.minOrderValue,
+        usageLimit: props.InfoItem.usageLimit,
+        userUsageLimit: props.InfoItem.userUsageLimit,
+        startDate: props.InfoItem.startDate,
+        endDate: props.InfoItem.endDate,
+        active: props.InfoItem.active,
+      });
     }
-  }, [isShow]);
-  const selectSubcategories = subCategories.map((item) => ({
+    setIsLoading(false);
+  }, [props.isShowUpdate, props.InfoItem]);
+  const selectSubcategories = props.subCategories.map((item) => ({
     value: item.id,
     label: item.subCategoryName,
   }));
-  const selectBrand = brands.map((item) => ({
+  const selectBrand = props.brands.map((item) => ({
     value: item.brandId,
     label: item.brandName,
   }));
-  const selectCategories = categories.map((item) => ({
+  const selectCategories = props.categories.map((item) => ({
     value: item.categoryId,
     label: item.categoryName,
   }));
-  const selectProducts = products.map((item) => ({
+  const selectProducts = props.products.map((item) => ({
     value: item.productId,
     label: item.productName,
   }));
-  const loadInitialData = async () => {
-    setIsLoading(true);
-    try {
-      await getListCategories();
-      await getListSubCategories();
-      await getListProducts();
-      await getListBrands();
-    } catch (error) {
-      toast.error("Lỗi khi tải dữ liệu");
-    }
-    setIsLoading(false);
-  };
-  const getListCategories = async () => {
-    try {
-      const response = await handleCategories();
-      setCategories(response.data.data);
-    } catch (error) {
-      console.error("Lỗi Khi Lấy Thông tin Phân Loại:", error);
-    }
-  };
-  const getListSubCategories = async () => {
-    try {
-      const response = await handleListSubCate();
-      setSubCategories(response.data.data);
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin subCategory:", error);
-    }
-  };
-  const getListProducts = async () => {
-    try {
-      const response = await fetchListProduct();
-      setProducts(response.data.data);
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin sản phẩm:", error);
-    }
-  };
-  const getListBrands = async () => {
-    try {
-      const response = await viewBrand();
-      setBrands(response.data.data);
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin sản phẩm:", error);
-    }
-  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -124,7 +109,6 @@ const UpdatePromotion = (props) => {
     if (formData.scope === "PRODUCT" && selectedProducts.length === 0) {
       errors.scope = "Vui lòng chọn ít nhất một sản phẩm";
     }
-    console.log(errors);
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -134,18 +118,16 @@ const UpdatePromotion = (props) => {
     try {
       const promotionData = {
         ...formData,
-        promotionCategories: [...selectedCategories.map((id) => ({ categoryId: id })), ...selectedSubCategories.map((id) => ({ subCategoryId: id }))],
-        promotionProducts: selectedProducts.map((id) => ({ productId: id })),
-        promotionBrand: selectedBrand.map((id) => ({ id: id })),
-        promotionSubCategory: selectedSubCategories.map((id) => ({ subCategoryId: id })),
+        promotionCategories: formData.scope === "CATEGORY" ? [...selectedCategories.map((id) => ({ categoryId: id })), ...selectedSubCategories.map((id) => ({ subCategoryId: id }))] : [],
+        promotionProducts: formData.scope === "PRODUCT" ? selectedProducts.map((id) => ({ productId: id })) : [],
+        promotionBrand: formData.scope === "BRAND" ? selectedBrand.map((id) => ({ id: id })) : [],
+        promotionSubCategory: formData.scope === "SUBCATEGORY" ? selectedSubCategories.map((id) => ({ subCategoryId: id })) : [],
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      console.log(promotionData);
-      await addNewPromotion(promotionData);
+      await updatePromotion(promotionData);
       toast.success("Thêm mã giảm giá thành công");
-      // handleClose();
-      // setShow(false);
+      handleClose();
       props.handlePromotionList();
     } catch (error) {
       toast.error("Thêm mã giảm giá thất bại");
@@ -175,10 +157,10 @@ const UpdatePromotion = (props) => {
     setSelectedProducts([]);
     setSelectedBrand([]);
     setValidationErrors({});
-    setShow(false);
+    props.closeUpdate();
   };
-
   const renderScopeSelection = () => {
+    if (formData.scope === "ALL") return null;
     if (formData.scope === "CATEGORY") {
       return (
         <Row className="mb-3">
@@ -207,8 +189,7 @@ const UpdatePromotion = (props) => {
               }
               value={selectSubcategories.filter((opt) => selectedSubCategories.includes(opt.value))}
             />
-            {console.log(selectedSubCategories)}
-            {console.log(selectSubcategories)}
+
             {validationErrors.scope && <Form.Text className="text-danger">{validationErrors.scope}</Form.Text>}
           </Col>
         </Row>
@@ -283,10 +264,16 @@ const UpdatePromotion = (props) => {
                     <option value="FREE_SHIPPING">Miễn phí vận chuyển</option>
                   </Form.Select>
                 </Form.Group>
-
+                {console.log(formData.scope)}
                 <Form.Group as={Col}>
                   <Form.Label>Phạm vi áp dụng</Form.Label>
-                  <Form.Select name="scope" value={formData.scope} onChange={handleInputChange}>
+                  <Form.Select
+                    name="scope"
+                    value={formData.scope}
+                    onChange={(e) => {
+                      return handleInputChange(e);
+                    }}
+                  >
                     <option value="ALL">Tất cả sản phẩm</option>
                     <option value="CATEGORY">Theo danh mục</option>
                     <option value="SUBCATEGORY">Theo nhánh sản phẩm</option>
@@ -373,7 +360,7 @@ const UpdatePromotion = (props) => {
             variant="secondary"
             onClick={() => {
               handleClose();
-              setShow(false);
+              props.closeUpdate();
             }}
             disabled={isSubmitting}
           >

@@ -92,6 +92,7 @@ const AddProduct = (props) => {
     try {
       await addNewProduct(formData);
       toast.success("Product Information Successful Added");
+      props.getListImport();
       close();
       props.handleProductsList();
       clearInput();

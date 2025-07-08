@@ -171,4 +171,9 @@ public class UserController {
 
         return ResponseEntity.ok().body(restRestponse);
     }
+    @GetMapping("/count_user")
+    public ResponseEntity<Object> countUser() {
+        long count = userService.findAll().size();
+        return ResponseEntity.ok().body(count);
+    }
 }

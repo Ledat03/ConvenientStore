@@ -13,4 +13,5 @@ public interface ImportRepository extends JpaRepository<InventoryImport, Long> {
     List<InventoryImport> findAll();
     InventoryImport findById(long id);
     InventoryImport save(InventoryImport inventoryImport);
+    void delete(InventoryImport inventoryImport);
 }

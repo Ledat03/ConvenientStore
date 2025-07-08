@@ -16,9 +16,9 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
     private Double total;
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order" , cascade = CascadeType.ALL)
     List<OrderItem> orderDetails;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_id")
     private Payment payment;
 

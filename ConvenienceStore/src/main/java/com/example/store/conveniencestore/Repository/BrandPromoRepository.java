@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BrandPromoRepository extends JpaRepository<PromotionBrand,Long> {
         PromotionBrand save(PromotionBrand promotionBrand);
+        void deleteAllByPromotion_CouponId(long id);
 }

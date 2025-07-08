@@ -6,6 +6,7 @@ import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import { FaPlus } from "react-icons/fa";
 import AddImport from "./manageimport/AddImport";
 import UpdateImport from "./manageimport/UpdateImport";
+import DeleteImport from "./manageimport/DeleteImport";
 const ManageImport = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [timeFilter, setTimeFilter] = useState("Last 30 days");
@@ -145,8 +146,9 @@ const ManageImport = () => {
         </table>
       </div>
       <>
-        <AddImport isActive={isActive} close={() => setActive({ ...isActive, addImport: false })} />
-        <UpdateImport isActive={isActive} close={() => setActive({ ...isActive, updateImport: false })} Import={selectedImport} />
+        <AddImport isActive={isActive} close={() => setActive({ ...isActive, addImport: false })} getListImport={getListImport} />
+        <UpdateImport isActive={isActive} close={() => setActive({ ...isActive, updateImport: false })} Import={selectedImport} getListImport={getListImport} />
+        <DeleteImport isActive={isActive} close={() => setActive({ ...isActive, deleteImport: false })} Import={selectedImport} getListImport={getListImport} />
       </>
     </div>
   );

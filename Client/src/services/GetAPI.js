@@ -69,15 +69,18 @@ const viewBrand = async () => await APIsCustomize.get("/brand/view", { headers: 
 const addNewPromotion = async (formData) => await APIsCustomize.post("/promotion/add", formData, { headers: { "Content-Type": "application/json" } });
 const fetchListPromotion = async () => await APIsCustomize.get("/promotion/view", { headers: { "Content-Type": "application/json" } });
 const fetchListPromotionByFilter = async (code) => await APIsCustomize.get("/promotion/filterpromo", { params: { code }, headers: { "Content-Type": "application/json" } });
-
+const updatePromotion = async (promotion) => await APIsCustomize.put("/promotion/update", promotion, { headers: { "Content-Type": "application/json" } });
+const deletePromotion = async (id) => await APIsCustomize.delete(`/promotion/delete?id=${id}`);
 //OrderController
 const fetchListOrder = async () => await APIsCustomize.get("/order/view");
 const fetchListOrderById = async (id) => await APIsCustomize.get(`/order/view/id`, { params: { id }, headers: { "Content-Type": "application/json" } });
 const updateDelivery = async (delivery) => await APIsCustomize.put("/order/update/delivery", delivery, { headers: { "Content-Type": "application/json" } });
 const updatePayment = async (payment) => await APIsCustomize.put("/order/update/payment", payment, { headers: { "Content-Type": "application/json" } });
+const deleteOrder = async (id) => await APIsCustomize.delete(`/order/delete?id=${id}`);
 //InventoryImport
 
 const addImport = async (inventImport) => await APIsCustomize.post("/import/add", inventImport, { headers: { "Content-Type": "application/json" } });
 const viewImport = async () => await APIsCustomize.get("/import/view");
 const updateImport = async (inventImport) => await APIsCustomize.put("/import/update", inventImport, { headers: { "Content-Type": "application/json" } });
-export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, fetchListPromotionByFilter, fetchListOrder, fetchListOrderById, updateDelivery, updatePayment, addImport, viewImport, updateImport };
+const deleteImport = async (id) => await APIsCustomize.delete(`/import/delete?id=${id}`, { headers: { "Content-Type": "application/json" } });
+export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, updatePromotion, fetchListPromotionByFilter, deletePromotion, fetchListOrder, fetchListOrderById, updateDelivery, updatePayment, addImport, viewImport, updateImport, deleteImport, deleteOrder };

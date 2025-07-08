@@ -52,19 +52,19 @@ public class PromotionController {
 
     public ProductPromotionDTO convertPPromotionToDTO(PromotionProduct promotionProduct) {
         ProductPromotionDTO promotionDTO = new ProductPromotionDTO();
-        promotionDTO.setProductId(promotionProduct.getId());
+        promotionDTO.setProductId(promotionProduct.getProduct().getProductId());
         promotionDTO.setProductName(promotionProduct.getProduct().getProductName());
         return promotionDTO;
     }
     public BrandPromotionDTO convertBrandPromotionToDTO(PromotionBrand promotionBrand) {
         BrandPromotionDTO promotionDTO = new BrandPromotionDTO();
-        promotionDTO.setId(promotionBrand.getId());
+        promotionDTO.setId(promotionBrand.getBrand().getBrandId());
         promotionDTO.setBrand(promotionBrand.getBrand().getBrandName());
         return promotionDTO;
     }
     public CategoryPromotionDTO convertCategoryPromotionToDTO(PromotionCategory promotionCategory) {
         CategoryPromotionDTO promotionDTO = new CategoryPromotionDTO();
-        promotionDTO.setCategoryId(promotionCategory.getId());
+        promotionDTO.setCategoryId(promotionCategory.getCategory().getCategory_id());
         promotionDTO.setCategoryName(promotionCategory.getCategory().getCategoryName());
         return promotionDTO;
     }
@@ -90,5 +90,25 @@ public class PromotionController {
         List<Promotion> promotions = promotionService.findAll();
         List<PromotionDTO> promotionDTOs = promotions.stream().map(this::convertPromotionToDTO).toList();
         return ResponseEntity.ok(promotionDTOs);
+    }
+    @PutMapping("/update")
+    public ResponseEntity<Object> updatePromotion(@RequestBody PromotionDTO promotionDTO) {
+        Promotion promotion = promotionService.findPromotionById(promotionDTO.getId());
+        if(promotionDTO.getScope() == DiscountScope.ALL) {
+            Promotion savePromotion = promotionService.savePromotion(promotionDTO);
+            return ResponseEntity.ok("Cập nhật thành công");
+        }else{
+            Promotion savePromotion = promotionService.updateVariantPromotion(promotionDTO);
+            return ResponseEntity.ok("Cập nhật phiếu khác thành công");
+        }
+    }
+    @DeleteMapping("/delete")
+    public ResponseEntity<Object> deletePromotion(@RequestParam("id") long id) {
+        Promotion promotion = promotionService.findPromotionById(id);
+        if(promotion != null) {
+            promotionService.deletePromotion(id);
+            return ResponseEntity.ok("Xóa mã giảm giá thành công !");
+        }
+        return ResponseEntity.notFound().build();
     }
 }
