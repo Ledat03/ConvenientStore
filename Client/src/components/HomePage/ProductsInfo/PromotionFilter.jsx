@@ -69,7 +69,14 @@ const PromotionFilter = (props) => {
             </button>
 
             <div className="promotion-scroll-container" ref={scrollContainerRef} onScroll={handleScroll}>
-              {PromotionList.map((promo) => (
+              {PromotionList.filter((promotion) => {
+                if (!promotion.active) return false;
+                if (!promotion.promotionUser || promotion.promotionUser.length === 0) {
+                  return true;
+                }
+                const isUserUsed = promotion.promotionUser.some((item) => item.userId === props.User?.id);
+                return !isUserUsed;
+              }).map((promo) => (
                 <div key={promo.id} className="promotion-card">
                   <div className="promotion-left">
                     {promo.type != "PERCENTAGE" ? (

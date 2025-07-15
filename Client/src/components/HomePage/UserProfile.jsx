@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 import "../../assets/scss/userprofile.scss";
-import { getUserProfile, updateInfo, handleChangePassword } from "../../services/UserSevice";
+import { getUserProfile, updateInfo, handleChangePassword, cancelOrder } from "../../services/UserSevice";
+import { re_Pay } from "../../services/AuthAPI";
 import { fetchListOrderById } from "../../services/GetAPI";
 import { useLocation } from "react-router-dom";
+import { Modal, Button } from "react-bootstrap";
 import _ from "lodash";
+import { toast } from "react-toastify";
+import Logo from "../../assets/Winmart.svg";
 const UserProfile = () => {
+  const [controlModal, setActive] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
   const [userInfo, setUserInfo] = useState({});
   const [Order, setOrder] = useState();
@@ -15,6 +20,9 @@ const UserProfile = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
   const updateProfile = async () => {
     try {
       await updateInfo(userInfo);
@@ -28,10 +36,7 @@ const UserProfile = () => {
     console.log(res);
     setOrder(res.data.data);
   };
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [showOrderDetails, setShowOrderDetails] = useState(false);
+
   const changePassword = async () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       return alert("Mật khẩu nhập lại không chính xác");
@@ -52,104 +57,6 @@ const UserProfile = () => {
   useEffect(() => {
     fetchUserInfo(user.id);
     getListOrder();
-    setOrders([
-      {
-        id: 1,
-        total: 250000,
-        orderDetails: [
-          {
-            id: 1,
-            quantity: 2,
-            totalPrice: 100000,
-            product: { name: "Coca Cola 330ml", image: "/placeholder.svg?height=60&width=60" },
-          },
-          {
-            id: 2,
-            quantity: 1,
-            totalPrice: 150000,
-            product: { name: "Bánh mì thịt nướng", image: "/placeholder.svg?height=60&width=60" },
-          },
-        ],
-        payment: {
-          paymentMethod: "CREDIT_CARD",
-          amount: 250000,
-          paymentStatus: "COMPLETED",
-          paymentDate: "2024-01-15",
-          transactionId: "TXN123456789",
-        },
-        delivery: {
-          delivery_status: "DELIVERED",
-          delivery_address: "123 Main Street, Ho Chi Minh City",
-          receiver_name: "John Doe",
-          receiver_phone: "+84 123 456 789",
-          tracking_number: "TN123456789",
-          delivered_at: "2024-01-18",
-          delivery_method: "Giao hàng tiêu chuẩn",
-        },
-      },
-      {
-        id: 2,
-        total: 180000,
-        orderDetails: [
-          {
-            id: 3,
-            quantity: 3,
-            totalPrice: 180000,
-            product: { name: "Nước suối Aquafina 500ml", image: "/placeholder.svg?height=60&width=60" },
-          },
-        ],
-        payment: {
-          paymentMethod: "CREDIT_CARD",
-          amount: 180000,
-          paymentStatus: "FAILED",
-          paymentDate: "2024-01-20",
-          transactionId: "TXN987654321",
-        },
-        delivery: {
-          delivery_status: "PENDING",
-          delivery_address: "456 Second Street, Ho Chi Minh City",
-          receiver_name: "John Doe",
-          receiver_phone: "+84 123 456 789",
-          tracking_number: "TN987654321",
-          delivered_at: null,
-          delivery_method: "Giao hàng nhanh",
-        },
-      },
-      {
-        id: 3,
-        total: 320000,
-        orderDetails: [
-          {
-            id: 4,
-            quantity: 1,
-            totalPrice: 120000,
-            product: { name: "Cơm gà Hải Nam", image: "/placeholder.svg?height=60&width=60" },
-          },
-          {
-            id: 5,
-            quantity: 2,
-            totalPrice: 200000,
-            product: { name: "Trà sữa trân châu", image: "/placeholder.svg?height=60&width=60" },
-          },
-        ],
-        payment: {
-          paymentMethod: "CASH_ON_DELIVERY",
-          amount: 320000,
-          paymentStatus: "PENDING",
-          paymentDate: "2024-01-22",
-          transactionId: null,
-        },
-        delivery: {
-          delivery_status: "SHIPPING",
-          delivery_address: "789 Third Avenue, Ho Chi Minh City",
-          receiver_name: "John Doe",
-          receiver_phone: "+84 123 456 789",
-          tracking_number: "TN456789123",
-          delivered_at: null,
-          delivery_method: "Giao hàng tiêu chuẩn",
-        },
-      },
-    ]);
   }, []);
   const fetchUserInfo = async () => {
     const res = await getUserProfile(user.id);
@@ -202,12 +109,13 @@ const UserProfile = () => {
     setSelectedOrder(order);
     setShowOrderDetails(true);
   };
-
-  const handleRetryPayment = (orderId) => {
+  console.log(controlModal);
+  const handleRetryPayment = async (orderId) => {
     setLoading(true);
-
+    const res = await re_Pay(orderId);
     setTimeout(() => {
       alert(`Đang chuyển hướng đến trang thanh toán cho đơn hàng #${orderId}`);
+      window.location.href = res.data;
       setLoading(false);
     }, 1000);
   };
@@ -241,15 +149,21 @@ const UserProfile = () => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("vi-VN");
   };
-
+  const confirmCancel = async (id) => {
+    const res = await cancelOrder(id);
+    toast.success("Hủy đơn hàng thành công !");
+    getListOrder();
+    setActive(false);
+  };
   return (
     <div className="user-profile-container">
       <div className="profile-sidebar">
         <div className="sidebar-header">
-          <h2>TÀI KHOẢN</h2>
+          <a href="/">
+            <img src={Logo} alt="" />
+          </a>
           <p>Xin chào, {userInfo.username}!</p>
         </div>
-
         <nav className="sidebar-nav">
           <button className={`nav-item ${activeTab === "personal" ? "active" : ""}`} onClick={() => setActiveTab("personal")}>
             <i className="icon-user"></i>
@@ -286,30 +200,30 @@ const UserProfile = () => {
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="username">Tên đăng nhập</label>
-                    <input type="text" id="username" name="username" value={userInfo.username} onChange={handlePersonalInfoChange} />
+                    <input type="text" id="username" name="username" value={userInfo.username || ""} onChange={handlePersonalInfoChange} />
                   </div>
                   <div className="form-group">
                     <label htmlFor="email">Email</label>
-                    <input type="email" id="email" name="email" value={userInfo.email} disabled />
+                    <input type="email" id="email" name="email" value={userInfo.email || ""} disabled />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="firstName">Họ</label>
-                    <input type="text" id="firstName" name="firstName" value={userInfo.firstName} onChange={handlePersonalInfoChange} required />
+                    <input type="text" id="firstName" name="firstName" value={userInfo.firstName || ""} onChange={handlePersonalInfoChange} required />
                   </div>
                   <div className="form-group">
                     <label htmlFor="lastName">Tên</label>
-                    <input type="text" id="lastName" name="lastName" value={userInfo.lastName} onChange={handlePersonalInfoChange} required />
+                    <input type="text" id="lastName" name="lastName" value={userInfo.lastName || ""} onChange={handlePersonalInfoChange} required />
                   </div>
                 </div>
                 <div className="form-group">
                   <label htmlFor="phone">Số điện thoại</label>
-                  <input type="tel" id="phone" name="phone" value={userInfo.phone} onChange={handlePersonalInfoChange} required />
+                  <input type="tel" id="phone" name="phone" value={userInfo.phone || ""} onChange={handlePersonalInfoChange} required />
                 </div>
                 <div className="form-group">
                   <label htmlFor="address">Địa chỉ</label>
-                  <textarea id="address" name="address" value={userInfo.address} onChange={handlePersonalInfoChange} rows="3" required />
+                  <textarea id="address" name="address" value={userInfo.address || ""} onChange={handlePersonalInfoChange} rows="3" required />
                 </div>
                 <button type="submit" className="submit-btn" disabled={loading} onClick={updateProfile}>
                   {loading ? "Đang cập nhật..." : "Cập nhật thông tin"}
@@ -339,11 +253,30 @@ const UserProfile = () => {
               </form>
             </div>
           )}
-
+          <>
+            {" "}
+            <Modal size="md" show={controlModal} onHide={() => setActive(false)}>
+              <Modal.Header closeButton>Hủy Đặt Hàng</Modal.Header>
+              <Modal.Body>
+                <span>Bạn có chắc chắn muốn hủy đơn hàng này không ?</span>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onClick={() => setActive(false)}>Hủy</Button>
+                <Button
+                  className="btn-danger"
+                  onClick={() => {
+                    confirmCancel(selectedOrder.orderId);
+                  }}
+                >
+                  Xác Nhận
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          </>
           {activeTab === "orders" && (
             <div className="tab-content">
               <div className="orders-list">
-                {orders.length === 0 ? (
+                {Order.length === 0 ? (
                   <div className="empty-orders">
                     <p>Bạn chưa có đơn hàng nào</p>
                   </div>
@@ -355,21 +288,39 @@ const UserProfile = () => {
                           <h3>Đơn hàng {order.orderId}</h3>
                           <p className="order-total">{formatCurrency(order.totalPrice)}</p>
                         </div>
+                        {order.delivery.deliveryStatus === "FAILED" && order.payment.paymentStatus === "SUCCESS" && (
+                          <div className="warning-notice">
+                            <span>
+                              Bạn hãy liên hệ với số điện thoại chăm sóc khách hàng hoặc chatbot <br /> để được hướng dẫn hoàn lại tiền đã thanh toán
+                            </span>
+                          </div>
+                        )}
                         <div className="order-actions">
                           <button className="detail-btn" onClick={() => handleViewOrderDetails(order)}>
                             Xem chi tiết
                           </button>
-                          {order.payment.paymentStatus === "FAILED" && order.payment.paymentMethod !== "CASH_ON_DELIVERY" && (
-                            <button className="retry-payment-btn" onClick={() => handleRetryPayment(order.id)} disabled={loading}>
+                          {order.payment.paymentStatus === "FAILED" && (
+                            <button className="retry-payment-btn" onClick={() => handleRetryPayment(order.orderId)} disabled={loading}>
                               Thanh toán lại
+                            </button>
+                          )}
+                          {order.delivery.deliveryStatus === "PENDING" && (
+                            <button
+                              className="retry-payment-btn"
+                              onClick={() => {
+                                setSelectedOrder(order);
+                                setActive(true);
+                              }}
+                              disabled={loading}
+                            >
+                              Hủy Đơn Hàng
                             </button>
                           )}
                         </div>
                       </div>
-
                       <div className="order-summary">
                         <div className="delivery-summary">
-                          <h4>🚚 Thông tin giao hàng</h4>
+                          <h4>Thông tin giao hàng</h4>
                           <div className="summary-item">
                             <span>Trạng thái:</span>
                             {getStatusBadge(order.delivery.deliveryStatus)}
@@ -389,7 +340,7 @@ const UserProfile = () => {
                         </div>
 
                         <div className="payment-summary">
-                          <h4>💳 Thông tin thanh toán</h4>
+                          <h4>Thông tin thanh toán</h4>
                           <div className="summary-item">
                             <span>Trạng thái:</span>
                             {getStatusBadge(order.payment.paymentStatus)}
@@ -416,7 +367,6 @@ const UserProfile = () => {
           )}
         </div>
       </div>
-
       {showOrderDetails && selectedOrder && (
         <div className="modal-overlay" onClick={closeOrderDetails}>
           <div className="modal-content-profile" onClick={(e) => e.stopPropagation()}>

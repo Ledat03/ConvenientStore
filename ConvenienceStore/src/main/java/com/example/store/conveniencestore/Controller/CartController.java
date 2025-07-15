@@ -4,9 +4,11 @@ import com.example.store.conveniencestore.DTO.*;
 import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.Service.ProductService;
 import com.example.store.conveniencestore.Service.UserService;
+import com.example.store.conveniencestore.Util.ErrorHandle.CartException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.smartcardio.CardException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,9 +66,18 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> addProductToCart(@RequestBody ReqCartDTO cartDTO) {
-        String confirm = userService.AddNewProductToCart(cartDTO.getUserId(), cartDTO.getProductId(),cartDTO.getVariantId(),cartDTO.getQuantity());
-        return ResponseEntity.ok().body(confirm);
+    public ResponseEntity<?> addProductToCart(@RequestBody ReqCartDTO cartDTO) {
+        try {
+            Object result = userService.AddNewProductToCart(
+                    cartDTO.getUserId(),
+                    cartDTO.getProductId(),
+                    cartDTO.getVariantId(),
+                    cartDTO.getQuantity()
+            );
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/view")

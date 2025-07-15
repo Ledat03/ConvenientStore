@@ -7,9 +7,8 @@ import { FaPlus } from "react-icons/fa";
 import AddImport from "./manageimport/AddImport";
 import UpdateImport from "./manageimport/UpdateImport";
 import DeleteImport from "./manageimport/DeleteImport";
+import Paginate from "../common/Paginate";
 const ManageImport = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [timeFilter, setTimeFilter] = useState("Last 30 days");
   const [ListImport, setListImport] = useState([]);
   const [isActive, setActive] = useState({
     addImport: false,
@@ -17,8 +16,28 @@ const ManageImport = () => {
     updateImport: false,
     deleteImport: false,
   });
-  console.log(ListImport);
+  const itemsPerPage = 1;
+  const totalItem = ListImport.length;
+  const [PaginatedItem, setPaginatedItem] = useState([]);
   const [selectedImport, setSelectedImport] = useState();
+  const [filters, setFilters] = useState({
+    time: "Default",
+    reduce: "Default",
+    status: "Default",
+    search: "",
+  });
+  const filledProduct = () => {
+    const now = new Date();
+    return ListImport.filter((item) => {
+      if (filters.time !== "Default") {
+        const importDate = new Date(item.importDate);
+        const diffInDays = (now - importDate) / (1000 * 60 * 60 * 24);
+        return diffInDays <= parseInt(filters.time);
+      }
+      return true;
+    }).filter((item) => item.importCode.toLowerCase().includes(filters.search));
+  };
+  const filterList = filledProduct();
   useEffect(() => {
     getListImport();
   }, []);
@@ -44,14 +63,13 @@ const ManageImport = () => {
         </div>
         <div className="header-actions">
           <button className="btn-secondary">Export</button>
-          <button className="btn-secondary">Import</button>
         </div>
       </div>
       <h1 className="page-title">Danh sách nhập hàng</h1>
       <div className="controls">
         <div className="controls-left">
           <div className="search-container">
-            <input type="text" placeholder="Tìm kiếm thông tin" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="search-input" />
+            <input type="text" placeholder="Tìm kiếm thông tin" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} className="search-input" />
             <span className="search-icon">🔍</span>
           </div>
           <Button onClick={() => setActive({ ...isActive, addImport: true })}>
@@ -59,10 +77,11 @@ const ManageImport = () => {
           </Button>
         </div>
         <div className="controls-right">
-          <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="time-filter">
-            <option>Last 30 days</option>
-            <option>Last 7 days</option>
-            <option>Last 90 days</option>
+          <select value={filters.time} onChange={(e) => setFilters({ ...filters, time: e.target.value })} className="time-filter">
+            <option value="Default">Khoảng thời gian</option>
+            <option value={30}>Last 30 days</option>
+            <option value={7}>Last 7 days</option>
+            <option value={90}>Last 90 days</option>
           </select>
         </div>
       </div>
@@ -81,7 +100,7 @@ const ManageImport = () => {
             </tr>
           </thead>
           <tbody>
-            {ListImport.map((item, index) => (
+            {PaginatedItem.map((item, index) => (
               <tr
                 key={index}
                 onClick={() => {
@@ -93,7 +112,7 @@ const ManageImport = () => {
                   <input type="checkbox" />
                 </td>
                 <td className="order-id">{item.importId}</td>
-                <td className="order-date">{item.importDate ? new Date(item.importDate).toISOString().slice(0, 16) : ""}</td>
+                <td className="order-date">{item.importDate ? new Date(item.importDate).toLocaleDateString("vi-VN") : ""}</td>
                 <td className="customer">
                   <div className="customer-info">
                     <span className="customer-name">{item.importCode}</span>
@@ -106,7 +125,7 @@ const ManageImport = () => {
                 </td>
                 <td className="customer">
                   <div className="customer-info">
-                    <span className="customer-name">{totalCost}</span>
+                    <span className="customer-name">{totalCost.toLocaleString("vi-VN")}VNĐ</span>
                   </div>
                 </td>
                 <td>
@@ -143,7 +162,10 @@ const ManageImport = () => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table>{" "}
+        <div className="pagination-container">
+          <Paginate itemsPerPage={itemsPerPage} totalItem={totalItem} item={filterList} setPaginatedItem={setPaginatedItem} sortBy={filters} />
+        </div>
       </div>
       <>
         <AddImport isActive={isActive} close={() => setActive({ ...isActive, addImport: false })} getListImport={getListImport} />

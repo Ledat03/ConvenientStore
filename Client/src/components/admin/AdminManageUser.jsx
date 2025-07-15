@@ -7,6 +7,8 @@ export const AdminManageUser = () => {
   const [Users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [Filter, setFilter] = useState({ role: "Default", search: "" });
+  const [Search, setSearch] = useState("");
   useEffect(() => {
     handleUsers();
   }, []);
@@ -35,13 +37,12 @@ export const AdminManageUser = () => {
           Trang chủ
         </a>
         <span className="breadcrumb-separator">/</span>
-        <span className="breadcrumb-current">Sản Phẩm</span>
+        <span className="breadcrumb-current">Quản lí người dùng</span>
       </nav>
 
       <div className="product-list-header">
-        <h1 className="page-title">Danh Sách Sản Phẩm</h1>
+        <h1 className="page-title">Danh Sách Người Dùng</h1>
         <div className="header-buttons">
-          <button className="secondary-button">Export</button>
           <button className="secondary-button">Import</button>
         </div>
       </div>
@@ -53,44 +54,22 @@ export const AdminManageUser = () => {
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input type="text" placeholder="Tìm Kiếm Sản Phẩm" className="search-input" />
-          </div>
-
-          <div className="date-container">
-            <input type="text" value="14 Feb, 24" readOnly className="date-input" />
-            <svg className="date-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
+            <input type="text" placeholder="Nhập Email người dùng" className="search-input" value={Filter.search} onChange={(e) => setFilter({ ...Filter, search: e.target.value })} />
           </div>
         </div>
 
         <div className="filters-right">
-          <select className="filter-select">
-            <option value="">Vendor</option>
-            <option value="fotobi">Fotobi Furniture</option>
-            <option value="mojar">Mojar Furniture</option>
-          </select>
-
-          <select className="filter-select">
-            <option value="">Tagged With</option>
-            <option value="furniture">Furniture</option>
-            <option value="chair">Chair</option>
-          </select>
-
-          <select className="filter-select">
-            <option value="">Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="draft">Draft</option>
+          <select className="filter-select" value={Filter.role} onChange={(e) => setFilter({ ...Filter, role: e.target.value })}>
+            <option value="Default">Quyền hạn</option>
+            <option value="admin">Quản trị viên</option>
+            <option value="employee">Nhân viên</option>
+            <option value="user">Người dùng</option>
           </select>
         </div>
       </div>
       <div className="manage-user-subcontainer"></div>
       <div className="table-user">
-        <UserTable handleUsers={handleUsers} Users={Users} />
+        <UserTable Filter={Filter} handleUsers={handleUsers} Users={Users} />
       </div>
     </div>
   );

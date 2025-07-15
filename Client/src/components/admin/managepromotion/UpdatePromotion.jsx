@@ -126,11 +126,11 @@ const UpdatePromotion = (props) => {
         updatedAt: new Date(),
       };
       await updatePromotion(promotionData);
-      toast.success("Thêm mã giảm giá thành công");
+      toast.success("Cập nhật mã giảm giá thành công");
       handleClose();
       props.handlePromotionList();
     } catch (error) {
-      toast.error("Thêm mã giảm giá thất bại");
+      toast.error("Cập nhật mã giảm giá thất bại");
     } finally {
       setIsSubmitting(false);
     }
@@ -373,7 +373,7 @@ const UpdatePromotion = (props) => {
                 Đang xử lý...
               </>
             ) : (
-              "Thêm mã giảm giá"
+              "Cập Nhật"
             )}
           </Button>
         </Modal.Footer>

@@ -111,7 +111,7 @@ const AddPromotion = (props) => {
       maxDiscount: 0,
       minOrderValue: 0,
       usageLimit: 0,
-      userUsageLimit: 0,
+      userUsageLimit: 1,
       startDate: "",
       endDate: "",
       active: true,
@@ -283,7 +283,7 @@ const AddPromotion = (props) => {
 
                 <Form.Group as={Col}>
                   <Form.Label>Giới hạn sử dụng/người</Form.Label>
-                  <Form.Control type="number" name="userUsageLimit" value={formData.userUsageLimit} onChange={handleInputChange} />
+                  <Form.Control type="number" name="userUsageLimit" value={1} onChange={handleInputChange} disabled />
                 </Form.Group>
               </Row>
 

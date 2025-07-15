@@ -1,9 +1,14 @@
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import "../../assets/scss/home.scss";
 import logo from "../../assets/order.png";
+import { useEffect } from "react";
 const Thankyou = () => {
   const [searchParams] = useSearchParams();
   const status = searchParams.get("status");
+  useEffect(() => {
+    if (status != "00") {
+    }
+  });
   return (
     <>
       <div className="Thank-Component">

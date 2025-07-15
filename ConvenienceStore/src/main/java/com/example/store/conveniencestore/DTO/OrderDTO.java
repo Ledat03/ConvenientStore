@@ -15,5 +15,6 @@ public class OrderDTO {
     private String deliveryMethod;
     private String paymentMethod;
     private String payTotal;
+    private long promotionId;
     private List<OrderItemDTO> items;
 }

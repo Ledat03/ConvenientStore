@@ -1,10 +1,11 @@
+@use "../scss/variables.scss" as var;
 .chat-toggle-btn {
   position: fixed !important;
   bottom: 20px;
   right: 20px;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var.$red-accent;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -90,7 +91,7 @@
 }
 
 .chat-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var.$red-accent;
   color: white;
   padding: 16px 20px;
   display: flex;
@@ -125,10 +126,10 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-.close-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+.close-btn-chatbot {
+  background-color: var.$red-accent;
   color: white;
+  border: none;
   padding: 4px;
   border-radius: 4px;
   cursor: pointer;
@@ -138,7 +139,7 @@
   transition: all 0.2s ease;
 }
 
-.close-btn:hover {
+.close-btn-chatbot:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 

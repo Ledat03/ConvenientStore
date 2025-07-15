@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -47,6 +48,10 @@ public class PromotionController {
             List<SubCategoryPromotionDTO> promotionDTOs = promotion.getPromotionSubCates().stream().map(this::convertSubCatePromotionToDTO).toList();
             promotionDTO.setPromotionSubCategory(promotionDTOs);
         }
+        if(promotion.getPromotionUsers() != null && !promotion.getPromotionUsers().isEmpty()) {
+        List<UserPromotionDTO> promotionDTOs = promotion.getPromotionUsers().stream().map(this::convertUserPromotionToDTO).toList();
+        promotionDTO.setPromotionUser(promotionDTOs);
+    }
         return promotionDTO;
     }
 
@@ -60,6 +65,12 @@ public class PromotionController {
         BrandPromotionDTO promotionDTO = new BrandPromotionDTO();
         promotionDTO.setId(promotionBrand.getBrand().getBrandId());
         promotionDTO.setBrand(promotionBrand.getBrand().getBrandName());
+        return promotionDTO;
+    }
+    public UserPromotionDTO convertUserPromotionToDTO(PromotionUser promotionUser) {
+        UserPromotionDTO promotionDTO = new UserPromotionDTO();
+        promotionDTO.setUserId(promotionUser.getUser().getId());
+        promotionDTO.setUserName(promotionUser.getUser().getUsername());
         return promotionDTO;
     }
     public CategoryPromotionDTO convertCategoryPromotionToDTO(PromotionCategory promotionCategory) {
@@ -87,6 +98,13 @@ public class PromotionController {
 
     @GetMapping("/view")
     public ResponseEntity<Object> viewPromotion() {
+        List<Promotion> checkOutDated = promotionService.findAll();
+        LocalDateTime now = LocalDateTime.now();
+        for(Promotion promotion : checkOutDated) {
+            if(promotion.getEndDate().isBefore(now)){
+                promotionService.changeState(promotion);
+            }
+        }
         List<Promotion> promotions = promotionService.findAll();
         List<PromotionDTO> promotionDTOs = promotions.stream().map(this::convertPromotionToDTO).toList();
         return ResponseEntity.ok(promotionDTOs);

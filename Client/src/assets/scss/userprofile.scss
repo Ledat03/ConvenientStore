@@ -21,6 +21,7 @@
 .sidebar-header {
   padding: 30px 25px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
 }
 
 .sidebar-header h2 {
@@ -218,7 +219,10 @@
   transition: all 0.3s ease;
   background: #fff;
 }
-
+.warning-notice {
+  color: red;
+  text-align: center;
+}
 .order-card:hover {
   border-color: #667eea;
   box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);

@@ -1,18 +1,17 @@
 import ReactPaginate from "react-paginate";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 function Paginate(props) {
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
   useEffect(() => {
-    if (props.product) {
+    if (props.item) {
       const endOffset = itemOffset + props.itemsPerPage;
-      props.setPaginatedProduct(props.product.slice(itemOffset, endOffset));
-      setPageCount(Math.ceil(props.totalProduct / props.itemsPerPage));
+      props.setPaginatedItem(props.item.slice(itemOffset, endOffset));
+      setPageCount(Math.ceil(props.totalItem / props.itemsPerPage));
     }
-  }, [itemOffset, props.itemsPerPage, props.filters, props.totalProduct]);
+  }, [itemOffset, props.itemsPerPage, props.filters, props.totalItem, props.sortBy]);
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * props.itemsPerPage) % props.product.length;
-    console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
+    const newOffset = (event.selected * props.itemsPerPage) % props.item.length;
     setItemOffset(newOffset);
   };
   return (

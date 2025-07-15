@@ -2,11 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import "../../assets/scss/home.scss";
 import { fetchListPromotion } from "../../services/GetAPI";
 import { Link } from "react-router-dom";
-const Promotion = () => {
+const Promotion = ({ User }) => {
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [PromotionList, setPromotions] = useState([]);
+
   useEffect(() => {
     handleListPromotion();
   }, []);
@@ -53,7 +54,14 @@ const Promotion = () => {
             </button>
 
             <div className="promotion-scroll-container" ref={scrollContainerRef} onScroll={handleScroll}>
-              {PromotionList.map((promo) => (
+              {PromotionList.filter((promotion) => {
+                if (!promotion.active) return false;
+                if (!promotion.promotionUser || promotion.promotionUser.length === 0) {
+                  return true;
+                }
+                const isUserUsed = promotion.promotionUser.some((item) => item.userId === User?.id);
+                return !isUserUsed;
+              }).map((promo) => (
                 <div key={promo.id} className="promotion-card">
                   <div className="promotion-left">
                     {promo.type != "PERCENTAGE" ? (

@@ -25,15 +25,21 @@ const ProductInfo = () => {
   const [Product, setProduct] = useState([]);
   const [Loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState("recommended");
+  const [User, setUser] = useState();
+  const getUser = () => {
+    if (localStorage.getItem("user")) {
+      setUser(JSON.parse(localStorage.getItem("user")));
+    }
+  };
   const handleFilterChange = (filterType, value) => {
     setFilters((prev) => ({
       ...prev,
       [filterType]: value,
     }));
   };
-  const onSortChange = (product, param) => {
+  const onSortChange = (product, sortBy) => {
     const sortProduct = [...product];
-    switch (param) {
+    switch (sortBy) {
       case "recommended":
         return sortProduct;
       case "price-low": {
@@ -55,6 +61,7 @@ const ProductInfo = () => {
   useEffect(() => {
     setLoading(true);
     handleProductList();
+    getUser();
   }, [category, subCate, Search]);
   const handleProductList = async () => {
     try {
@@ -93,8 +100,8 @@ const ProductInfo = () => {
     <div className="products-app">
       {flatVariant ? (
         <div className="products-container">
-          <SearchHeader product={flatVariant} category={category} subCate={subCate} sortBy={sortBy} onSortChange={setSortBy} />
-          <PromotionFilter category={category} flatVariant={flatVariant} filterBrand={filterBrand} promotion />
+          <SearchHeader product={flatVariant} category={category} subCate={subCate} sortBy={sortBy} setSortBy={setSortBy} />
+          <PromotionFilter category={category} flatVariant={flatVariant} filterBrand={filterBrand} promotion User={User} />
           <div className="products-main-content">
             <FilterProducts products={flatVariant} filters={filters} onFilterChange={handleFilterChange} filterBrand={filterBrand} filterStock={filterStock} filterSubCategory={filterSubCategory} filterUnit={filterUnit} subCate={subCate} />
             <div className="product-table">

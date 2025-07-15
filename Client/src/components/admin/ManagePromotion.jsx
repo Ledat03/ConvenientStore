@@ -37,7 +37,7 @@ const ManagePromotion = () => {
       const response = await handleCategories();
       setCategories(response.data.data);
     } catch (error) {
-      console.error("Lỗi Khi Lấy Thông tin Phân Loại:", error);
+      console.error("Lỗi Khi Lấy Thông tin danh mục:", error);
     }
   };
   const getListSubCategories = async () => {
@@ -45,7 +45,7 @@ const ManagePromotion = () => {
       const response = await handleListSubCate();
       setSubCategories(response.data.data);
     } catch (error) {
-      console.error("Lỗi khi lấy thông tin subCategory:", error);
+      console.error("Lỗi khi lấy thông tin danh mục nhánh:", error);
     }
   };
   const getListProducts = async () => {
@@ -61,7 +61,7 @@ const ManagePromotion = () => {
       const response = await viewBrand();
       setBrands(response.data.data);
     } catch (error) {
-      console.error("Lỗi khi lấy thông tin sản phẩm:", error);
+      console.error("Lỗi khi lấy thông tin hãng sản phẩm:", error);
     }
   };
   if (loading) {

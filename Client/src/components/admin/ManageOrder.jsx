@@ -7,9 +7,8 @@ import OrderDetail from "./manageorder/OrderDetail";
 import UpdatePayment from "./manageorder/UpdatePayment";
 import UpdateDelivery from "./manageorder/UpdateDelivery";
 import DeleteOrder from "./manageorder/DeleteOrder";
+import Paginate from "../common/Paginate";
 const ManageOrder = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [timeFilter, setTimeFilter] = useState("Last 30 days");
   const [ListOrder, setListOrder] = useState([]);
   const [isActive, setActive] = useState({
     Detail: false,
@@ -17,13 +16,18 @@ const ManageOrder = () => {
     UpdatePayment: false,
     Delete: false,
   });
+  const itemsPerPage = 3;
+  const totalItem = ListOrder.length;
+  const [PaginatedItem, setPaginatedItem] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState();
   useEffect(() => {
     getListOrder();
   }, []);
+
   const getListOrder = async () => {
     const res = await fetchListOrder();
     setListOrder(res.data.data);
+    console.log("Updated");
   };
   const setStatus = (status) => {
     switch (status) {
@@ -37,6 +41,8 @@ const ManageOrder = () => {
         return "Đã hủy";
       case "RETURNED":
         return "Đã hoàn tiền";
+      case "CANCELLED":
+        return "Đã hoàn hàng";
     }
   };
   const getStatusClass = (status, type) => {
@@ -59,7 +65,27 @@ const ManageOrder = () => {
     };
     return statusMap[type][status] || "";
   };
-
+  const [filters, setFilters] = useState({
+    time: "Default",
+    payment_Status: "Default",
+    delivery_Status: "Default",
+    search: "",
+  });
+  const filledProduct = () => {
+    const now = new Date();
+    return ListOrder.filter((item) => {
+      if (filters.time !== "Default") {
+        const importDate = new Date(item.delivery.deliveryDate);
+        const diffInDays = (now - importDate) / (1000 * 60 * 60 * 24);
+        return diffInDays <= parseInt(filters.time);
+      }
+      return true;
+    })
+      .filter((item) => (filters.payment_Status !== "Default" ? item.payment.paymentStatus === filters.payment_Status : item))
+      .filter((item) => (filters.delivery_Status !== "Default" ? item.delivery.deliveryStatus === filters.delivery_Status : item))
+      .filter((item) => item.delivery.receiverName.toLowerCase().includes(filters.search));
+  };
+  const filterList = filledProduct();
   return (
     <div className="manage-order">
       <div className="header">
@@ -70,22 +96,38 @@ const ManageOrder = () => {
         </div>
         <div className="header-actions">
           <button className="btn-secondary">Export</button>
-          <button className="btn-secondary">Import</button>
         </div>
       </div>
       <h1 className="page-title">Quản lí đơn hàng</h1>
       <div className="controls">
         <div className="controls-left">
           <div className="search-container">
-            <input type="text" placeholder="Search order" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="search-input" />
+            <input type="text" placeholder="Search order" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} className="search-input" />
             <span className="search-icon">🔍</span>
           </div>
         </div>
         <div className="controls-right">
-          <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="time-filter">
-            <option>Last 30 days</option>
-            <option>Last 7 days</option>
-            <option>Last 90 days</option>
+          <select value={filters.time} onChange={(e) => setFilters({ ...filters, time: e.target.value })} className="time-filter">
+            <option value="Default">Theo thời gian</option>
+            <option value={30}>Last 30 days</option>
+            <option value={7}>Last 7 days</option>
+            <option value={90}>Last 90 days</option>
+          </select>
+          <select value={filters.delivery_Status} onChange={(e) => setFilters({ ...filters, delivery_Status: e.target.value })} className="time-filter">
+            <option value="Default">Trang thái giao hàng</option>
+            <option value="PENDING">Đang chờ giao hàng</option>
+            <option value="SHIPPED">Đang giao hàng</option>
+            <option value="DELIVERED">Đã giao hàng</option>
+            <option value="RETURNED">Hoàn hàng</option>
+            <option value="FAILED">Lỗi giao hàng</option>
+            <option value="CANCELLED">Hàng đã được hoàn lại</option>
+          </select>
+          <select value={filters.payment_Status} onChange={(e) => setFilters({ ...filters, payment_Status: e.target.value })} className="time-filter">
+            <option value="Default">Trang thái thanh toán</option>
+            <option value="PENDING">Đang chờ thanh toán</option>
+            <option value="SUCCESS">Thanh Toán Thành Công</option>
+            <option value="RETURNED">Hoàn Tiền</option>
+            <option value="FAILED">Lỗi Giao Dịch</option>
           </select>
         </div>
       </div>
@@ -97,7 +139,7 @@ const ManageOrder = () => {
                 <input type="checkbox" />
               </th>
               <th>Đơn hàng</th>
-              <th>Ngày đặt hàng</th>
+              <th>Ngày giao hàng hàng</th>
               <th>Tên người dùng</th>
               <th>Trạng thái thanh toán</th>
               <th>Trạng thái giao hàng</th>
@@ -106,7 +148,7 @@ const ManageOrder = () => {
             </tr>
           </thead>
           <tbody>
-            {ListOrder.map((order, index) => (
+            {PaginatedItem.map((order, index) => (
               <tr
                 key={index}
                 onClick={() => {
@@ -118,7 +160,7 @@ const ManageOrder = () => {
                   <input type="checkbox" />
                 </td>
                 <td className="order-id">{order.orderId}</td>
-                <td className="order-date">{order.delivery.deliveryDate ? new Date(order.delivery.deliveryDate).toISOString().slice(0, 16) : ""}</td>
+                <td className="order-date">{order.delivery.deliveryDate ? new Date(order.delivery.deliveryDate).toLocaleDateString("vi-VN") : "Chưa giao hàng"}</td>
                 <td className="customer">
                   <div className="customer-info">
                     <span className="customer-name">{order.user.username}</span>
@@ -184,6 +226,9 @@ const ManageOrder = () => {
             ))}
           </tbody>
         </table>
+        <div className="pagination-container">
+          <Paginate itemsPerPage={itemsPerPage} totalItem={totalItem} item={filterList} setPaginatedItem={setPaginatedItem} sortBy={filters} />
+        </div>
       </div>
       <>
         <OrderDetail
@@ -199,6 +244,7 @@ const ManageOrder = () => {
           }}
           isActive={isActive}
           Order={selectedOrder}
+          getListOrder={getListOrder}
         />
         <UpdatePayment
           close={() => {
@@ -206,6 +252,7 @@ const ManageOrder = () => {
           }}
           isActive={isActive}
           Order={selectedOrder}
+          getListOrder={getListOrder}
         />
         <DeleteOrder
           Order={selectedOrder}

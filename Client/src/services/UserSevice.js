@@ -7,4 +7,5 @@ const ViewCart = async (userId) => await APIsCustomize.get("cart/view", { params
 const DeleteCartDetail = async (cartDetailId) => APIsCustomize.delete("cart/delete", { params: { cartDetailId }, headers: { "Content-Type": "application/json" } });
 const getMainPage = async () => APIsCustomize.get("/", { headers: { "Content-Type": "application/json" } });
 const addCheckout = async (order) => APIsCustomize.post("/order/add", order, { headers: { "Content-Type": "application/json" } });
-export { AddToCart, ViewCart, DeleteCartDetail, getMainPage, addCheckout, getUserProfile, updateInfo, handleChangePassword };
+const cancelOrder = async (id) => await APIsCustomize.post(`order/cancel?id=${id}`);
+export { AddToCart, ViewCart, DeleteCartDetail, getMainPage, addCheckout, getUserProfile, updateInfo, handleChangePassword, cancelOrder };

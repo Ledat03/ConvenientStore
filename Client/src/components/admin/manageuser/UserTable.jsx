@@ -1,11 +1,15 @@
-import { Table, Dropdown } from "react-bootstrap";
-import React from "react";
+import { Table, Dropdown, ButtonGroup } from "react-bootstrap";
 import UpdateUser from "./UpdateUser";
 import ViewUser from "./ViewUser";
 import DeleteUser from "./DeleteUser";
 import { useState } from "react";
 import { FaEllipsisV } from "react-icons/fa";
+import Paginate from "../../common/Paginate";
+import LoadingAnimation from "../../common/LoadingAnimation";
 export const UserTable = (props) => {
+  const itemsPerPage = 4;
+  const [Loading, setLoading] = useState(false);
+  const [UserPaginated, setUserPaginated] = useState();
   const [CRUDState, setCRUDState] = useState({
     UpdateModal: false,
     ViewModal: false,
@@ -21,25 +25,23 @@ export const UserTable = (props) => {
   const handleUser = (user) => {
     setInfoUser(user);
   };
-  const CustomToggle = React.forwardRef(({ children, onClick }, ref) => {
-    return (
-      <span
-        ref={ref}
-        onClick={(e) => {
-          e.preventDefault();
-          onClick(e);
-        }}
-        style={{
-          cursor: "pointer",
-          color: "#000",
-          display: "inline-block",
-          padding: "5px",
-        }}
-      >
-        {children}
-      </span>
-    );
-  });
+  const usersLength = props.Users.length;
+  const FilledUsers = () => {
+    switch (props.Filter.role) {
+      case "Default":
+        return props.Filter.search == "" ? props.Users : props.Users.filter((item) => item.email.toLowerCase().includes(props.Filter.search.toLowerCase()));
+      case "admin":
+        return props.Users.filter((item) => item.role === "admin").filter((item) => item.email.toLowerCase().includes(props.Filter.search.toLowerCase()));
+      case "employee":
+        return props.Users.filter((item) => item.role === "employee").filter((item) => item.email.toLowerCase().includes(props.Filter.search.toLowerCase()));
+      case "user":
+        return props.Users.filter((item) => item.role === "user").filter((item) => item.email.toLowerCase().includes(props.Filter.search.toLowerCase()));
+    }
+  };
+  const ItemsPaginated = FilledUsers();
+  if (Loading) {
+    return <LoadingAnimation />;
+  }
   return (
     <>
       <Table hover>
@@ -52,17 +54,18 @@ export const UserTable = (props) => {
           </tr>
         </thead>
         <tbody>
-          {props.Users?.length > 0 ? (
-            props.Users.map((item, index) => {
+          {UserPaginated?.length > 0 ? (
+            UserPaginated?.map((item) => {
               return (
                 <tr key={item.id}>
-                  <td>{item.id}</td>
-                  <td>
-                    {" "}
-                    <span className="user-name">{item.username} </span>{" "}
+                  <td className="user-info-td">
+                    <span>{item.id}</span>
                   </td>
-                  <td>{item.email}</td>
-                  <td>
+                  <td className="user-info-td">
+                    <span className="user-name">{item.username} </span>
+                  </td>
+                  <td className="user-info-td">{item.email}</td>
+                  <td className="user-info-td">
                     <span className={item.role == "admin" ? "role-custom_red" : "role-custom_green"}>
                       {item.role == "admin" && "Quản trị viên"}
                       {item.role == "employee" && "Nhân viên"}
@@ -71,8 +74,8 @@ export const UserTable = (props) => {
                   </td>
                   <td className="crud-group-btn">
                     <Dropdown>
-                      <Dropdown.Toggle as={CustomToggle}>
-                        <FaEllipsisV size={20} />
+                      <Dropdown.Toggle as={ButtonGroup}>
+                        <FaEllipsisV />
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
                         <Dropdown.Item
@@ -113,6 +116,9 @@ export const UserTable = (props) => {
         </tbody>
       </Table>
 
+      <div className="pagination-container">
+        <Paginate itemsPerPage={itemsPerPage} totalItem={usersLength} item={ItemsPaginated} setPaginatedItem={setUserPaginated} sortBy={props.Filter} />
+      </div>
       <>
         <UpdateUser handleUsers={props.handleUsers} isShowUpdate={CRUDState.UpdateModal} closeUpdate={() => closeModal("UpdateModal")} openUpdate={() => openModal("UpdateModal")} InfoUser={InfoUser} />
         <ViewUser isShowView={CRUDState.ViewModal} closeView={() => closeModal("ViewModal")} openView={() => openModal("ViewModal")} InfoUser={InfoUser} />

@@ -5,7 +5,6 @@ import "../../assets/scss/checkout.scss";
 import { fetchListPromotion } from "../../services/GetAPI";
 import Logo from "../../assets/v-vnpay.svg";
 import { addCheckout } from "../../services/UserSevice";
-import { toast } from "react-toastify";
 export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -19,6 +18,7 @@ export default function Checkout() {
   const [Category, setCategory] = useState([]);
   const [ProductName, setProductName] = useState([]);
   const [selectedPromotion, setSelected] = useState(null);
+  const [Loading, setLoading] = useState(false);
   // const [Validate, setValidate] = useState();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -43,6 +43,7 @@ export default function Checkout() {
       deliveryMethod: formData.deliveryMethod,
       paymentMethod: formData.paymentMethod,
       payTotal: salePrices,
+      promotionId: selectedPromotion !== null ? selectedPromotion.id : 0,
       items: checkoutInfo.map((item) => ({
         productId: item.product.productId,
         variantId: item.productVariant.id,
@@ -62,12 +63,14 @@ export default function Checkout() {
     //   return;
     // }
     try {
+      setLoading(true);
       const res = await addCheckout(order);
       if (formData.paymentMethod === "COD") {
         navigate("/ordercheck");
       } else {
         window.location.href = res.data;
       }
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -79,6 +82,7 @@ export default function Checkout() {
     setProductName([...new Set(checkoutInfo.map((cartdetail) => cartdetail.product.productName))]);
     setPromotion(res.data.data);
   };
+
   const filterPromotion = Promotion.filter((promo) => {
     switch (promo.scope) {
       case "ALL":
@@ -92,6 +96,7 @@ export default function Checkout() {
         return promo.promotionProducts && promo.promotionProducts.some((cate) => ProductName.includes(cate.productName));
     }
   });
+  console.log(filterPromotion);
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -205,8 +210,8 @@ export default function Checkout() {
                 <span>VNPAY</span>
               </label>
             </div>
-            <button className="pay-button" onClick={saveCheckout}>
-              Xác Nhận
+            <button className="pay-button" onClick={saveCheckout} disabled={Loading}>
+              {Loading ? "Đang thực hiện..." : "Xác Nhận"}
             </button>
           </section>
         </div>
@@ -239,72 +244,83 @@ export default function Checkout() {
         <Modal show={isShow} onHide={close}>
           <Modal.Header>Mã Khả Dụng Với Sản Phẩm Của Bạn</Modal.Header>
           <Modal.Body>
-            {filterPromotion.map((promo) => {
-              const handleTotalPrice = () => {
-                const calSum = (item) => (item.productVariant.salePrice === 0 ? item.productVariant.price : item.productVariant.salePrice);
-                switch (promo.scope) {
-                  case "BRAND":
-                    return checkoutInfo.filter((item) => promo.promotionBrand?.some((brand) => brand.brand === item.product.brand)).reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
-                  case "CATEGORY":
-                    return checkoutInfo.filter((item) => promo.promotionCategories.some((itm) => itm.categoryName === item.product.category)).reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
-                  case "PRODUCT":
-                    return checkoutInfo.filter((item) => promo.promotionProducts.some((itm) => itm.productName === item.product.productName)).reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
+            {filterPromotion
+              .filter((promotion) => {
+                if (!promotion.active) return false;
+                if (!promotion.promotionUser || promotion.promotionUser.length === 0) {
+                  return true;
                 }
-              };
-              const totalCart = handleTotalPrice();
-              if (totalCart >= promo.minOrderValue) {
-                return (
-                  <div
-                    key={promo.id}
-                    className="promotion-checkout"
-                    onClick={(e) => {
-                      if (promo.type == "PERCENTAGE") {
-                        const checkReduce = totalCart * (promo.discountValue / 100);
-                        console.log(checkReduce);
-                        if (checkReduce > promo.maxDiscount) {
+                const isUserUsed = promotion.promotionUser.some((item) => item.userId === user?.id);
+                return !isUserUsed;
+              })
+              .map((promo) => {
+                const handleTotalPrice = () => {
+                  const calSum = (item) => (item.productVariant.salePrice === 0 ? item.productVariant.price : item.productVariant.salePrice);
+                  switch (promo.scope) {
+                    case "ALL":
+                      return checkoutInfo.reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
+                    case "BRAND":
+                      return checkoutInfo.filter((item) => promo.promotionBrand?.some((brand) => brand.brand === item.product.brand)).reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
+                    case "CATEGORY":
+                      return checkoutInfo.filter((item) => promo.promotionCategories.some((itm) => itm.categoryName === item.product.category)).reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
+                    case "PRODUCT":
+                      return checkoutInfo.filter((item) => promo.promotionProducts.some((itm) => itm.productName === item.product.productName)).reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
+                  }
+                };
+                const totalCart = handleTotalPrice();
+                if (totalCart >= promo.minOrderValue) {
+                  return (
+                    <div
+                      key={promo.id}
+                      className="promotion-checkout"
+                      onClick={(e) => {
+                        if (promo.type == "PERCENTAGE") {
+                          const checkReduce = totalCart * (promo.discountValue / 100);
+                          console.log(checkReduce);
+                          if (checkReduce > promo.maxDiscount) {
+                            setReduce(promo.maxDiscount);
+                          } else {
+                            setReduce(checkReduce);
+                          }
+                        } else if (promo.type == "FIXED_AMOUNT") {
                           setReduce(promo.maxDiscount);
-                        } else {
-                          setReduce(checkReduce);
                         }
-                      } else if (promo.type == "FIXED_AMOUNT") {
-                        setReduce(promo.maxDiscount);
-                      }
-                      fillCode(promo.code);
-                      setSelected(promo);
-                      close();
-                    }}
-                  >
-                    <div className="promotion-left">
-                      {promo.type != "PERCENTAGE" ? (
-                        <span>
-                          Giảm
-                          <p>{promo.maxDiscount.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</p>
-                        </span>
-                      ) : (
-                        <div className="promotion-left__text">
-                          <p>Giảm {promo.discountValue} %</p> <span>Tối đa {promo.maxDiscount.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="promotion-right">
-                      <div className="promotion-header">
-                        <div className="expiry-badge">HSD: {new Date(promo.endDate).toLocaleDateString("vi-Vn")}</div>
+                        fillCode(promo.code);
+                        setSelected(promo);
+                        close();
+                      }}
+                    >
+                      <div className="promotion-left">
+                        {promo.type != "PERCENTAGE" ? (
+                          <span>
+                            Giảm
+                            <p>{promo.maxDiscount.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</p>
+                          </span>
+                        ) : (
+                          <div className="promotion-left__text">
+                            <p>Giảm {promo.discountValue} %</p> <span>Tối đa {promo.maxDiscount.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                          </div>
+                        )}
                       </div>
+                      <div className="promotion-right">
+                        <div className="promotion-header">
+                          <div className="expiry-badge">HSD: {new Date(promo.endDate).toLocaleDateString("vi-Vn")}</div>
+                        </div>
 
-                      <h3 className="promotion-title">{promo.name}</h3>
-                      <p className="promotion-description">{promo.description}</p>
+                        <h3 className="promotion-title">{promo.name}</h3>
+                        <p className="promotion-description">{promo.description}</p>
 
-                      <div className="promotion-footer">
-                        <div className="promo-info">
-                          <span>Cho đơn tối thiểu {promo.minOrderValue.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
-                          <span className="promo-code">{promo.code}</span>
+                        <div className="promotion-footer">
+                          <div className="promo-info">
+                            <span>Cho đơn tối thiểu {promo.minOrderValue.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                            <span className="promo-code">{promo.code}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              }
-            })}
+                  );
+                }
+              })}
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={close} className="promotion-close-btn">

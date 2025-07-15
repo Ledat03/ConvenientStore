@@ -16,6 +16,7 @@ const UpdateDelivery = (props) => {
     deliveryAddress: "",
   });
   useEffect(() => {
+    console.log("useEffect");
     if (!_.isEmpty(props.Order)) {
       setDelivery({
         deliveryId: props.Order.delivery.deliveryId,
@@ -30,10 +31,13 @@ const UpdateDelivery = (props) => {
         deliveryAddress: props.Order.delivery.deliveryAddress,
       });
     }
-  }, [props.Order]);
+  }, [props.Order, props.isActive.UpdateDelivery]);
+  console.log(Delivery);
   const putDelivery = async () => {
     const res = await updateDelivery(Delivery);
     console.log(res);
+    props.getListOrder();
+    props.close();
   };
   return (
     <>
@@ -45,7 +49,7 @@ const UpdateDelivery = (props) => {
               <Form.Group as={Col}>
                 <Form.Label>Tên Người Nhận</Form.Label>
                 <Form.Control
-                  defaultValue={props.Order?.delivery.receiverName}
+                  value={Delivery.receiverName}
                   onChange={(e) => {
                     setDelivery({ ...Delivery, receiverName: e.target.value });
                   }}
@@ -54,7 +58,7 @@ const UpdateDelivery = (props) => {
               <Form.Group as={Col}>
                 <Form.Label>Số Điện Thoại</Form.Label>
                 <Form.Control
-                  defaultValue={props.Order?.delivery.receiverPhone}
+                  value={Delivery.receiverPhone}
                   onChange={(e) => {
                     setDelivery({ ...Delivery, receiverPhone: e.target.value });
                   }}
@@ -65,17 +69,18 @@ const UpdateDelivery = (props) => {
               <Form.Group as={Col}>
                 <Form.Label>Thời Gian Giao Hàng</Form.Label>
                 <Form.Control
-                  defaultValue={props.Order?.delivery.deliveryDate ? new Date(props.Order.delivery.deliveryDate).toISOString().slice(0, 16) : ""}
+                  value={Delivery.deliveryDate ? Delivery.deliveryDate : ""}
                   onChange={(e) => {
                     setDelivery({ ...Delivery, deliveryDate: e.target.value });
                   }}
                   type="datetime-local"
                 />
+                {console.log(Delivery.deliveryDate)}
               </Form.Group>
               <Form.Group as={Col}>
                 <Form.Label>Thời Gian Nhận Hàng</Form.Label>
                 <Form.Control
-                  defaultValue={props.Order?.delivery.deliveredTime ? new Date(props.Order.delivery.deliveredTime).toISOString().slice(0, 16) : ""}
+                  value={Delivery.deliveredTime ? new Date(props.Order.delivery.deliveredTime).toISOString().slice(0, 16) : ""}
                   onChange={(e) => {
                     setDelivery({ ...Delivery, deliveredTime: e.target.value });
                   }}
@@ -87,7 +92,7 @@ const UpdateDelivery = (props) => {
               <Form.Group as={Col}>
                 <Form.Label>Mã Theo Dõi</Form.Label>
                 <Form.Control
-                  defaultValue={props.Order?.delivery.trackingNumber}
+                  value={Delivery.trackingNumber}
                   onChange={(e) => {
                     setDelivery({ ...Delivery, trackingNumber: e.target.value });
                   }}
@@ -96,7 +101,7 @@ const UpdateDelivery = (props) => {
               <Form.Group as={Col}>
                 <Form.Label>Phí Giao Hàng</Form.Label>
                 <Form.Control
-                  defaultValue={props.Order?.delivery.deliveryFee}
+                  value={Delivery.deliveryFee}
                   onChange={(e) => {
                     setDelivery({ ...Delivery, deliveryFee: e.target.value });
                   }}
@@ -107,7 +112,7 @@ const UpdateDelivery = (props) => {
               <Form.Group as={Col}>
                 <Form.Label>Trạng Thái Đơn Hàng</Form.Label>
                 <Form.Select
-                  defaultValue={props.Order?.delivery.deliveryStatus}
+                  value={Delivery.deliveryStatus}
                   onChange={(e) => {
                     setDelivery({ ...Delivery, deliveryStatus: e.target.value });
                   }}
@@ -117,12 +122,13 @@ const UpdateDelivery = (props) => {
                   <option value="DELIVERED">Đã giao hàng</option>
                   <option value="RETURNED">Hoàn hàng</option>
                   <option value="FAILED">Lỗi giao hàng</option>
+                  <option value="CANCELLED">Hàng đã được hoàn lại</option>
                 </Form.Select>
               </Form.Group>
               <Form.Group as={Col}>
                 <Form.Label>Phương Thức Giao Hàng</Form.Label>
                 <Form.Select
-                  defaultValue={props.Order?.delivery.deliveryMethod}
+                  value={Delivery.deliveryMethod}
                   onChange={(e) => {
                     setDelivery({ ...Delivery, deliveryMethod: e.target.value });
                   }}
@@ -136,7 +142,7 @@ const UpdateDelivery = (props) => {
               <Form.Group as={Col}>
                 <Form.Label>Địa Chỉ Nhận Hàng</Form.Label>
                 <Form.Control
-                  defaultValue={props.Order?.delivery.deliveryAddress}
+                  value={Delivery.deliveryAddress}
                   onChange={(e) => {
                     setDelivery({ ...Delivery, deliveryAddress: e.target.value });
                   }}

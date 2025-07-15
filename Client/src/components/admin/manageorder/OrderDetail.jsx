@@ -4,24 +4,22 @@ import logo from "../../../assets/Winmart.svg";
 const OrderDetail = (props) => {
   const summary = {
     subtotal: 1632.4,
-    shippingCost: 4.49,
+    shippingCost: 10000,
     total: 1636.89,
   };
   const handlePrint = () => {
-    const printContent = document.querySelector(".order-detail");
-    const originalContents = document.body.innerHTML;
-
-    document.body.innerHTML = printContent.innerHTML;
-    window.print();
-    document.body.innerHTML = originalContents;
-    window.location.reload();
+    document.body.classList.add("printing");
+    setTimeout(() => {
+      window.print();
+      document.body.classList.remove("printing");
+    }, 100);
   };
   return (
     <Modal show={props.isActive.Detail} onHide={props.close} size="xl">
       <Modal.Header closeButton></Modal.Header>
       <Modal.Body>
         <div className="order-detail">
-          <div className="header">
+          <div className="order-detail_header">
             <div className="logo">
               <img src={logo} alt="" />
             </div>
@@ -45,7 +43,7 @@ const OrderDetail = (props) => {
                 <div className="detail-row">
                   <span className="label">Ngày Đặt Hàng</span>
                   <span className="colon">:</span>
-                  <span className="value">{props.Order?.payment.createTime}</span>
+                  <span className="value">{new Date(props.Order?.payment.createTime).toLocaleDateString("vi-VN")}</span>
                 </div>
                 <div className="detail-row">
                   <span className="label">Người Đặt Hàng</span>
@@ -71,19 +69,19 @@ const OrderDetail = (props) => {
                   <span className="value">{props.Order?.delivery.receiverPhone}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Trạng Thái Thanh Toán</span>
+                  <span className="label">Trạng Thái</span>
                   <span className="colon">:</span>
                   <span className="value">
                     <span className="status-badge status-paid">{props.Order?.payment.paymentStatus}</span>
                   </span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Người Nhận Hàng</span>
+                  <span className="label">Người Nhận</span>
                   <span className="colon">:</span>
                   <span className="value">{props.Order?.delivery.receiverName}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="label">Địa Chỉ Nhận Hàng</span>
+                  <span className="label">Địa Chỉ Nhận</span>
                   <span className="colon">:</span>
                   <span className="value">{props.Order?.delivery.deliveryAddress}</span>
                 </div>
@@ -102,21 +100,19 @@ const OrderDetail = (props) => {
                     <th>SKU</th>
                     <th>Đơn Vị Tính</th>
                     <th>Số Lượng</th>
-                    <th>Giá Tạm Tính</th>
                     <th>Thuế VAT</th>
                     <th>Tổng Tiền</th>
                   </tr>
                 </thead>
+                {console.log(props.Order)}
                 <tbody>
                   {props.Order?.orderItemDTOs.map((item, index) => (
                     <tr key={index}>
                       <td>{index + 1}</td>
                       <td className="product-name">{item.product.productName}</td>
                       <td className="sku">{item.product.sku}</td>
-
                       <td className="seller-sku">{item.productVariant.calUnit}</td>
                       <td className="sku">{item.quantity}</td>
-                      <td className="price">{item.totalPrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</td>
                       <td className="vat">10%</td>
                       <td className="total-price">{item.totalPrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</td>
                     </tr>
@@ -126,16 +122,12 @@ const OrderDetail = (props) => {
             </div>
             <div className="order-summary">
               <div className="summary-row">
-                <span className="summary-label">Tạm Tính</span>
-                <span className="summary-value">{summary.subtotal.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
-              </div>
-              <div className="summary-row">
                 <span className="summary-label">Phí Giao Hàng</span>
                 <span className="summary-value">{summary.shippingCost.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
               </div>
               <div className="summary-row total-row">
                 <span className="summary-label">Tổng Tiền</span>
-                <span className="summary-value">{summary.total.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                <span className="summary-value">{(summary.shippingCost + props.Order?.totalPrice).toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
               </div>
             </div>
           </div>
@@ -148,13 +140,7 @@ const OrderDetail = (props) => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button
-          onClick={() => {
-            handlePrint();
-          }}
-        >
-          Xuất hóa đơn
-        </Button>
+        <Button onClick={handlePrint}>Xuất hóa đơn</Button>
       </Modal.Footer>
     </Modal>
   );

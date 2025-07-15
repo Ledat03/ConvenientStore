@@ -30,5 +30,5 @@ public class PromotionDTO {
     private List<CategoryPromotionDTO> promotionCategories;
     private List<SubCategoryPromotionDTO> promotionSubCategory;
     private List<BrandPromotionDTO> promotionBrand;
-
+    private List<UserPromotionDTO> promotionUser;
 }

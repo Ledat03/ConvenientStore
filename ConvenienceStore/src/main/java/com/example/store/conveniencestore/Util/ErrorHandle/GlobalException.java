@@ -40,4 +40,8 @@ public class GlobalException extends Exception {
         restResponse.setError(e.getBody().getTitle());
         return ResponseEntity.status(restResponse.getStatusCode()).body(restResponse);
     }
+    @ExceptionHandler(CartException.class)
+    public ResponseEntity<Object> handleQuantityExceedStock(CartException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 }

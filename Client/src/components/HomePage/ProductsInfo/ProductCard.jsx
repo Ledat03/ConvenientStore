@@ -4,13 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import Paginate from "../../common/Paginate";
 import { toast } from "react-toastify";
 import { AddToCart } from "../../../services/UserSevice";
-const ProductCard = ({ products, filters, Loading, sortBy, onSortChange }) => {
+const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
   const calSavePrice = (salePrice, price) => {
     let sale = ((salePrice - price) / price) * 100;
     return Math.round(sale);
   };
   const [PaginatedProduct, setPaginatedProduct] = useState([]);
-  const itemsPerPage = 9;
+  const itemsPerPage = 6;
   const [totalProduct, setTotalProduct] = useState(0);
   const [userData, setUserData] = useState({});
   const navigate = useNavigate();
@@ -92,7 +92,7 @@ const ProductCard = ({ products, filters, Loading, sortBy, onSortChange }) => {
     toast.success("Thêm Vào Giỏ Hàng Thành Công");
     console.log("thông tin gửi đi - " + info.userId + " " + info.variantId + " " + info.productId);
   };
-  console.log(PaginatedProduct);
+  const sortedProducts = onSortChange(ActiveProduct, sortBy);
   return (
     <>
       <div className="product-grid">
@@ -159,7 +159,7 @@ const ProductCard = ({ products, filters, Loading, sortBy, onSortChange }) => {
         )}
       </div>
       <div className="pagination-container">
-        <Paginate itemsPerPage={itemsPerPage} totalProduct={totalProduct} product={ActiveProduct} setPaginatedProduct={setPaginatedProduct} filters={filters} />
+        <Paginate itemsPerPage={itemsPerPage} totalItem={totalProduct} item={sortedProducts} setPaginatedItem={setPaginatedProduct} filters={filters} sortBy={sortBy} />
       </div>
     </>
   );

@@ -47,11 +47,11 @@ APIsCustomize.interceptors.response.use(
       error.config._retry = true;
       const Token = cookies.get("refreshToken");
       console.log(Token);
-      if (!Token) { 
+      if (!Token) {
         return Promise.reject(error);
       }
       try {
-        const response = await APIsCustomize.get("api/check/auth/refresh", {params:{refreshToken: Token}});
+        const response = await APIsCustomize.get("api/check/auth/refresh", { params: { refreshToken: Token } });
         console.log(response);
       } catch (refreshError) {
         console.error("Refresh token failed:", refreshError);
@@ -62,6 +62,7 @@ APIsCustomize.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
+    return Promise.reject(error);
   }
 );
 

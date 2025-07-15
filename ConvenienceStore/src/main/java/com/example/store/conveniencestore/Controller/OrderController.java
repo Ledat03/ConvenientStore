@@ -29,14 +29,14 @@ public class OrderController {
     private final ProductService productService;
     private final VNPayService vnPayService;
     private final GmailService gmailService;
-
-    public OrderController( VNPayService vnPayService, UserService userService, ProductService productService, GmailService gmailService,OrderService orderService) {
+    private final PromotionService promotionService;
+    public OrderController(PromotionService promotionService, VNPayService vnPayService, UserService userService, ProductService productService, GmailService gmailService,OrderService orderService) {
         this.orderService = orderService;
         this.userService = userService;
         this.productService = productService;
         this.vnPayService = vnPayService;
         this.gmailService = gmailService;
-
+        this.promotionService = promotionService;
     }
     private UserDTO convertUserToDTO(User user) {
         UserDTO userDTO = new UserDTO();
@@ -171,18 +171,33 @@ public class OrderController {
         payment.setCreatedAt(LocalDateTime.now());
         return orderService.savePayment(payment);
     }
+    public PromotionUser createPromotionUser(User user,Promotion promotion) {
+        PromotionUser promotionUser = new PromotionUser();
+        promotionUser.setCreatedAt(LocalDateTime.now());
+        promotionUser.setPromotion(promotion);
+        promotionUser.setUser(user);
+        return promotionService.savePromotionUserUsage(promotionUser);
+    }
     @PostMapping("/add")
     public ResponseEntity<Object> addOrder(@RequestBody OrderDTO orderDTO, HttpServletRequest request) throws UnsupportedEncodingException, MessagingException {
         if (orderDTO.getPaymentMethod().equals("COD")) {
             Order order = createOrder(orderDTO);
             User user = userService.findById(orderDTO.getUserId());
             Delivery delivery = createDelivery(orderDTO, order);
+            if(orderDTO.getPromotionId() != 0){
+                Promotion promotion = promotionService.findPromotionById(orderDTO.getPromotionId());
+                promotion.setUsageLimit(promotion.getUsageLimit() - 1);
+                promotionService.savePromo(promotion);
+                PromotionUser promotionUser = createPromotionUser(user,promotion);
+            }
             List<OrderItem> orderItems = new ArrayList<>();
             for (OrderItemDTO orderItemDTO : orderDTO.getItems()) {
                 OrderItem item = createOrderItem(order, orderItemDTO);
+                ProductVariant variant = productService.findProductVariantById(orderItemDTO.getVariantId());
+                variant.setStock(variant.getStock() - orderItemDTO.getQuantity());
+                productService.saveVariant(variant);
                 orderItems.add(item);
             }
-
             Payment payment = createPayment(order, orderDTO);
             order.setDelivery(delivery);
             order.setPayment(payment);
@@ -210,6 +225,19 @@ public class OrderController {
         }
         return ResponseEntity.accepted().build();
         }
+    @PostMapping("/Re_Pay")
+    public ResponseEntity<Object> RePayOrder(@RequestParam("id") long id, HttpServletRequest request) throws UnsupportedEncodingException, MessagingException {
+            Order rePayOrder = orderService.findbyOrderId(id);
+            String PaymentURL = vnPayService.createPaymentURL(request, rePayOrder.getPayment(),rePayOrder.getDelivery(),rePayOrder.getUser());
+            return ResponseEntity.ok(PaymentURL);
+    }
+    @PostMapping("/cancel")
+    public ResponseEntity<Object> CancelOrder(@RequestParam("id") long id) {
+        Order order = orderService.findbyOrderId(id);
+        order.getDelivery().setDelivery_status(DeliveryStatus.FAILED);
+        orderService.saveOrder(order);
+        return ResponseEntity.ok("Hủy đơn hàng thành công");
+    }
     @GetMapping("/view")
     public ResponseEntity<Object> viewOrder() {
         List<Order> orders = orderService.findAll();
@@ -229,6 +257,14 @@ public class OrderController {
             delivery.setReceiver_name(resDeliveryDTO.getReceiverName());
             delivery.setReceiver_phone(resDeliveryDTO.getReceiverPhone());
             delivery.setDelivery_method(resDeliveryDTO.getDeliveryMethod());
+            if (resDeliveryDTO.getDeliveryStatus().equals(DeliveryStatus.CANCELLED)) {
+                Order order = delivery.getOrder();
+                for(OrderItem item : order.getOrderDetails()) {
+                    ProductVariant productVariant = item.getProductVariant();
+                    productVariant.setStock(productVariant.getStock() + item.getQuantity());
+                    productService.saveVariant(productVariant);
+                }
+            }
             delivery.setDelivery_status(resDeliveryDTO.getDeliveryStatus());
             delivery.setDelivery_date(resDeliveryDTO.getDeliveryDate());
             delivery.setDelivered_at(resDeliveryDTO.getDeliveredTime());
@@ -256,6 +292,7 @@ public class OrderController {
         }
         return ResponseEntity.notFound().build();
     }
+
     @DeleteMapping("/delete")
     public ResponseEntity<Object> deleteOrder(@RequestParam(name = "id") long id) {
         Order order = orderService.findbyOrderId(id);

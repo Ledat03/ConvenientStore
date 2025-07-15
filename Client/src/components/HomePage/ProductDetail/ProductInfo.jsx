@@ -2,13 +2,14 @@ import "../../../assets/scss/productdetail/productdetail.scss";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { AddToCart } from "../../../services/UserSevice";
+import { Button } from "react-bootstrap";
 const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
   const [userData, setUserData] = useState({});
   const [SelectedItem, setItem] = useState(0);
   useEffect(() => {
     IsLogIn();
   }, []);
-  const Discount = (product.productVariant[SelectedItem].salePrice / product.productVariant[SelectedItem].price).toFixed(1) * 10;
+  const Discount = (product.productVariant[SelectedItem]?.salePrice / product.productVariant[SelectedItem]?.price).toFixed(1) * 10;
   const IsLogIn = () => {
     const checkUser = localStorage?.getItem("user");
     if (checkUser != null) {
@@ -16,18 +17,24 @@ const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
       setUserData(parse);
     }
   };
-  console.log(product);
   const handleAddToCart = async (variantId, productId) => {
-    const info = {
-      userId: userData.id,
-      variantId: variantId,
-      productId: productId,
-      quantity: quantity,
-    };
-    const res = await AddToCart(info);
-    toast.success("Thêm Vào Giỏ Hàng Thành Công");
-    console.log("thông tin gửi đi - " + info.userId + " " + info.variantId + " " + info.productId);
-    console.log(res);
+    try {
+      const info = {
+        userId: userData.id,
+        variantId: variantId,
+        productId: productId,
+        quantity: quantity,
+      };
+      const response = await AddToCart(info);
+      if (response) {
+        console.log(response);
+        toast.success("Thêm Vào Giỏ Hàng Thành Công");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response.data);
+      throw error;
+    }
   };
   return (
     <div className="product-info">
@@ -36,7 +43,7 @@ const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
       </h1>
 
       <div className="price-section">
-        <span className="current-price">{product.productVariant[SelectedItem].price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+        <span className="current-price">{product.productVariant[SelectedItem]?.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
         {product.productVariant[SelectedItem].salePrice != 0 && (
           <div>
             <span className="original-price">{product.productVariant[SelectedItem].salePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
@@ -52,15 +59,24 @@ const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
             -
           </button>
           <span className="quantity-value">{quantity}</span>
-          <button className="quantity-btn" onClick={() => setQuantity(quantity + 1)}>
+          <button
+            className="quantity-btn"
+            onClick={(e) => {
+              if (quantity >= product.productVariant[SelectedItem].stock) {
+                return;
+              }
+              setQuantity(quantity + 1);
+            }}
+          >
             +
           </button>
         </div>
-        <span className="stock-info"></span>
+        <span className="stock-info">Số Lượng Còn Lại : </span>
+        <span>{product.productVariant[SelectedItem].stock}</span>
       </div>
 
       <div className="color-section">
-        <h3 className="section-title">Đơn vị tính</h3>
+        <h3 className="section-title">Đơn vị tính</h3>{" "}
         <div className="color-options">
           {product.productVariant.map((variant, index) => (
             <div
@@ -73,19 +89,24 @@ const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
             >
               <span>{variant.calUnit}</span>
             </div>
-          ))}
-        </div>
+          ))}{" "}
+        </div>{" "}
       </div>
-
       <div className="action-buttons">
-        <button
-          className="add-to-cart"
-          onClick={() => {
-            handleAddToCart(product.productVariant[SelectedItem].id, product.productId);
-          }}
-        >
-          Thêm Vào Giỏ Hàng
-        </button>
+        {product.productVariant[SelectedItem].stock != 0 ? (
+          <button
+            className="add-to-cart"
+            onClick={() => {
+              handleAddToCart(product.productVariant[SelectedItem].id, product.productId);
+            }}
+          >
+            Thêm Vào Giỏ Hàng
+          </button>
+        ) : (
+          <Button className="add-to-cart" disabled>
+            Hết Hàng
+          </Button>
+        )}
       </div>
 
       <div className="info-section">

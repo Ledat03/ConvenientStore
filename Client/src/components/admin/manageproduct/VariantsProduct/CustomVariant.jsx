@@ -1,6 +1,5 @@
-import { toast } from "react-toastify";
 import { Modal, Button, Table } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import UpdateVariant from "./UpdateVariant";
 import AddVariant from "./AddVariant";
 import ViewVariant from "./ViewVariant";
@@ -28,7 +27,7 @@ const CustomVariant = (props) => {
   return (
     <>
       <Modal show={props.isShowVariant} onHide={props.closeModal}>
-        <Modal.Header closeButton>Edit</Modal.Header>
+        <Modal.Header closeButton>Chỉnh sửa khác</Modal.Header>
         <Modal.Body>
           <FaPlusCircle
             onClick={() => {
@@ -48,7 +47,13 @@ const CustomVariant = (props) => {
             <tbody>
               {props.ListVariants.map((item, index) => {
                 return (
-                  <tr key={index} onClick={() => openModal("ProdVariantView")}>
+                  <tr
+                    key={index}
+                    onClick={() => {
+                      fetchVariantInfo(item);
+                      openModal("ProdVariantView");
+                    }}
+                  >
                     <td>
                       <input type="checkbox" onClick={(e) => e.stopPropagation()} />
                     </td>
@@ -87,10 +92,10 @@ const CustomVariant = (props) => {
           </Table>
         </Modal.Body>
       </Modal>
-      <UpdateVariant isShowVariant={HandleProductState.ProdVariantUpdate} openVariant={() => openModal("ProdVariantUpdate")} closeVariant={() => closeModal("ProdVariantUpdate")} InfoItem={props.InfoItem} handleProductsList={props.handleProductsList} Variant={Variant} getVariants={props.getVariants} />
-      <AddVariant isShowVariant={HandleProductState.ProdVariantAdd} openVariant={() => openModal("ProdVariantAdd")} closeVariant={() => closeModal("ProdVariantAdd")} InfoItem={props.InfoItem} handleProductsList={props.handleProductsList} getVariants={props.getVariants} />
-      <ViewVariant isShowVariant={HandleProductState.ProdVariantView} openVariant={() => openModal("ProdVariantView")} closeVariant={() => closeModal("ProdVariantView")} InfoItem={props.InfoItem} handleProductsList={props.handleProductsList} Variant={Variant} />
-      <DeleteVariant isShowVariant={HandleProductState.ProdVariantDelete} openVariant={() => openModal("ProdVariantDelete")} closeVariant={() => closeModal("ProdVariantDelete")} InfoItem={props.InfoItem} Variant={Variant} handleProductsList={props.handleProductsList} getVariants={props.getVariants} />
+      <UpdateVariant isShowVariant={HandleProductState.ProdVariantUpdate} closeVariant={() => closeModal("ProdVariantUpdate")} InfoItem={props.InfoItem} handleProductsList={props.handleProductsList} Variant={Variant} getVariants={props.getVariants} />
+      <AddVariant isShowVariant={HandleProductState.ProdVariantAdd} closeVariant={() => closeModal("ProdVariantAdd")} InfoItem={props.InfoItem} handleProductsList={props.handleProductsList} getVariants={props.getVariants} />
+      <ViewVariant isShowVariant={HandleProductState.ProdVariantView} closeVariant={() => closeModal("ProdVariantView")} InfoItem={props.InfoItem} handleProductsList={props.handleProductsList} Variant={Variant} />
+      <DeleteVariant isShowVariant={HandleProductState.ProdVariantDelete} closeVariant={() => closeModal("ProdVariantDelete")} InfoItem={props.InfoItem} Variant={Variant} handleProductsList={props.handleProductsList} getVariants={props.getVariants} />
     </>
   );
 };

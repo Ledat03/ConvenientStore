@@ -25,6 +25,7 @@ const UpdatePayment = (props) => {
   }, [props.Order]);
   const putPayment = async () => {
     const res = await updatePayment(Payment);
+    getListOrder();
     console.log(res);
   };
   return (

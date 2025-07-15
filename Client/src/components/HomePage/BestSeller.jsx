@@ -22,6 +22,9 @@ const BestSeller = (props) => {
       if (!selectedCategory) return true;
       return product.category === selectedCategory;
     })
+    .filter((product) => {
+      if (product.stock != 0) return true;
+    })
     .slice(0, viewLimit);
   return (
     <section className="best-sellers">

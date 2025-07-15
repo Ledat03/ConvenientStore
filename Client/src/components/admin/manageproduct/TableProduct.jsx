@@ -8,6 +8,7 @@ import ViewProduct from "./ViewProduct";
 import CustomVariant from "./VariantsProduct/CustomVariant";
 import { GetListVariant } from "../../../services/GetAPI";
 import "../css/productCustom.scss";
+import Paginate from "../../common/Paginate";
 const TableProduct = (props) => {
   const [HandleProductState, setState] = useState({
     ProdView: false,
@@ -15,6 +16,8 @@ const TableProduct = (props) => {
     ProdDelete: false,
     ProdVariant: false,
   });
+  const itemsPerPage = 2;
+  const [PaginatedProduct, setPaginatedProduct] = useState([]);
   const openModal = (modalName) => {
     setState((prev) => ({ ...prev, [modalName]: true }));
   };
@@ -26,7 +29,7 @@ const TableProduct = (props) => {
   const handleProduct = (product) => {
     setInfoItem(product);
   };
-
+  const productsLength = props.InfoProduct.length;
   const getVariants = async (id) => {
     try {
       const handleVariants = await GetListVariant(id);
@@ -36,21 +39,16 @@ const TableProduct = (props) => {
     }
   };
   const [filters, setFilters] = useState({
-    vendor: "",
-    taggedWith: "",
-    status: "",
+    status: "Default",
+    state: "Default",
+    search: "",
   });
-  const getStatusStyle = (status) => {
-    switch (status.toLowerCase()) {
-      case "active":
-        return "status-badge status-active";
-      case "inactive":
-        return "status-badge status-inactive";
-      default:
-        return "status-badge";
-    }
+  const filledProduct = () => {
+    return props.InfoProduct.filter((item) => (filters.status !== "Default" ? item.isActive === filters.status : item))
+      .filter((item) => (filters.state !== "Default" ? item.status === filters.state : item))
+      .filter((item) => item.productName.toLowerCase().includes(filters.search));
   };
-
+  const filterList = filledProduct();
   return (
     <div className="product-list-container">
       <nav className="breadcrumb">
@@ -65,7 +63,6 @@ const TableProduct = (props) => {
         <h1 className="page-title">Danh Sách Sản Phẩm</h1>
         <div className="header-buttons">
           <button className="secondary-button">Export</button>
-          <button className="secondary-button">Import</button>
         </div>
       </div>
 
@@ -77,48 +74,23 @@ const TableProduct = (props) => {
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input type="text" placeholder="Tìm Kiếm Sản Phẩm" className="search-input" />
-          </div>
-
-          <div className="date-container">
-            <input type="text" value="14 Feb, 24" readOnly className="date-input" />
-            <svg className="date-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
+            <input type="text" placeholder="Tìm Kiếm Sản Phẩm" className="search-input" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} />
           </div>
         </div>
 
         <div className="filters-right">
-          <select className="filter-select" value={filters.vendor} onChange={(e) => setFilters({ ...filters, vendor: e.target.value })}>
-            <option value="">Vendor</option>
-            <option value="fotobi">Fotobi Furniture</option>
-            <option value="mojar">Mojar Furniture</option>
-          </select>
-
-          <select className="filter-select" value={filters.taggedWith} onChange={(e) => setFilters({ ...filters, taggedWith: e.target.value })}>
-            <option value="">Tagged With</option>
-            <option value="furniture">Furniture</option>
-            <option value="chair">Chair</option>
-          </select>
-
           <select className="filter-select" value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
-            <option value="">Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-            <option value="draft">Draft</option>
+            <option value="Default">Trang thái</option>
+            <option value="true">Hiển Thị</option>
+            <option value="false">Ẩn</option>
           </select>
 
-          <button className="filter-button-text">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
-            </svg>
-            Saved
-          </button>
-
-          <button className="filter-button-text">More Filters</button>
+          <select className="filter-select" value={filters.state} onChange={(e) => setFilters({ ...filters, state: e.target.value })}>
+            <option value="Default">Tình trạng</option>
+            <option value="Draft">Đang Chỉnh Sửa</option>
+            <option value="Published">Đang Bán</option>
+            <option value="NotAvailable">Ngừng Kinh Doanh</option>
+          </select>
         </div>
       </div>
       <div className="product-table-container">
@@ -129,7 +101,7 @@ const TableProduct = (props) => {
                 <input type="checkbox" className="checkbox" />
               </th>
 
-              <th className="table-header name-header">Tên</th>
+              <th className="table-header name-header"></th>
               <th className="table-header">Loại</th>
               <th className="table-header">Trạng thái</th>
               <th className="table-header">Cập nhật vào</th>
@@ -137,24 +109,23 @@ const TableProduct = (props) => {
             </tr>
           </thead>
           <tbody>
-            {props.InfoProduct.map((product) => (
+            {PaginatedProduct.map((product) => (
               <tr key={product.productId} className="table-row">
                 <td className="table-cell">
                   <input type="checkbox" className="checkbox" />
                 </td>
                 <td className="table-cell">
-                  <div className="product-info">
+                  <div className="product-info" style={{ marginLeft: "30px" }}>
                     {product.image ? <img src={product.image} alt={product.name} className="product-image" /> : ""}
-                    <span className="product-name">{product.productName}</span>
+                    {product.productName}
                   </div>
                 </td>
                 <td className="table-cell">{product.category}</td>
 
                 <td className="table-cell">
-                  <span className={getStatusStyle("active")}>{product.isActive == true ? "hiển thị" : "đang ẩn"}</span>
+                  <span>{product.isActive == "true" ? "Hiển Thị" : "Đang Ẩn"}</span>
                 </td>
-                {console.log(product)}
-                <td className="table-cell">{product.updateAt}</td>
+                <td className="table-cell">{new Date(product.updateAt).toLocaleDateString("vi-VN")}</td>
                 <td className="table-cell">
                   {product.status == "Draft" && "Chưa hoàn thành"}
                   {product.status == "Published" && "Đang bán"}
@@ -207,11 +178,14 @@ const TableProduct = (props) => {
             ))}
           </tbody>
         </table>
+        <div className="pagination-container">
+          <Paginate itemsPerPage={itemsPerPage} totalItem={productsLength} item={filterList} setPaginatedItem={setPaginatedProduct} sortBy={filters} />
+        </div>
       </div>
       <>
-        <UpdateProduct isShowUpdate={HandleProductState.ProdUpdate} closeUpdate={() => closeModal("ProdUpdate")} openUpdate={() => openModal("ProdUpdate")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
-        <ViewProduct isShowView={HandleProductState.ProdView} closeView={() => closeModal("ProdView")} openView={() => openModal("ProdView")} InfoItem={InfoItem} />
-        <DeleteProduct isShowDelete={HandleProductState.ProdDelete} closeDelete={() => closeModal("ProdDelete")} openDelete={() => openModal("ProdDelete")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
+        <UpdateProduct isShowUpdate={HandleProductState.ProdUpdate} closeUpdate={() => closeModal("ProdUpdate")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
+        <ViewProduct isShowView={HandleProductState.ProdView} closeView={() => closeModal("ProdView")} InfoItem={InfoItem} />
+        <DeleteProduct isShowDelete={HandleProductState.ProdDelete} closeDelete={() => closeModal("ProdDelete")} InfoItem={InfoItem} handleProductsList={props.handleProductsList} />
         <CustomVariant isShowVariant={HandleProductState.ProdVariant} closeModal={() => closeModal("ProdVariant")} InfoItem={InfoItem} ListVariants={ListVariants} getVariants={getVariants} />
       </>
     </div>

@@ -19,13 +19,15 @@ public class PromotionService {
     private final CatePromotionRepository catePromotionRepository;
     private final SubCategoryRepository subCategoryRepository;
     private final BrandPromoRepository brandPromoRepository;
+    private final UserPromoRepository userPromoRepository;
     public PromotionService(SubCategoryRepository subCategoryRepository ,
                             PromotionRepository promotionRepository,
                             ProdPromotionRepository prodPromotionRepository,
                             SubPromoRepository subPromoRepository,
                             CatePromotionRepository catePromotionRepository,
                             BrandPromoRepository brandPromoRepository,
-                            ProductService productService) {
+                            ProductService productService,
+                            UserPromoRepository userPromoRepository) {
         this.promotionRepository = promotionRepository;
         this.prodPromotionRepository = prodPromotionRepository;
         this.subPromoRepository = subPromoRepository;
@@ -33,6 +35,7 @@ public class PromotionService {
         this.subCategoryRepository = subCategoryRepository;
         this.productService = productService;
         this.brandPromoRepository = brandPromoRepository;
+        this.userPromoRepository = userPromoRepository;
     }
 
     public List<Promotion> findAll() {
@@ -163,10 +166,11 @@ public class PromotionService {
             promotion.setActive(promotionDTO.isActive());
             promotion.setCreatedAt(promotionDTO.getCreatedAt());
             promotion.setUpdatedAt(promotionDTO.getUpdatedAt());
+            promotionRepository.save(promotion);
             deleteAllCatePromotion(promotion.getCouponId());
             deleteAllBrandPromotion(promotion.getCouponId());
             deleteAllProdPromotion(promotion.getCouponId());
-            promotionRepository.save(promotion);
+
             if(promotionDTO.getPromotionCategories() != null && !promotionDTO.getPromotionCategories().isEmpty()) {
                 for(CategoryPromotionDTO categoryPromotionDTO : promotionDTO.getPromotionCategories()) {
                     PromotionCategory promotionCategory = new PromotionCategory();
@@ -229,6 +233,13 @@ public class PromotionService {
     public Promotion findPromotionByCode(String code) {
         return promotionRepository.findByCode(code);
     }
+    public Promotion changeState(Promotion promotion) {
+        promotion.setActive(false);
+        return promotionRepository.save(promotion);
+    }
+    public Promotion savePromo(Promotion promotion) {
+        return promotionRepository.save(promotion);
+    }
     public Promotion findPromotionByCategoryPromo(PromotionCategory promotionCategory) {
         return promotionRepository.findByCouponCategories(promotionCategory);
     }
@@ -247,5 +258,8 @@ public class PromotionService {
     }
     public void deleteAllCatePromotion(long promotion) {
         catePromotionRepository.deleteAllByPromotion_CouponId(promotion);
+    }
+    public PromotionUser savePromotionUserUsage(PromotionUser promotionUser){
+        return userPromoRepository.save(promotionUser);
     }
 }

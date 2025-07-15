@@ -4,50 +4,84 @@ import { Bar, Doughnut } from "react-chartjs-2";
 import { FaUserCircle } from "react-icons/fa";
 import { NumberOfUsers, NumberOfProducts } from "../../services/ManageAPI";
 import { fetchListOrder } from "../../services/GetAPI";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { viewImport } from "../../services/GetAPI";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const MainPage = () => {
   const [statsData, setStatsData] = useState({
     users: "",
     products: "",
-    orders: "",
-    totalRevenue: 2450000,
-    purchaseCost: 1680000,
+    orders: [],
   });
+  const [selectedYear, setSelectedYear] = useState(2025);
+  const [ImportData, setImportData] = useState([]);
+
+  const getYear = () => {
+    const Years = new Set();
+    statsData.orders.forEach((item) => {
+      if (item.payment.paymentStatus === "SUCCESS") {
+        const year = new Date(item.payment.paymentDate).getFullYear();
+        if (year > 2000) {
+          Years.add(year);
+        }
+      }
+    });
+    return Array.from(Years).sort((a, b) => b - a);
+  };
+  const YearLists = getYear();
+  const analysisRevenue = useMemo(() => {
+    const revenuePerMonth = Array(12)
+      .fill(0)
+      .map((_, index) => {
+        return {
+          month: `Tháng ${index + 1}`,
+          profit: 0,
+        };
+      });
+    statsData.orders.forEach((item) => {
+      if (item.payment.paymentStatus === "SUCCESS" && item.delivery.deliveryStatus !== "CANCELLED") {
+        const orderDate = new Date(item.payment.paymentDate);
+        const month = orderDate.getMonth();
+        const year = orderDate.getFullYear();
+        if (year === selectedYear) {
+          return (revenuePerMonth[month].profit += item.payment.paymentAmount);
+        }
+      }
+    });
+    return revenuePerMonth;
+  }, [YearLists, statsData.orders]);
+  const calculatePuschaseCost = ImportData.map((item) =>
+    item.inventoryImportDetails?.reduce((sum, item) => {
+      return sum + item.total_cost;
+    }, 0)
+  );
+  const totalRevenue = statsData.orders
+    .filter((item) => item.payment.paymentStatus === "SUCCESS")
+    .filter((item) => item.delivery.deliveryStatus === "DELIVERED")
+    .reduce((sum, item) => {
+      return sum + item.payment.paymentAmount;
+    }, 0);
   const [orderData, setOrderData] = useState([]);
   const handleData = async () => {
     const users = await NumberOfUsers();
     const products = await NumberOfProducts();
     const orders = await fetchListOrder();
+    const imports = await viewImport();
     setStatsData((prevData) => ({
       ...prevData,
-      orders: orders.data.data.length,
+      orders: orders.data.data,
       users: users.data.data,
       products: products.data.data,
     }));
     setOrderData(orders.data.data);
+    setImportData(imports.data.data);
   };
-  console.log(orderData);
+
   useEffect(() => {
     handleData();
+    getYear();
   }, []);
-  const monthlyRevenueData = [
-    { month: "T1", value: 180000 },
-    { month: "T2", value: 220000 },
-    { month: "T3", value: 195000 },
-    { month: "T4", value: 280000 },
-    { month: "T5", value: 310000 },
-    { month: "T6", value: 290000 },
-    { month: "T7", value: 350000 },
-    { month: "T8", value: 320000 },
-    { month: "T9", value: 380000 },
-    { month: "T10", value: 420000 },
-    { month: "T11", value: 390000 },
-    { month: "T12", value: 450000 },
-  ];
-
-  const maxRevenue = Math.max(...monthlyRevenueData.map((item) => item.value));
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -60,7 +94,7 @@ const MainPage = () => {
     return new Intl.NumberFormat("vi-VN").format(num);
   };
 
-  const profitMargin = (((statsData.totalRevenue - statsData.purchaseCost) / statsData.totalRevenue) * 100).toFixed(1);
+  const profitMargin = (((totalRevenue - calculatePuschaseCost) / totalRevenue) * 100).toFixed(1);
 
   return (
     <div className="dashboard">
@@ -98,7 +132,7 @@ const MainPage = () => {
           </div>
           <div className="stat-content">
             <h3>Đơn Hàng</h3>
-            <p className="stat-number">{formatNumber(statsData.orders)}</p>
+            <p className="stat-number">{formatNumber(statsData.orders.length)}</p>
           </div>
         </div>
       </div>
@@ -108,18 +142,19 @@ const MainPage = () => {
           <div className="chart-header">
             <h3>Quản Lý Doanh Thu Tháng</h3>
             <select className="time-selector">
-              <option>Năm 2024</option>
-              <option>Năm 2023</option>
+              {YearLists.map((item) => {
+                return <option>Năm {item}</option>;
+              })}
             </select>
           </div>
           <div className="chart-wrapper">
             <Bar
               data={{
-                labels: monthlyRevenueData.map((item) => item.month),
+                labels: analysisRevenue.map((item) => item.month),
                 datasets: [
                   {
                     label: "Doanh Thu",
-                    data: monthlyRevenueData.map((item) => item.value),
+                    data: analysisRevenue.map((item) => item.profit),
                     backgroundColor: ["rgba(34, 197, 94, 0.8)"],
                     borderColor: ["rgb(22, 196, 45)"],
                     borderWidth: 2,
@@ -202,7 +237,7 @@ const MainPage = () => {
               </div>
               <div className="revenue-content">
                 <h4>Tổng Doanh Thu</h4>
-                <p className="revenue-amount">{formatCurrency(statsData.totalRevenue)}</p>
+                <p className="revenue-amount">{formatCurrency(totalRevenue)}</p>
               </div>
             </div>
 
@@ -214,7 +249,7 @@ const MainPage = () => {
               </div>
               <div className="revenue-content">
                 <h4>Tiền Nhập Hàng</h4>
-                <p className="revenue-amount">{formatCurrency(statsData.purchaseCost)}</p>
+                <p className="revenue-amount">{formatCurrency(calculatePuschaseCost)}</p>
               </div>
             </div>
 
@@ -226,7 +261,7 @@ const MainPage = () => {
               </div>
               <div className="revenue-content">
                 <h4>Lợi Nhuận</h4>
-                <p className="revenue-amount">{formatCurrency(statsData.totalRevenue - statsData.purchaseCost)}</p>
+                <p className="revenue-amount">{formatCurrency(totalRevenue - calculatePuschaseCost)}</p>
                 <span className="profit-margin">Tỷ suất: {profitMargin}%</span>
               </div>
             </div>
@@ -239,7 +274,7 @@ const MainPage = () => {
                   labels: ["Lợi Nhuận", "Chi Phí Nhập Hàng"],
                   datasets: [
                     {
-                      data: [statsData.totalRevenue - statsData.purchaseCost, statsData.purchaseCost],
+                      data: [totalRevenue, calculatePuschaseCost],
                       backgroundColor: ["rgba(16, 185, 129, 0.8)", "rgba(245, 158, 11, 0.8)"],
                       borderColor: ["rgba(16, 185, 129, 1)", "rgba(245, 158, 11, 1)"],
                       borderWidth: 3,
@@ -273,7 +308,7 @@ const MainPage = () => {
                       cornerRadius: 8,
                       callbacks: {
                         label: (context) => {
-                          const percentage = ((context.parsed / statsData.totalRevenue) * 100).toFixed(1);
+                          const percentage = ((context.parsed / totalRevenue) * 100).toFixed(1);
                           return `${context.label}: ${formatCurrency(context.parsed)} (${percentage}%)`;
                         },
                       },
@@ -293,16 +328,17 @@ const MainPage = () => {
               <div className="comparison-bar">
                 <div className="comparison-label">Doanh Thu</div>
                 <div className="comparison-bar-container">
-                  <div className="comparison-bar-fill revenue-bar" style={{ width: "100%" }}></div>
+                  <div className="comparison-bar-fill revenue-bar" style={{ width: `${(totalRevenue / calculatePuschaseCost) * 100}%` }}></div>
                 </div>
-                <div className="comparison-value">{formatCurrency(statsData.totalRevenue)}</div>
+                {console.log(totalRevenue)}
+                <div className="comparison-value">{formatCurrency(totalRevenue)}</div>
               </div>
               <div className="comparison-bar">
                 <div className="comparison-label">Nhập Hàng</div>
                 <div className="comparison-bar-container">
-                  <div className="comparison-bar-fill cost-bar" style={{ width: `${(statsData.purchaseCost / statsData.totalRevenue) * 100}%` }}></div>
+                  <div className="comparison-bar-fill cost-bar" style={{ width: "100%" }}></div>
                 </div>
-                <div className="comparison-value">{formatCurrency(statsData.purchaseCost)}</div>
+                <div className="comparison-value">{formatCurrency(calculatePuschaseCost)}</div>
               </div>
             </div>
           </div>

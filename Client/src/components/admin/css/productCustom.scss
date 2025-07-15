@@ -1,7 +1,31 @@
 .dropdown-toggle::before {
   content: none !important;
 }
-
+.table-cell {
+  .promotion-code {
+    background-color: rgba(255, 255, 0, 0.349);
+    color: rgb(124, 124, 1);
+  }
+  .promotion-date {
+    background-color: rgba(255, 0, 0, 0.623);
+  }
+  .active {
+    background-color: rgb(0, 201, 27);
+  }
+  .disabled {
+    background-color: red;
+  }
+  span {
+    padding: 5px;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+  }
+  span .status-active {
+    background-color: white;
+    color: black;
+  }
+}
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -23,7 +47,12 @@
     font-weight: 500;
   }
 }
-
+th {
+  height: 35px;
+}
+td {
+  text-align: start;
+}
 .product-list-container {
   display: flex;
   flex-direction: column;
@@ -31,18 +60,19 @@
   .product-table-container {
     width: 100%;
     min-height: 20vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     .product-table {
       width: 100%;
       .name-header {
         box-sizing: border-box;
-        padding-left: 20px;
-        width: 40%;
       }
     }
     .product-info {
       .product-image {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
       }
     }
   }

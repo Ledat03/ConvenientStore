@@ -33,13 +33,19 @@ export const Home = (props) => {
     }))
   );
   const handleAddToCart = async (variantId, productId) => {
-    const info = {
-      userId: userData.id,
-      variantId: variantId,
-      productId: productId,
-    };
-    await AddToCart(info);
-    toast.success("Thêm Vào Giỏ Hàng Thành Công");
+    try {
+      const info = {
+        userId: userData.id,
+        variantId: variantId,
+        productId: productId,
+        quantity: 1,
+      };
+      const res = await AddToCart(info);
+      toast.success("Thêm Vào Giỏ Hàng Thành Công");
+    } catch (e) {
+      toast.error("Tạm thời đã tới giới hạn số lượng sản phẩm");
+      throw e;
+    }
   };
   const handleUser = () => {
     const data = localStorage.getItem("user");
@@ -48,7 +54,7 @@ export const Home = (props) => {
   return (
     <>
       <Notification />
-      <Promotion />
+      <Promotion User={userData} />
       <QuickCategory />
       <BestDeal product={flatVariant} handleAddToCart={handleAddToCart} />
       <BestSeller products={flatVariant} handleAddToCart={handleAddToCart} />

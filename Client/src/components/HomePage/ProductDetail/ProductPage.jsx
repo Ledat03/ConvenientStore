@@ -7,6 +7,7 @@ import LoadingAnimation from "../../common/LoadingAnimation";
 import RelatedProducts from "./RelatedProducts";
 import { fetchProductById, fetchListProduct } from "../../../services/GetAPI";
 import { useParams, useSearchParams, Link } from "react-router-dom";
+import { ToastContainer, Bounce } from "react-toastify";
 const ProductPage = () => {
   const { productId } = useParams();
   const [searchParams] = useSearchParams();
@@ -54,7 +55,6 @@ const ProductPage = () => {
   const handleVariant = (Unit) => {
     setVariant(productData.productVariant.find((variant) => variant.calUnit === Unit));
   };
-  console.log(productData);
   return (
     <div>
       {Loading ? (
@@ -91,6 +91,7 @@ const ProductPage = () => {
               <RelatedProducts product={flatVariant} productData={productData} />
             </div>
           </div>
+          <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
         </>
       )}
     </div>

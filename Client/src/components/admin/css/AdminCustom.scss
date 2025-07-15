@@ -11,13 +11,13 @@
     font-family: "Poppins", sans-serif;
   }
 }
-.user-name {
-  color: #007bff;
-}
 .logout_button {
-  background-color: white;
+  background-color: white !important;
   color: #64748b;
-  border: 1px solid black;
+  border: 1px solid black !important;
+  &:hover {
+    background-color: black !important;
+  }
 }
 .role-custom {
   &_red {
@@ -41,7 +41,9 @@
   height: 100%;
   overflow: hidden;
 }
-
+.manage-product-container {
+  margin: 0 40px;
+}
 .sidebar-admin {
   width: 250px;
   min-width: 0;
@@ -68,7 +70,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 85%;
+    width: 80%;
     margin: 0 auto;
   }
 
@@ -215,22 +217,47 @@
 }
 .table-user {
   height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   .table {
     width: 100%;
     border-collapse: collapse;
+    .td {
+      padding: 5px;
+    }
   }
 }
-
+.admin-logo {
+  height: 100px;
+  position: relative;
+  span {
+    position: absolute;
+    left: 50px;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    align-items: center;
+    img {
+      border-radius: 10px;
+      width: 150px;
+      background-color: rgb(213, 67, 67);
+    }
+  }
+}
 .add-btn {
   align-self: end;
-  background-color: #28a745;
+  background-color: black;
   color: white;
   border: none;
   padding: 10px;
   border-radius: 4px;
   cursor: pointer;
   &:hover {
-    background-color: #218838;
+    background-color: white;
+    color: black;
+    border: 1px solid black;
   }
 
   .i-add-user {
