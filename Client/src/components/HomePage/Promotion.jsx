@@ -13,7 +13,7 @@ const Promotion = ({ User }) => {
   }, []);
   const handleListPromotion = async () => {
     const res = await fetchListPromotion();
-    setPromotions(res.data.data);
+    setPromotions(res.data);
   };
   const scroll = (direction) => {
     const container = scrollContainerRef.current;

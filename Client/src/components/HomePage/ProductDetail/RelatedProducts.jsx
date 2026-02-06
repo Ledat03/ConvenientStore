@@ -22,8 +22,8 @@ const RelatedProduct = (props) => {
     let sale = ((salePrice - price) / price) * 100;
     return Math.round(sale);
   };
-
-  const saleProduct = props.product.filter((item) => item.category === props.productData.category);
+  console.log(props.product);
+  const saleProduct = props.product.filter((item) => item.category === props.productData.category.categoryName);
   const updateScrollButtons = () => {
     const container = scrollContainerRef.current;
     if (container) {
@@ -35,6 +35,7 @@ const RelatedProduct = (props) => {
   const handleScroll = () => {
     updateScrollButtons();
   };
+  console.log(saleProduct);
   return (
     <>
       <div className="promotion-container">

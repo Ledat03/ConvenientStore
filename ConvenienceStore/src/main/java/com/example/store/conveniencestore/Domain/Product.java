@@ -6,10 +6,20 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.swing.text.View;
+
+import com.example.store.conveniencestore.View.ViewsConfig;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
+
 @Entity
 @Data
 @Table(name = "Products")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long productId;
@@ -32,13 +42,11 @@ public class Product {
     private SubCategory subCategory;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
+    @JsonManagedReference
     private Category category;
     @OneToMany(mappedBy = "product")
+    @JsonManagedReference
     private List<ProductVariant> productVariant;
-    @OneToMany(mappedBy = "product")
-    private List<CartDetail> cartDetails;
-    @OneToMany(mappedBy = "product")
-    private List<InventoryImportDetail> inventoryImportDetail;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

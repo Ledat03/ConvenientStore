@@ -4,7 +4,10 @@ import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.Repository.*;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.smartcardio.CardException;
@@ -66,6 +69,7 @@ public class UserService {
     public User findByRefreshTokenAndEmail(String refreshToken, String email) {
         return userRepository.findByRefreshTokenAndEmail(refreshToken, email);
     }
+    @Transactional
     public void updateUserToken(String Token,String username){
         User user = findByEmail(username);
         if(user != null){
@@ -73,6 +77,7 @@ public class UserService {
             userRepository.save(user);
         }
     }
+    @Transactional
     public Object AddNewProductToCart(long userId, long productId, long variantId,int quantity) throws CardException {
         Cart userCart = cartRepository.findByUser_Id(userId);
         CartDetail cartItem = cartDetailRepository.findByProduct_ProductIdAndCartIdAndProductVariant_VariantId(productId,userCart.getId(),variantId);
@@ -148,6 +153,7 @@ public class UserService {
         return cartRepository.findByUser_Id(userId);
 
     }
+    @Transactional
     public void deleteCartDetail(long CartDetailId) {
         CartDetail cartDetail = cartDetailRepository.findById(CartDetailId);
         Cart cart = cartRepository.findByDetails(cartDetail);
@@ -161,7 +167,7 @@ public class UserService {
         cartDetailRepository.deleteAllByCart(cart);
     }
 
-    @Transactional
+
     public Cart getOrCreateUserCart(long userId) {
         Cart cart = cartRepository.findByUser_Id(userId);
         if (cart == null) {
@@ -177,5 +183,9 @@ public class UserService {
 
     public CartDetail findCartDetailById(long CartDetailId) {
         return cartDetailRepository.findById(CartDetailId);
+    }
+
+    public Page<User> getUserByEmailOrRole(String name, String role, Pageable pageable){
+        return userRepository.findUserByEmailOrRole(name,role,pageable);
     }
 }

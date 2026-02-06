@@ -38,101 +38,11 @@ public class OrderController {
         this.gmailService = gmailService;
         this.promotionService = promotionService;
     }
-    private UserDTO convertUserToDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setFirstName(user.getFirstName());
-        userDTO.setLastName(user.getLastName());
-        userDTO.setUsername(user.getUsername());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setPhone(user.getPhone());
-        userDTO.setRole(user.getRole().getName());
-        return userDTO;
-    }
-    private String getTime(LocalDateTime localDateTime) {
+   String getTime(LocalDateTime localDateTime) {
         String formattedTime = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         return formattedTime;
     }
-    public ResOrderDTO convertOrderToOrderDTO(Order order) {
-        ResOrderDTO resOrderDTO = new ResOrderDTO();
-        resOrderDTO.setOrderId(order.getId());
-        resOrderDTO.setUser(convertUserToDTO(order.getUser()));
-        resOrderDTO.setTotalPrice(order.getTotal());
-        resOrderDTO.setDelivery(convertDeliveryToDeliveryDTO(order.getDelivery()));
-        List<ResOrderItemDTO> resOrderItemDTOs = order.getOrderDetails().stream().map(this::convertOrderItemToOrderItemDTO).toList();
-        resOrderDTO.setOrderItemDTOs(resOrderItemDTOs);
-        resOrderDTO.setPayment(convertPaymentToPaymentDTO(order.getPayment()));
-        return resOrderDTO;
-    }
-    public ResOrderItemDTO convertOrderItemToOrderItemDTO(OrderItem orderItem) {
-        ResOrderItemDTO resOrderItemDTO = new ResOrderItemDTO();
-        resOrderItemDTO.setOrderItemId(orderItem.getId());
-        resOrderItemDTO.setQuantity(orderItem.getQuantity());
-        resOrderItemDTO.setTotalPrice(orderItem.getTotalPrice());
-        resOrderItemDTO.setProduct(convertProductToProductDTO(orderItem.getProduct()));
-        resOrderItemDTO.setProductVariant(convertVariantToDTO(orderItem.getProductVariant()));
-        return resOrderItemDTO;
-    }
-    public PaymentDTO convertPaymentToPaymentDTO(Payment payment) {
-        PaymentDTO paymentDTO = new PaymentDTO();
-        paymentDTO.setPaymentId(payment.getId());
-        paymentDTO.setPaymentMethod(payment.getPaymentMethod());
-        paymentDTO.setPaymentAmount(payment.getAmount());
-        paymentDTO.setPaymentDate(payment.getPaymentDate());
-        paymentDTO.setTransactionId(payment.getTransactionId());
-        paymentDTO.setPaymentStatus(payment.getPaymentStatus());
-        paymentDTO.setCreateTime(payment.getCreatedAt());
-        return paymentDTO;
-    }
-    public ResDeliveryDTO convertDeliveryToDeliveryDTO(Delivery delivery) {
-        ResDeliveryDTO resDeliveryDTO = new ResDeliveryDTO();
-        resDeliveryDTO.setDeliveryId(delivery.getDeliveryId());
-        resDeliveryDTO.setDeliveryMethod(delivery.getDelivery_method());
-        resDeliveryDTO.setDeliveryDate(delivery.getDelivery_date());
-        resDeliveryDTO.setDeliveryFee(delivery.getDelivery_fee());
-        resDeliveryDTO.setDeliveryStatus(delivery.getDelivery_status());
-        resDeliveryDTO.setTrackingNumber(delivery.getTracking_number());
-        resDeliveryDTO.setDeliveredTime(delivery.getDelivered_at());
-        resDeliveryDTO.setReceiverName(delivery.getReceiver_name());
-        resDeliveryDTO.setReceiverPhone(delivery.getReceiver_phone());
-        resDeliveryDTO.setDeliveryAddress(delivery.getDelivery_address());
-        return resDeliveryDTO;
-    }
-    public ProductVariantDTO convertVariantToDTO(ProductVariant product) {
-        ProductVariantDTO productVariantDTO = new ProductVariantDTO();
-        productVariantDTO.setId(product.getVariantId());
-        productVariantDTO.setProductId(product.getProduct().getProductId());
-        productVariantDTO.setProductImage(product.getProductImage());
-        productVariantDTO.setStock(product.getStock());
-        productVariantDTO.setPrice(product.getPrice());
-        productVariantDTO.setSalePrice(product.getSalePrice());
-        productVariantDTO.setCalUnit(product.getCalUnit());
-        productVariantDTO.setSkuCode(product.getSkuCode());
-        productVariantDTO.setIsActive(product.getIsActive());
-        return productVariantDTO;
-    }
-    private ProductDTO convertProductToProductDTO(Product product) {
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setProductId(product.getProductId());
-        productDTO.setProductName(product.getProductName());
-        productDTO.setProductDescription(product.getProductDescription());
-        productDTO.setHowToUse(product.getHowToUse());
-        productDTO.setPreserve(product.getPreserve());
-        productDTO.setOrigin(product.getOrigin());
-        productDTO.setCategory(product.getCategory().getCategoryName());
-        productDTO.setSubCategory(product.getSubCategory().getSubCategoryName());
-        productDTO.setIngredient(product.getIngredient());
-        productDTO.setUpdateAt(getTime(product.getUpdatedAt()));
-        productDTO.setImage(product.getImage());
-        productDTO.setStatus(product.getStatus());
-        productDTO.setIsActive(Boolean.toString(product.getIsActive()));
-        productDTO.setBrand(product.getBrand().getBrandName());
-        productDTO.setSku(product.getSku());
-        List<ProductVariantDTO> temp = product.getProductVariant().stream().map(this::convertVariantToDTO).toList();
-        productDTO.setProductVariant(temp);
-        return productDTO;
-    }
+
     public Order createOrder(OrderDTO orderDTO) {
         Order order = new Order();
         order.setUser(userService.findById(orderDTO.getUserId()));
@@ -236,18 +146,23 @@ public class OrderController {
         Order order = orderService.findbyOrderId(id);
         order.getDelivery().setDelivery_status(DeliveryStatus.FAILED);
         orderService.saveOrder(order);
-        return ResponseEntity.ok("Hủy đơn hàng thành công");
+        for(OrderItem item : order.getOrderDetails()) {
+            ProductVariant productVariant = item.getProductVariant();
+            productVariant.setStock(productVariant.getStock() + item.getQuantity());
+            productService.saveVariant(productVariant);
+        }
+        return ResponseEntity.ok("Successfully cancel order");
     }
     @GetMapping("/view")
     public ResponseEntity<Object> viewOrder() {
         List<Order> orders = orderService.findAll();
-        List<ResOrderDTO> resOrderDTOs = orders.stream().map(this::convertOrderToOrderDTO).toList();
+        List<ResOrderDTO> resOrderDTOs = orders.stream().map(ResOrderDTO::new).toList();
         return ResponseEntity.ok(resOrderDTOs);
     }
     @GetMapping("/view/id")
     public ResponseEntity<Object> viewOrderById(@RequestParam("id") Long id) {
         List<Order> orders = orderService.findAllByUserId(id);
-        List<ResOrderDTO> resOrderDTOs = orders.stream().map(this::convertOrderToOrderDTO).toList();
+        List<ResOrderDTO> resOrderDTOs = orders.stream().map(ResOrderDTO::new).toList();
         return ResponseEntity.ok(resOrderDTOs);
     }
     @PutMapping("/update/delivery")

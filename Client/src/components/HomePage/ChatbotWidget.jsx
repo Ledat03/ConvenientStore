@@ -15,7 +15,6 @@ const ChatbotWidget = () => {
   const [User, setUser] = useState({});
   const genAI = new GoogleGenerativeAI("AIzaSyADoMNR5Rp5GpTCegzhVo995jpZb5riHw0");
   const MIN_REQUEST_INTERVAL = 2000;
-
   const getInfomation = async () => {
     const productData = await fetchListProduct();
     const promotionData = await fetchListPromotion();
@@ -32,7 +31,6 @@ const ChatbotWidget = () => {
       setMessages(JSON.parse(localStorage.getItem("chatMessages")));
     }
   }, []);
-  console.log(User);
   const markdownToHtml = (text) => {
     return text
       .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
@@ -85,6 +83,7 @@ const ChatbotWidget = () => {
       `;
     }).join("\n---\n");
     const promotionsData = Promotions.map((promo) => `- Mã: ${promo.code || promo.title} - ${promo.description || ""}`).join("\n");
+    console.log(productsData);
     console.log(promotionsData);
     const prompt = `Bạn là trợ lý AI của WinMart - website thương mại điện tử bán lẻ hàng đầu Việt Nam.
 
@@ -117,7 +116,11 @@ HƯỚNG DẪN TRẢ LỜI CHI TIẾT:
    - Nếu có 1 sản phẩm khớp chính xác → hiển thị nó + gợi ý thêm 1-2 sản phẩm cùng loại/thương hiệu
    - Nếu có nhiều sản phẩm khớp → hiển thị 2-3 sản phẩm bán chạy/giá tốt nhất
    - Cuối cùng luôn thêm: "Còn nhiều sản phẩm khác, bạn muốn xem thêm loại nào không ạ?"
-
+   - Nếu sản phẩm hết hàng -> không đề xuất trừ khi người dùng chỉ định sản phẩm đó.
+   - Nếu người dùng hỏi về mã giảm giá → đề xuất danh sách các mã giảm giá  + gợi ý thêm 1-2 sản phẩm liên quan đến mã giảm giá
+    - Khi người dùng muốn tư vấn sản phẩm liên quan đến loại sản phẩm cụ thể thì bạn chỉ nên giới thiệu các sản phẩm có sự tương đồng về danh mục, loại sản phẩm cũng như nhãn hàng. Ví dụ người dùng muốn tư vấn sản phẩm về sữa thì chỉ gợi ý các sản phẩm sữa nếu không có sản phẩm phù hợp → xin lỗi và đưa ra các gợi ý về các danh mục sản phẩm khác trong cửa hàng.
+    - Nếu như người dùng đưa ra một khoản tiền và muốn đề xuất các sản phẩm có thể mua theo ý của họ nhưng sau đó người dùng lại chỉ có khoản tài chỉnh ít hơn khoản tiền họ đề xuất trước đó thì bạn hãy gợi ý lại các sản phẩm phù hợp với nhu cầu tài chính của khách hàng và phải có sự tương đồng với sản phẩm người dùng muốn tư vấn.
+   
 3. Về khuyến mãi và mã giảm giá:
    - Nếu sản phẩm đang có giá khuyến mãi (salePrice < price), nhấn mạnh điều này
    - Nếu có mã giảm giá phù hợp (ví dụ MILKSUMMER cho sữa), hướng dẫn:
@@ -136,7 +139,7 @@ HƯỚNG DẪN TRẢ LỜI CHI TIẾT:
     
    
    Hỗ trợ khách hàng:
-   - Hotline: 1900-1234 (8h-22h hàng ngày)
+   - Hotline: 1900-8888 (8h-22h hàng ngày)
    - Email: support@winmart.vn
 
 5. Phong cách trả lời:
@@ -151,12 +154,12 @@ HƯỚNG DẪN TRẢ LỜI CHI TIẾT:
   - Thanh toán bằng VNPay người dùng sẽ trực tiếp chuyển hướng sang phía VNPay để thực hiện thanh toán do trang web không có chức năng thanh toán bằng thẻ ngân hàng. 
 7. Xử lý các trường hợp đặc biệt:
    - Nếu không tìm thấy sản phẩm: "Rất tiếc, hiện tại WinMart chưa có sản phẩm này. Bạn có thể tham khảo các sản phẩm tương tự sau..."
-   - Nếu hỏi về đơn hàng: "Quý khách vui lòng kiểm tra tại mục 'Đơn hàng của tôi' hoặc liên hệ hotline 1900-1234 để được hỗ trợ chi tiết về đơn hàng ạ."
+   - Nếu hỏi về đơn hàng: "Quý khách vui lòng kiểm tra tại mục 'Quản lí đơn hàng' hoặc liên hệ hotline 1900-8888 hoặc gửi tới Email support@winmart.vn để được hỗ trợ chi tiết về đơn hàng ạ."
    - Nếu hỏi giá cụ thể: Luôn hiển thị cả giá gốc và giá khuyến mãi (nếu có)
    - Nếu như hỏi các hình thức thanh toán khác : Rất xin lỗi nếu như người dùng muốn thanh toán bằng các phương thức thanh toán khác.
-
+   - Không trả lời các câu hỏi không liên quan tới cửa hàng và từ chối một cách lịch sự
 Câu hỏi của khách hàng: ${userMessage}
-
+Các thông tin về cuộc trò chuyện với người dùng: ${messages}
 Hãy trả lời chi tiết, chính xác với thông tin sản phẩm thực tế từ danh sách trên. LUÔN gợi ý nhiều lựa chọn cho khách hàng.`;
 
     const MAX_RETRIES = 3;
@@ -165,7 +168,7 @@ Hãy trả lời chi tiết, chính xác với thông tin sản phẩm thực t�
     while (retries < MAX_RETRIES) {
       try {
         const model = genAI.getGenerativeModel({
-          model: "gemini-1.5-flash",
+          model: "gemini-2.0-flash",
         });
 
         const result = await model.generateContent(prompt);
@@ -187,23 +190,6 @@ Hãy trả lời chi tiết, chính xác với thông tin sản phẩm thực t�
         }
 
         const fallbackResponses = {
-          sữa: `**Các sản phẩm sữa tại WinMart:**
-
-**Sữa tươi tiệt trùng Vinamilk ít đường hộp 1 lít** - **33.900đ** (giá gốc: ~~37.900đ~~)
-Thương hiệu: VINAMILK | Danh mục: Sữa tươi
-Còn hàng: 200 hộp
-
-Sữa tươi Vinamilk ít đường được sản xuất từ nguồn sữa tươi nguyên chất, bổ sung vitamin và khoáng chất.
-
-[Xem chi tiết sản phẩm](http://localhost:3000/products/product/2?variant=1)
-
----
-
-Áp dụng mã **MILKSUMMER** để được ưu đãi thêm!
-[Xem tất cả sản phẩm khuyến mãi](http://localhost:3000/products?promotion=MILKSUMMER)
-
- Còn nhiều sản phẩm sữa khác, bạn muốn xem thêm không ạ?`,
-
           giá: " Quý khách có thể xem giá chi tiết của từng sản phẩm trên website. WinMart cam kết giá tốt nhất thị trường! Bạn đang tìm sản phẩm nào ạ?",
 
           "giao hàng": ` **Chính sách giao hàng WinMart:**
@@ -246,7 +232,7 @@ Sữa tươi Vinamilk ít đường được sản xuất từ nguồn sữa tư
             ...prev,
             {
               role: "bot",
-              content: " Xin lỗi quý khách, hệ thống đang bận. Vui lòng thử lại sau ít phút hoặc liên hệ hotline 1900-1234 để được hỗ trợ ngay ạ!",
+              content: " Xin lỗi quý khách, hệ thống đang bận. Vui lòng thử lại sau ít phút hoặc liên hệ hotline 1900-8888 để được hỗ trợ ngay ạ!",
             },
           ]);
         }

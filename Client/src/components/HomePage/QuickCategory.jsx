@@ -30,7 +30,7 @@ const QuickCategory = () => {
     },
     {
       id: 5,
-      name: "Rau Củ & Trái Cây",
+      name: "Rau Củ Trái Cây",
       count: "",
       icon: "https://res.cloudinary.com/donwvgcah/image/upload/v1749117032/fruit_nz90is.png",
     },

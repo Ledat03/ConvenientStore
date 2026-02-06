@@ -2,12 +2,12 @@ package com.example.store.conveniencestore.Config;
 
 import java.io.IOException;
 
+import com.example.store.conveniencestore.Domain.RestRestponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.example.store.conveniencestore.Domain.RestRestponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.ServletException;

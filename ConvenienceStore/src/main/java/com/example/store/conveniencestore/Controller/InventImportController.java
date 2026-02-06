@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("import")
 public class InventImportController {
+
     private final UserService userService;
     private final ProductService productService;
 
@@ -136,30 +137,60 @@ public class InventImportController {
         if (inventDTO != null) {
             InventoryImport inventoryImport = productService.findInventoryImportById(inventDTO.getImportId());
             if (inventoryImport != null) {
+                for (InventoryImportDetail oldDetail : inventoryImport.getInventoryImportDetails()) {
+                    ProductVariant variant = oldDetail.getVariant();
+                    if (variant != null) {
+                        variant.setStock(variant.getStock() - oldDetail.getQuantity());
+                        productService.saveVariant(variant);
+                    }
+                }
                 inventoryImport.setImportCode(inventDTO.getImportCode());
                 inventoryImport.setImportNote(inventDTO.getImportNote());
                 inventoryImport.setImportDate(LocalDateTime.now());
                 inventoryImport.setUser(userService.findById(inventDTO.getUserId()));
+
                 List<InventoryImportDetail> details = new ArrayList<>();
                 for (InventDetailDTO dto : inventDTO.getInventoryImportDetails()) {
                     InventoryImportDetail detail = convertDTOToEntity(dto, inventoryImport);
+
+                    ProductVariant variant = detail.getVariant();
+                    if (variant != null) {
+                        variant.setStock(detail.getQuantity());
+                        productService.saveVariant(variant);
+                    }
+
                     details.add(detail);
                 }
                 inventoryImport.getInventoryImportDetails().clear();
                 inventoryImport.getInventoryImportDetails().addAll(details);
                 productService.saveInventoryImport(inventoryImport);
+
                 return ResponseEntity.ok("Sửa thành công");
             }
         }
         return ResponseEntity.ok("Sửa thất bại");
     }
+
     @DeleteMapping("/delete")
     public ResponseEntity<Object> deleteInventory(@RequestParam("id") long id) {
         InventoryImport inventoryImport = productService.findInventoryImportById(id);
+
         if (inventoryImport != null) {
+            for (InventoryImportDetail detail : inventoryImport.getInventoryImportDetails()) {
+                ProductVariant variant = detail.getVariant();
+                if (variant.getStock() < detail.getQuantity()) {
+                    return ResponseEntity.badRequest().body("Không thể xóa do tồn kho không đủ");
+                }
+                if (variant != null) {
+                    variant.setStock(variant.getStock() - detail.getQuantity());
+                    productService.saveVariant(variant);
+                }
+            }
+
             productService.deleteInventoryImport(inventoryImport);
             return ResponseEntity.ok("Xóa thông tin thành công !");
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest().body("Không tìm thấy phiếu nhập");
     }
+
 }

@@ -51,11 +51,12 @@ const MainPage = () => {
     });
     return revenuePerMonth;
   }, [YearLists, statsData.orders]);
-  const calculatePuschaseCost = ImportData.map((item) =>
-    item.inventoryImportDetails?.reduce((sum, item) => {
+  const calculatePuschaseCost = ImportData.reduce((sum, item) => {
+    const total = item.inventoryImportDetails?.reduce((sum, item) => {
       return sum + item.total_cost;
-    }, 0)
-  );
+    }, 0);
+    return sum + total;
+  }, 0);
   const totalRevenue = statsData.orders
     .filter((item) => item.payment.paymentStatus === "SUCCESS")
     .filter((item) => item.delivery.deliveryStatus === "DELIVERED")
@@ -70,12 +71,12 @@ const MainPage = () => {
     const imports = await viewImport();
     setStatsData((prevData) => ({
       ...prevData,
-      orders: orders.data.data,
-      users: users.data.data,
-      products: products.data.data,
+      orders: orders.data,
+      users: users.data,
+      products: products.data,
     }));
-    setOrderData(orders.data.data);
-    setImportData(imports.data.data);
+    setOrderData(orders.data);
+    setImportData(imports.data);
   };
 
   useEffect(() => {
@@ -95,7 +96,7 @@ const MainPage = () => {
   };
 
   const profitMargin = (((totalRevenue - calculatePuschaseCost) / totalRevenue) * 100).toFixed(1);
-
+  console.log(calculatePuschaseCost);
   return (
     <div className="dashboard">
       <div className="dashboard-header">

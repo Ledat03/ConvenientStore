@@ -1,7 +1,6 @@
 import { Await } from "react-router-dom";
 import APIsCustomize from "../utils/APIsCustomize";
 
-//User Controller
 const createNewUser = async (user) => {
   try {
     const responseData = await APIsCustomize.post("user/create", user, {
@@ -51,7 +50,22 @@ const addNewProduct = async (formData) => {
 const updateProduct = async (Product) => {
   await APIsCustomize.put("product/update", Product, { headers: { "Content-Type": "application/json" } });
 };
-const fetchListProduct = async (category, subCategory, code, name) => await APIsCustomize.get("/product/view", { params: { category, subCategory, code, name }, headers: { "Content-Type": "application/json" } });
+const fetchListProduct = async (filter) => {
+  if(filter !==  undefined){
+  const params = { ...filter };
+  if (params.state === "null" || params.state === "") {
+    params.state = null;
+  }
+  if (params.status === "null" || params.status === "") {
+    params.status = null;
+  }
+  if (params.name === "") {
+    params.name = null;
+  }
+    return await APIsCustomize.get("/product/view", {params: params,headers: { "Content-Type": "application/json" }})
+  } 
+}
+const getAllProducts = async () => APIsCustomize.get("/product/all_products", { headers: { "Content-Type": "application/json" } })
 const deleteProduct = async (id) => await APIsCustomize.delete(`/product/delete/${id}`, { headers: { "Content-Type": "application/json" } });
 const fetchProductById = async (productId) => await APIsCustomize.get(`/product/view/product-info/${productId}`, { headers: { "Content-Type": "application/json" } });
 //Variant Controller
@@ -83,4 +97,4 @@ const addImport = async (inventImport) => await APIsCustomize.post("/import/add"
 const viewImport = async () => await APIsCustomize.get("/import/view");
 const updateImport = async (inventImport) => await APIsCustomize.put("/import/update", inventImport, { headers: { "Content-Type": "application/json" } });
 const deleteImport = async (id) => await APIsCustomize.delete(`/import/delete?id=${id}`, { headers: { "Content-Type": "application/json" } });
-export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, updatePromotion, fetchListPromotionByFilter, deletePromotion, fetchListOrder, fetchListOrderById, updateDelivery, updatePayment, addImport, viewImport, updateImport, deleteImport, deleteOrder };
+export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct,getAllProducts, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, updatePromotion, fetchListPromotionByFilter, deletePromotion, fetchListOrder, fetchListOrderById, updateDelivery, updatePayment, addImport, viewImport, updateImport, deleteImport, deleteOrder };

@@ -5,6 +5,7 @@ import Paginate from "../../common/Paginate";
 import { toast } from "react-toastify";
 import { AddToCart } from "../../../services/UserSevice";
 const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
+  console.log(sortBy);
   const calSavePrice = (salePrice, price) => {
     let sale = ((salePrice - price) / price) * 100;
     return Math.round(sale);
@@ -22,9 +23,12 @@ const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
     }
     IsLogIn();
   }, [filters, Loading]);
+  console.log(products);
+  console.log(filters);
   const ActiveProduct = products
-    ?.filter((item) => item.Active == "true")
+    .filter((item) => item.Active == true)
     .filter((item) => {
+      console.log(item);
       if (filters.availability.length === 0) {
         return true;
       }
@@ -37,6 +41,7 @@ const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
       if (filters.availability.includes("out-of-stock") && item.stock == 0) {
         return true;
       }
+
       return false;
     })
     .filter((item) => {
@@ -52,7 +57,7 @@ const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
       if (filters.category.length === 0) {
         return true;
       }
-      if (filters.category.includes(item.subCategory)) {
+      if (filters.category.includes(item.subCategory.subCategoryName)) {
         return true;
       }
       return false;
@@ -61,7 +66,7 @@ const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
       if (filters.brand.length === 0) {
         return true;
       }
-      if (filters.brand.includes(item.brand)) {
+      if (filters.brand.includes(item.brand.brandName)) {
         return true;
       }
       return false;
@@ -71,6 +76,16 @@ const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
         return true;
       }
       if (item.price >= filters.priceRange[0] && item.price <= filters.priceRange[1]) {
+        return true;
+      }
+      return false;
+    })
+    .filter((item) => {
+      if (filters.sale.length === 0) return true;
+      if (filters.sale.includes("sale-price") && item.salePrice > 0) {
+        return true;
+      }
+      if (filters.sale.includes("regular") && item.salePrice === 0) {
         return true;
       }
       return false;
@@ -92,12 +107,17 @@ const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
     toast.success("Thêm Vào Giỏ Hàng Thành Công");
     console.log("thông tin gửi đi - " + info.userId + " " + info.variantId + " " + info.productId);
   };
+
   const sortedProducts = onSortChange(ActiveProduct, sortBy);
+  console.log(ActiveProduct);
+
+  console.log(PaginatedProduct);
   return (
     <>
       <div className="product-grid">
         {PaginatedProduct.length != 0 ? (
           PaginatedProduct.map((item, index) => {
+            console.log(item);
             return (
               <Link to={`product/${item.productId}?variant=${item.calUnit}`} className="product-card" key={index}>
                 {item.stock >= 0 && (
@@ -113,8 +133,8 @@ const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
                 <div className="product-card__info">
                   <h3 className="product-card__name">{item.productName}</h3>
                   <div className="product-card__tags">
-                    <span className="product-card__tag">{item.subCategory}</span>
-                    <span className="product-card__tag">{item.brand}</span>
+                    <span className="product-card__tag">{item.subCategory.subCategoryName}</span>
+                    <span className="product-card__tag">{item.brand.brandName}</span>
                     <span className="product-card__tag">{item.calUnit}</span>
                   </div>
 

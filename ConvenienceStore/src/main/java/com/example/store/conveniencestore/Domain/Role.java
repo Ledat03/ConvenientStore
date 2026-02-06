@@ -1,10 +1,13 @@
 package com.example.store.conveniencestore.Domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Data
@@ -15,7 +18,4 @@ public class Role {
     private long id;
     private String name;
     private String description;
-    @OneToMany(mappedBy = "role")
-    @JsonBackReference
-    private List<User> users;
 }

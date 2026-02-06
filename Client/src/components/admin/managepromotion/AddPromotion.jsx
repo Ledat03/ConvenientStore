@@ -40,10 +40,14 @@ const AddPromotion = (props) => {
     value: item.categoryId,
     label: item.categoryName,
   }));
-  const selectProducts = props.products.map((item) => ({
-    value: item.productId,
-    label: item.productName,
-  }));
+  const selectProducts = () => {
+    if (props.products) {
+      props.products.map((item) => ({
+        value: item.productId,
+        label: item.productName,
+      }));
+    }
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -190,7 +194,7 @@ const AddPromotion = (props) => {
   return (
     <>
       <Button className="btn add-btn" onClick={() => setShow(true)}>
-        Thêm mã giảm giá
+        Add Promotion
       </Button>
 
       <Modal size="xl" show={isShow} onHide={handleClose}>

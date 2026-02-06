@@ -15,7 +15,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "payment", fetch = FetchType.EAGER)
     private Order order;
 
     @Enumerated(EnumType.STRING)

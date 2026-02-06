@@ -16,7 +16,7 @@ const BestSeller = (props) => {
     { label: "Sữa", value: "Các Loại Sữa" },
     { label: "Nấu Ăn", value: "Thực Phẩm Chế Biến" },
   ];
-
+  console.log(props.products);
   const filteredProducts = props.products
     .filter((product) => {
       if (!selectedCategory) return true;
@@ -24,6 +24,9 @@ const BestSeller = (props) => {
     })
     .filter((product) => {
       if (product.stock != 0) return true;
+    })
+    .filter((product) => {
+      if (product.Active == "true") return true;
     })
     .slice(0, viewLimit);
   return (

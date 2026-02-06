@@ -20,6 +20,7 @@ const NewProduct = (props) => {
             .filter((product) => {
               if (product.stock != 0) return true;
             })
+            .filter((product) => product.Active == "true")
             .slice(0, viewLimit)
             .map((item, index) => {
               return (

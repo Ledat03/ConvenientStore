@@ -5,16 +5,22 @@ import lombok.Data;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Data
 public class Cart {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private long sumQuantity;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",unique = true)
+    @JsonBackReference
+    @JoinColumn(name = "user_id", unique = true)
     private User user;
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<CartDetail> details;
 }

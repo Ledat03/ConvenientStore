@@ -10,6 +10,8 @@ import com.example.store.conveniencestore.Service.GmailService;
 import com.example.store.conveniencestore.Service.UserService;
 import com.example.store.conveniencestore.Util.SecurityToken;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +29,7 @@ import java.util.Random;
 @RestController
 @RequestMapping("api/check")
 public class AuthController {
+
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityToken securityToken;
     private final UserService userService;
@@ -54,9 +57,8 @@ public class AuthController {
         return user;
     }
 
-
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityToken securityToken,
-                          UserService userService, PasswordEncoder passwordEncoder, GmailService gmailService) {
+            UserService userService, PasswordEncoder passwordEncoder, GmailService gmailService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityToken = securityToken;
         this.userService = userService;
@@ -65,12 +67,12 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Object> signUp(@RequestBody UserDTO user) {
+    public ResponseEntity<Object> signUp(@Valid @RequestBody UserDTO user){
         User CheckExist = userService.findByEmail(user.getEmail());
         if (CheckExist != null && user.getEmail().equals(CheckExist.getEmail())) {
             RestRestponse<Object> ErrorRestRestponse = new RestRestponse<>();
-            ErrorRestRestponse.setMessage("Tài khoản đã tồn tại !");
-            ErrorRestRestponse.setError("Email đã tồn tại");
+            ErrorRestRestponse.setMessage("Email already exists !");
+            ErrorRestRestponse.setError("Email already exists !");
             ErrorRestRestponse.setStatusCode(HttpStatus.valueOf(400).value());
             return ResponseEntity.status(400).body(ErrorRestRestponse);
         }
@@ -86,54 +88,63 @@ public class AuthController {
         Authentication auth = authenticationManagerBuilder.getObject().authenticate(token);
         SecurityContextHolder.getContext().setAuthentication(auth);
         User user = userService.findByEmail(loginDTO.getUsername());
-        ResLoginDTO resLoginDTO = new ResLoginDTO();
-        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(user.getId(), loginDTO.getUsername(), user.getUsername(),user.getRole().getName());
-        resLoginDTO.setUser(userLogin);
-        String AuthToken = securityToken.createAccessToken(user.getEmail(),userLogin);
-        resLoginDTO.setAccessToken(AuthToken);
-        String refreshToken = securityToken.createRefreshToken(user.getEmail(), resLoginDTO);
-        userService.updateUserToken(refreshToken,user.getEmail());
+        ResLoginDTO userLogin = new ResLoginDTO("",user.getId(), loginDTO.getUsername(), user.getUsername(), user.getRole().getName());
+        String AuthToken = securityToken.createAccessToken( userLogin);
+        userLogin.setAccessToken(AuthToken);
+        String refreshToken = securityToken.createRefreshToken(user.getEmail(), userLogin);
+        userService.updateUserToken(refreshToken, user.getEmail());
         ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken).maxAge(refreshTokenExpiration).path("/").build();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(resLoginDTO);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(userLogin);
     }
 
-    @GetMapping("/auth")
-    public ResponseEntity<ResLoginDTO.UserLogin> auth() {
-        String Email = SecurityToken.getCurrentUserLogin().isPresent() ? SecurityToken.getCurrentUserLogin().get() : "";
-        User user = userService.findByEmail(Email);
-        ResLoginDTO.UserLogin resLoginDTO = new ResLoginDTO.UserLogin();
-        if (user != null) {
-            resLoginDTO.setId(user.getId());
-            resLoginDTO.setUsername(user.getEmail());
-            resLoginDTO.setName(user.getUsername());
+//    @GetMapping("/auth")
+//    public ResponseEntity<ResLoginDTO> auth() {
+//        String Email = SecurityToken.getCurrentUserLogin().isPresent() ? SecurityToken.getCurrentUserLogin().get() : "";
+//        User user = userService.findByEmail(Email);
+//        ResLoginDTO.UserLogin resLoginDTO = new ResLoginDTO.UserLogin();
+//        if (user != null) {
+//            resLoginDTO.setId(user.getId());
+//            resLoginDTO.setUsername(user.getEmail());
+//            resLoginDTO.setName(user.getUsername());
+//        }
+//        return ResponseEntity.ok().body(resLoginDTO);
+//    }
+
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<Object> refreshToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null) {
+            String refreshToken = null;
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    refreshToken = cookie.getValue();
+                    break;
+                }
+            }
+            Jwt refreshTokenJwt = securityToken.checkRefreshToken(refreshToken);
+            if(refreshToken != null) {
+
+                String email = refreshTokenJwt.getSubject();
+                User user = userService.findByEmail(email);
+                if(refreshTokenJwt.getExpiresAt() != null && refreshTokenJwt.getExpiresAt().isAfter(Instant.now())) {
+                    ResLoginDTO res = new ResLoginDTO("",user.getId(), user.getUsername(), user.getEmail(), user.getRole().getName());
+                    String accessToken = securityToken.createAccessToken(res);
+                    res.setAccessToken(accessToken);
+                    return ResponseEntity.ok().body(res);
+                }
+            }
         }
-        return ResponseEntity.ok().body(resLoginDTO);
+        return ResponseEntity.status(403).body("Unauthenticated");
     }
-    @GetMapping("/auth/refresh")
-    public ResponseEntity<ResLoginDTO> refreshToken(@RequestParam(name = "refreshToken",required = false) String refreshToken) {
-        Jwt decodedToken = this.securityToken.checkRefreshToken(refreshToken);
-        String Email = decodedToken.getSubject();
-        User user  = userService.findByRefreshTokenAndEmail(refreshToken, Email);
-        ResLoginDTO resLoginDTO = new ResLoginDTO();
-        if(user == null){
-            System.out.println("Không tìm thấy người dùng !");
-        }
-        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin(user.getId(), user.getEmail(), user.getUsername(),user.getRole().getName());
-        resLoginDTO.setUser(userLogin);
-        String AuthToken = securityToken.createAccessToken(user.getEmail(), userLogin);
-        resLoginDTO.setAccessToken(AuthToken);
-        String newRefreshToken = securityToken.createRefreshToken(user.getEmail(), resLoginDTO);
-        userService.updateUserToken(newRefreshToken,user.getEmail());
-        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", newRefreshToken).maxAge(refreshTokenExpiration).path("/").build();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(resLoginDTO);
-    }
+
     @GetMapping("/logout")
     public ResponseEntity<Void> logout() {
-       String email = SecurityToken.getCurrentUserLogin().isPresent() ? SecurityToken.getCurrentUserLogin().get() : "";
-       userService.updateUserToken(null,email);
-       ResponseCookie responseCookie = ResponseCookie.from("refreshToken" , null).secure(true).maxAge(0).path("/").build();
+        String email = SecurityToken.getCurrentUserLogin().isPresent() ? SecurityToken.getCurrentUserLogin().get() : "";
+        userService.updateUserToken(null, email);
+        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", null).secure(true).maxAge(0).path("/").build();
         return ResponseEntity.status(201).header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
     }
+
     @PostMapping("/forgot")
     public ResponseEntity<Object> forgotPassword(@RequestBody String email) {
         User user = userService.findByEmail("test1@gmail.com");
@@ -142,9 +153,9 @@ public class AuthController {
         }
         try {
             Random random = new Random();
-            long number = random.nextLong(90000)+10000;
+            long number = random.nextLong(90000) + 10000;
             String code = String.valueOf(number);
-            gmailService.sendCodeResetPassword("KrytosVN@gmail.com",code);
+            gmailService.sendCodeResetPassword("KrytosVN@gmail.com", code);
             return ResponseEntity.ok().body(code);
         } catch (MessagingException e) {
             throw new RuntimeException(e);

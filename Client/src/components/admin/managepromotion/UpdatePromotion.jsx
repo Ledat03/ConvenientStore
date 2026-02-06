@@ -5,7 +5,6 @@ import { updatePromotion } from "../../../services/GetAPI";
 import "../css/promotion.scss";
 import Select from "react-select";
 import _ from "lodash";
-import LoadingAnimation from "../../common/LoadingAnimation";
 const UpdatePromotion = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -77,11 +76,14 @@ const UpdatePromotion = (props) => {
     value: item.categoryId,
     label: item.categoryName,
   }));
-  const selectProducts = props.products.map((item) => ({
-    value: item.productId,
-    label: item.productName,
-  }));
-
+  const selectProducts = () => {
+    if (props.products) {
+      props.products.map((item) => ({
+        value: item.productId,
+        label: item.productName,
+      }));
+    }
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -264,7 +266,6 @@ const UpdatePromotion = (props) => {
                     <option value="FREE_SHIPPING">Miễn phí vận chuyển</option>
                   </Form.Select>
                 </Form.Group>
-                {console.log(formData.scope)}
                 <Form.Group as={Col}>
                   <Form.Label>Phạm vi áp dụng</Form.Label>
                   <Form.Select

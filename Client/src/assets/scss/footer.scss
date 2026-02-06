@@ -50,11 +50,16 @@
   }
 
   &__main {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    justify-content: space-between;
     gap: var.$spacing-8;
     padding: var.$spacing-8 0;
-
+    img {
+      background-color: var.$red-accent;
+      width: 200px;
+      height: 80px;
+      border-radius: 20px;
+    }
     @media (min-width: var.$breakpoint-lg) {
       grid-template-columns: repeat(5, 1fr);
     }

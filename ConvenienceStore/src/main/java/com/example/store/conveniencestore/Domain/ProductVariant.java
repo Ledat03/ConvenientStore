@@ -5,10 +5,15 @@ import lombok.Data;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Data
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "Product_Variants")
 public class ProductVariant {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long variantId;
@@ -20,13 +25,8 @@ public class ProductVariant {
     private String isActive;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
+    @JsonBackReference
     private Product product;
     @ElementCollection
     private List<String> productImage;
-    @OneToMany(mappedBy = "productVariant")
-    private List<CartDetail> cartDetails;
-    @OneToMany(mappedBy = "productVariant")
-    private List<OrderItem> orderItem;
-    @OneToMany(mappedBy = "variant")
-    private List<InventoryImportDetail> inventoryImportDetails;
 }

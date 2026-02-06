@@ -36,7 +36,7 @@ const UpdateProduct = (props) => {
   }, [props.InfoItem]);
   const getListSubCate = async () => {
     const dataSubCate = await handleListSubCate();
-    setSubCategory(dataSubCate.data.data);
+    setSubCategory(dataSubCate.data);
   };
   const updateInfoProduct = async () => {
     try {
@@ -87,7 +87,7 @@ const UpdateProduct = (props) => {
 
               <Form.Group as={Col} controlId="formPreserve">
                 <Form.Label>Hướng dẫn bảo quản</Form.Label>
-                <Form.Control type="text" placeholder="Last Name" onChange={(e) => setPreserve(e.target.value)} defaultValue={props.InfoItem.preserve} />
+                <Form.Control type="text" placeholder="" onChange={(e) => setPreserve(e.target.value)} defaultValue={props.InfoItem.preserve} />
               </Form.Group>
             </Row>
             <Row className="mb-3">

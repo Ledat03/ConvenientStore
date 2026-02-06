@@ -188,7 +188,7 @@
 }
 
 .message.user .message-content {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var.$red-accent;
   color: white;
   border-bottom-right-radius: 4px;
 }
@@ -217,7 +217,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #667eea;
+  background: var.$red-accent;
   animation: typing 1.4s infinite ease-in-out;
 }
 
@@ -265,7 +265,7 @@
 }
 
 .chat-input:focus {
-  border-color: #667eea;
+  border-color: var.$red-accent;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -275,7 +275,7 @@
 }
 
 .send-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var.$red-accent;
   color: white;
   border: none;
   padding: 10px 16px;

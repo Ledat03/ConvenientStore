@@ -1,15 +1,21 @@
 package com.example.store.conveniencestore.Domain;
 
 import com.example.store.conveniencestore.EnumType.DeliveryStatus;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+
 @Entity
 @Data
 @Table(name = "Deliveries")
 public class Delivery {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long deliveryId;
@@ -19,6 +25,7 @@ public class Delivery {
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonManagedReference
     @JoinColumn(name = "user_id")
     private User user;
 

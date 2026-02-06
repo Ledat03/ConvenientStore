@@ -17,7 +17,7 @@ const HomeHeader = ({ onLogout }) => {
   }, []);
   const fetchCategory = async () => {
     const res = await handleCategories();
-    setCategory(res.data.data);
+    if (res) setCategory(res.data);
   };
   const user = JSON.parse(localStorage.getItem("user"));
   const CustomToggle = React.forwardRef(({ children, onClick }, ref) => {

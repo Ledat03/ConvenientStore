@@ -4,18 +4,19 @@ import { useEffect, useState } from "react";
 import _ from "lodash";
 import { AddNewVariant } from "../../../../services/GetAPI";
 const AddVariant = (props) => {
-  const [Price, setPrice] = useState("");
-  const [SalePrice, setSalePrice] = useState("");
-  const [Stock, setStock] = useState("");
+  const [Price, setPrice] = useState("0");
+  const [SalePrice, setSalePrice] = useState("0");
+  const [Stock, setStock] = useState("0");
   const [Image, setImage] = useState([]);
   const [Unit, setUnit] = useState("");
   const [SKUCode, setSKUCode] = useState("");
   const [IsActive, setActive] = useState("true");
   const [ImagePreviewURL, setImagePreviewURL] = useState([]);
+  const [Loading, setLoading] = useState(false);
   const ClearInput = () => {
-    setPrice("");
-    setSalePrice("");
-    setStock("");
+    setPrice("0");
+    setSalePrice("0");
+    setStock("0");
     setImage([]);
     setUnit("");
     setSKUCode("");
@@ -35,15 +36,17 @@ const AddVariant = (props) => {
       formData.append(`productImage`, item);
     });
     try {
+      setLoading(true);
       console.log(formData.entries());
       await AddNewVariant(formData);
       toast.success("Thêm mới thành công");
       props.getVariants(props.InfoItem.productId);
       props.closeVariant();
       ClearInput();
+      setLoading(false);
     } catch (e) {
       toast.error("có lỗi xảy ra", e);
-      throw e;
+      setLoading(false);
     }
   };
   const handleImage = (e) => {
@@ -65,7 +68,7 @@ const AddVariant = (props) => {
               <Form.Label>Tên sản phẩm</Form.Label>
               <Form.Label>{props.InfoItem.productName}</Form.Label>
             </Form.Group>
-            <Row className="mb-3">
+            {/* <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridPrice">
                 <Form.Label>Giá</Form.Label>
                 <Form.Control type="text" placeholder="Nhập Giá Sản Phẩm" value={Price} onChange={(e) => setPrice(e.target.value)} />
@@ -74,11 +77,11 @@ const AddVariant = (props) => {
                 <Form.Label>Giá Khuyến mãi</Form.Label>
                 <Form.Control type="text" placeholder="Nhập Giá Khuyến mãi" value={SalePrice} onChange={(e) => setSalePrice(e.target.value)} />
               </Form.Group>
-            </Row>
+            </Row> */}
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formStock">
                 <Form.Label>Số lượng</Form.Label>
-                <Form.Control type="text" placeholder="Nhập Số lượng" value={Stock} onChange={(e) => setStock(e.target.value)} />
+                <Form.Control type="text" placeholder="Số lượng sẽ được thêm khi nhập hàng" value={Stock} onChange={(e) => setStock(e.target.value)} disabled />
               </Form.Group>
               <Form.Group as={Col}>
                 <Form.Label>Đơn vị tính</Form.Label>
@@ -127,7 +130,9 @@ const AddVariant = (props) => {
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={props.closeVariant}>Hủy</Button>
-          <Button onClick={Add}>Thêm</Button>
+          <Button onClick={Add} disabled={Loading}>
+            Thêm
+          </Button>
         </Modal.Footer>
       </Modal>
     </>

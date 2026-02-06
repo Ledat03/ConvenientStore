@@ -4,15 +4,17 @@ import "./css/AdminCustom.scss";
 import { useEffect, useState } from "react";
 import { AdminHeader } from "./adcommon/AdminHeader";
 import { Bounce, ToastContainer } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 export const AdminPage = () => {
   const [collapse, setCollapse] = useState(false);
   const [user, setUser] = useState();
-  const getUser = () => {
-    let temp = JSON.parse(localStorage.getItem("user"));
-    setUser(temp);
-  };
+  const navigate = useNavigate();
   useEffect(() => {
-    getUser();
+    let temp = JSON.parse(localStorage.getItem("user"));
+    if (temp && temp?.role === "user") {
+    navigate("/");
+  }
+  setUser(temp)
   }, []);
   return (
     <div className="admin-container">

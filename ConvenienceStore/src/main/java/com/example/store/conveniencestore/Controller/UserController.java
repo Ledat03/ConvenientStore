@@ -1,23 +1,22 @@
 package com.example.store.conveniencestore.Controller;
 
 import com.example.store.conveniencestore.DTO.ChangePassword;
-import com.example.store.conveniencestore.DTO.RoleDTO;
 import com.example.store.conveniencestore.DTO.UserDTO;
+import com.example.store.conveniencestore.Domain.RestRestponse;
 import com.example.store.conveniencestore.Domain.Role;
 import com.example.store.conveniencestore.Domain.User;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.store.conveniencestore.Domain.RestRestponse;
 import com.example.store.conveniencestore.Service.UserService;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("user")
@@ -29,24 +28,7 @@ public class UserController {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
-    private String convertToDTO(Role role) {
-        RoleDTO roleDTO = new RoleDTO();
-        roleDTO.setId(role.getId());
-        roleDTO.setName(role.getName());
-        return roleDTO.getName();
-    }
-    private UserDTO convertUserToDTO(User user) {
-       UserDTO userDTO = new UserDTO();
-       userDTO.setId(user.getId());
-       userDTO.setEmail(user.getEmail());
-       userDTO.setFirstName(user.getFirstName());
-       userDTO.setLastName(user.getLastName());
-       userDTO.setUsername(user.getUsername());
-       userDTO.setAddress(user.getAddress());
-       userDTO.setPhone(user.getPhone());
-       userDTO.setRole(convertToDTO(user.getRole()));
-       return userDTO;
-    }
+
     private User convertUserDTOToUser(UserDTO userDTO) {
         User user = new User();
         user.setId(userDTO.getId());
@@ -77,15 +59,15 @@ public class UserController {
     @GetMapping("/view")
     public ResponseEntity<Object> getUsers() {
         List<User> users = userService.findAll();
-            RestRestponse<List<UserDTO>> usersResponse = new RestRestponse<>();
-            List<UserDTO> userDTOs = users.stream().map(this::convertUserToDTO).toList();
+        RestRestponse<List<UserDTO>> usersResponse = new RestRestponse<>();
+            List<UserDTO> userDTOs = users.stream().map(UserDTO::new).toList();
             usersResponse.setData(userDTOs);
             return ResponseEntity.ok().body(userDTOs);
     }
     @GetMapping("/view-user")
     public ResponseEntity<Object> getUser(@RequestParam("id") Long id) {
         User user = userService.findById(id);
-        UserDTO userDTO = convertUserToDTO(user);
+        UserDTO userDTO = new UserDTO(user);
         return ResponseEntity.ok().body(userDTO);
     }
     @PutMapping("/update-user")
@@ -122,9 +104,9 @@ public class UserController {
                 String hash = passwordEncoder.encode(changePassword.getPassword());
                 user.setPasswordHash(hash);
                 userService.save(user);
-                return ResponseEntity.ok().body("Thay mật khẩu thành công");
+                return ResponseEntity.ok().body("Password was changed !");
             }else{
-                return ResponseEntity.ok().body("Mật khẩu cũ không trùng khớp");
+                return ResponseEntity.ok().body("Old password doesn't match !");
             }
         }
         return ResponseEntity.notFound().build();
@@ -175,5 +157,12 @@ public class UserController {
     public ResponseEntity<Object> countUser() {
         long count = userService.findAll().size();
         return ResponseEntity.ok().body(count);
+    }
+    @GetMapping("/filter")
+    public ResponseEntity<List<UserDTO>> filterUser(String name,String role,int page){
+        Pageable pageable = PageRequest.of(page,5);
+        Page<User> data = userService.getUserByEmailOrRole(name,role,pageable);
+        List<UserDTO> response = data.stream().map(UserDTO::new).toList();
+        return ResponseEntity.ok(response);
     }
 }

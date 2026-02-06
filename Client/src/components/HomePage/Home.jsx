@@ -12,7 +12,7 @@ export const Home = (props) => {
   const [Product, setProduct] = useState([]);
   const fetchListProduct = async () => {
     const res = await getMainPage();
-    setProduct(res.data.data);
+    setProduct(res.data);
   };
   const [userData, setUserData] = useState();
   useEffect(() => {

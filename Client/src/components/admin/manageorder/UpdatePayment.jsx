@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Modal, Form, Row, Col, Button } from "react-bootstrap";
 import _ from "lodash";
 import { updatePayment } from "../../../services/GetAPI";
+import { toast } from "react-toastify";
 const UpdatePayment = (props) => {
   const [Payment, setPayment] = useState({
     paymentId: 0,
@@ -24,9 +25,15 @@ const UpdatePayment = (props) => {
     }
   }, [props.Order]);
   const putPayment = async () => {
-    const res = await updatePayment(Payment);
-    getListOrder();
-    console.log(res);
+    try {
+      const res = await updatePayment(Payment);
+      props.getListOrder();
+      console.log(res);
+      props.close();
+      toast.success("Cập nhật thanh toán thành công !");
+    } catch (error) {
+      toast.error("Không thể cập nhật thanh toán !");
+    }
   };
   return (
     <>
@@ -77,7 +84,7 @@ const UpdatePayment = (props) => {
                 >
                   <option value="PENDING">Đang chờ thanh toán</option>
                   <option value="SUCCESS">Thanh Toán Thành Công</option>
-                  <option value="RETURNED">Hoàn Tiền</option>
+                  <option value="REFUNDED">Hoàn Tiền</option>
                   <option value="FAILED">Lỗi Giao Dịch</option>
                 </Form.Select>
               </Form.Group>

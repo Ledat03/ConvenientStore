@@ -40,7 +40,7 @@ public class SecurityToken {
         this.jwtEncoder = jwtEncoder;
     }
 
-    public String createAccessToken(String email,ResLoginDTO.UserLogin userLogin) {
+    public String createAccessToken(ResLoginDTO userLogin) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
         List<String> authorities = new ArrayList<>();
@@ -49,7 +49,7 @@ public class SecurityToken {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
-                .subject(email)
+                .subject(userLogin.getUsername())
                 .claim("user", userLogin)
                 .claim("permissions", authorities)
                 .build();
@@ -65,7 +65,10 @@ public class SecurityToken {
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(Email)
-                .claim("user",userDTO.getUser() )
+                .claim("id",userDTO.getId() )
+                .claim("username",userDTO.getUsername() )
+                .claim("name",userDTO.getName() )
+                .claim("role",userDTO.getRole() )
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).type("JWT").build();

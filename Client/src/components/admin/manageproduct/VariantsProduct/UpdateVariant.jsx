@@ -76,7 +76,7 @@ const UpdateVariant = (props) => {
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formStock">
                 <Form.Label>Số lượng</Form.Label>
-                <Form.Control type="text" placeholder="Nhập Số lượng" onChange={(e) => setStock(e.target.value)} defaultValue={props.Variant.stock} />
+                <Form.Control type="text" placeholder="Nhập Số lượng" onChange={(e) => setStock(e.target.value)} defaultValue={props.Variant.stock} disabled />
               </Form.Group>
               <Form.Group as={Col}>
                 <Form.Label>Đơn vị tính</Form.Label>

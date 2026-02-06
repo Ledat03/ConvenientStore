@@ -7,6 +7,7 @@ const AddProduct = (props) => {
   const [isShow, setShow] = useState(false);
   const close = () => setShow(false);
   const open = () => setShow(true);
+  const [Loading, setLoading] = useState(false);
   const [ListBrand, setListBrand] = useState([]);
   const [GetCategory, setGetCategory] = useState("Sữa Tươi");
   const [ProductName, setProductName] = useState("");
@@ -44,8 +45,8 @@ const AddProduct = (props) => {
   const getRequireInfo = async () => {
     const dataSubCate = await handleListSubCate();
     const dataBrands = await viewBrand();
-    setListBrand(dataBrands.data.data);
-    setSubCategory(dataSubCate.data.data);
+    setListBrand(dataBrands.data);
+    setSubCategory(dataSubCate.data);
   };
 
   const handleImage = (e) => {
@@ -89,13 +90,15 @@ const AddProduct = (props) => {
       return Object.keys(error).length === 0;
     };
     if (!checkValidate()) return;
+
     try {
+      setLoading(true);
       await addNewProduct(formData);
-      toast.success("Product Information Successful Added");
-      props.getListImport();
+      toast.success("New product is already added !");
       close();
       props.handleProductsList();
       clearInput();
+      setLoading(false);
     } catch (error) {
       toast.error("Fail");
     }
@@ -109,7 +112,7 @@ const AddProduct = (props) => {
           open();
         }}
       >
-        Thêm sản phẩm
+        Add New Product
       </Button>
       <Modal
         size="xl"
@@ -120,7 +123,7 @@ const AddProduct = (props) => {
           close();
         }}
       >
-        <Modal.Header closeButton> Thêm Sản Phẩm</Modal.Header>
+        <Modal.Header closeButton> Add new product</Modal.Header>
         <Modal.Body>
           <Form>
             <Row className="mb-3">
@@ -222,7 +225,9 @@ const AddProduct = (props) => {
           >
             Hủy
           </Button>
-          <Button onClick={handleAddProduct}>Thêm</Button>
+          <Button onClick={handleAddProduct} disabled={Loading}>
+            Thêm
+          </Button>
         </Modal.Footer>
       </Modal>
     </>

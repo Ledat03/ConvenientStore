@@ -2,15 +2,22 @@ package com.example.store.conveniencestore.Domain;
 
 import com.example.store.conveniencestore.EnumType.DiscountScope;
 import com.example.store.conveniencestore.EnumType.PromotionType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Data
 @Table(name = "promotions")
 public class Promotion {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long couponId;
@@ -34,18 +41,22 @@ public class Promotion {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<PromotionProduct> promotionProducts;
 
     @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<PromotionCategory> couponCategories;
 
     @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<PromotionSubCate> promotionSubCates;
 
     @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<PromotionBrand> promotionBrands;
 
     @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<PromotionUser> promotionUsers;
 }
-

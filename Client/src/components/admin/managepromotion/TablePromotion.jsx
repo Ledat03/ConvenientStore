@@ -7,11 +7,12 @@ import ViewPromotion from "./ViewPromotion";
 import "../css/productCustom.scss";
 import DeletePromotion from "./DeletePromotion";
 import Paginate from "../../common/Paginate";
-const TablePromotion = (props) => {
+const TablePromotion = ({ InfoPromotion, handlePromotionList, categories, subCategories, brands, products }) => {
   const [HandlePromotion, setState] = useState({
     ProView: false,
     ProUpdate: false,
     ProDelete: false,
+    ProFilter: false
   });
 
   const openModal = (modalName) => {
@@ -30,79 +31,57 @@ const TablePromotion = (props) => {
     status: "Default",
     search: "",
   });
-  const filledProduct = () => {
-    return props.InfoPromotion.filter((item) => (filters.type !== "Default" ? item.scope === filters.type : item))
-      .filter((item) => (filters.reduce !== "Default" ? item.type === filters.reduce : item))
-      .filter((item) => (filters.status !== "Default" ? item.active.toString() === filters.status : item))
-      .filter((item) => item.code.toLowerCase().includes(filters.search));
-  };
-  const filterList = filledProduct();
-  const itemsPerPage = 2;
-  const totalItem = props.InfoPromotion.length;
-  const [PaginatedItem, setPaginatedItem] = useState([]);
-  const getScope = (status) => {
-    switch (status) {
-      case "ALL":
-        return "Mọi Loại";
-      case "CATEGORY":
-        return "Loại Sản Phẩm";
-      case "SUBCATEGORY":
-        return "Nhánh Sản Phẩm";
-      case "PRODUCT":
-        return "Sản Phẩm";
-      case "BRAND":
-        return "Nhãn Hàng";
-      default:
-        return "Đang Cập Nhật";
-    }
-  };
   return (
     <div className="product-list-container">
       <nav className="breadcrumb">
         <a href="#" className="breadcrumb-link">
-          Trang chủ
+          Dashboard
         </a>
         <span className="breadcrumb-separator">/</span>
-        <span className="breadcrumb-current">Mã Giảm Giá</span>
+        <span className="breadcrumb-current">Promotion</span>
       </nav>
 
       <div className="product-list-header">
-        <h1 className="page-title">Danh Sách Mã Giảm Giá</h1>
+        <h1 className="page-title">Promotion List</h1>
       </div>
 
       <div className="product-list-filters">
         <div className="filters-left">
-          <AddPromotion handlePromotionList={props.handlePromotionList} categories={props.categories} subCategories={props.subCategories} brands={props.brands} products={props.products} />
+          <AddPromotion handlePromotionList={handlePromotionList} categories={categories} subCategories={subCategories} brands={brands} products={products} />
+
+        </div>
+
+        {HandlePromotion.ProFilter ? <div className="filters-right">
+          <button onClick={() => setState(prev => ({ ...prev, ProFilter: false }))}>X</button>
           <div className="search-container">
             <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.35-4.35"></path>
             </svg>
-            <input type="text" placeholder="Tìm Kiếm Mã " className="search-input" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} />
+            <input type="text" placeholder="Search Promotion " className="search-input" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} />
           </div>
-        </div>
-
-        <div className="filters-right">
           <select className="filter-select" value={filters.type} onChange={(e) => setFilters({ ...filters, type: e.target.value })}>
-            <option value="Default">Loại mã</option>
-            <option value="ALL">Giảm giá tất cả sản phẩm </option>
-            <option value="PRODUCT">Giảm giá sản phẩm </option>
-            <option value="CATEGORY">Giảm giá danh mục</option>
-            <option value="BRAND">Giảm giá nhãn hàng</option>
+            <option value="Default">Promotion For</option>
+            <option value="ALL">For All Products</option>
+            <option value="PRODUCT">For Specified Product </option>
+            <option value="CATEGORY">For Specified Category</option>
+            <option value="BRAND">For Specified Brand</option>
           </select>
 
           <select className="filter-select" value={filters.reduce} onChange={(e) => setFilters({ ...filters, reduce: e.target.value })}>
-            <option value="Default">Lọc với</option>
-            <option value="PERCENTAGE">Giảm theo %</option>
-            <option value="FIXED_AMOUNT">Giảm giá cố định</option>
+            <option value="Default">Promotion Type</option>
+            <option value="PERCENTAGE">Reduce By %</option>
+            <option value="FIXED_AMOUNT">Reduce By Fixed Amount</option>
           </select>
 
           <select className="filter-select" value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value })}>
-            <option value="Default">Trạng thái</option>
-            <option value="true">Kích hoạt</option>
-            <option value="false">Ẩn</option>
+            <option value="Default">Status</option>
+            <option value="true">Valid</option>
+            <option value="false">Expired</option>
           </select>
-        </div>
+          <button >Search</button>
+          <button>Clear</button>
+        </div> : <button onClick={() => setState(prev => ({ ...prev, ProFilter: true }))}>Filter</button>}
       </div>
       <div className="product-table-container">
         <table className="product-table">
@@ -111,15 +90,15 @@ const TablePromotion = (props) => {
               <th className="table-header">
                 <input type="checkbox" className="checkbox" />
               </th>
-              <th className="table-header">Tên</th>
-              <th className="table-header name-header">Mã Giảm Giá</th>
-              <th className="table-header">Hết Hạn Vào</th>
-              <th className="table-header">Trạng thái</th>
-              <th className="table-header">Đối Tượng</th>
+              <th className="table-header">Name</th>
+              <th className="table-header name-header">Code</th>
+              <th className="table-header">Expire At</th>
+              <th className="table-header">Status</th>
+              <th className="table-header">Type</th>
             </tr>
           </thead>
           <tbody>
-            {PaginatedItem.map((promotion) => (
+            {InfoPromotion.map((promotion) => (
               <tr key={promotion.id} className="table-row">
                 <td className="table-cell">
                   <input type="checkbox" className="checkbox" />
@@ -135,10 +114,10 @@ const TablePromotion = (props) => {
                 </td>
 
                 <td className={`table-cell`}>
-                  <span className={`${promotion.active ? "active" : "disabled"}`}>{promotion.active ? "Kích Hoạt" : "Vô Hiệu"}</span>
+                  <span className={`${promotion.active ? "active" : "disabled"}`}>{promotion.active ? "Valid" : "Expired"}</span>
                 </td>
 
-                <td className="table-cell">{getScope(promotion.scope)}</td>
+                <td className="table-cell">{promotion.scope}</td>
                 <td className="table-cell">
                   <Dropdown drop="down">
                     <Dropdown.Toggle as={ButtonGroup} className="action-button">
@@ -151,7 +130,7 @@ const TablePromotion = (props) => {
                           openModal("ProView");
                         }}
                       >
-                        Thông tin
+                        Information
                       </Dropdown.Item>
 
                       <Dropdown.Item
@@ -160,7 +139,7 @@ const TablePromotion = (props) => {
                           openModal("ProUpdate");
                         }}
                       >
-                        Cập nhật
+                        Update
                       </Dropdown.Item>
                       <Dropdown.Item
                         onClick={() => {
@@ -168,7 +147,7 @@ const TablePromotion = (props) => {
                           openModal("ProDelete");
                         }}
                       >
-                        Xóa
+                        Delete
                       </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
@@ -178,13 +157,13 @@ const TablePromotion = (props) => {
           </tbody>
         </table>
         <div className="pagination-container">
-          <Paginate itemsPerPage={itemsPerPage} totalItem={totalItem} item={filterList} setPaginatedItem={setPaginatedItem} sortBy={filters} />
+
         </div>
       </div>
       <>
-        <UpdatePromotion isShowUpdate={HandlePromotion.ProUpdate} closeUpdate={() => closeModal("ProUpdate")} InfoItem={InfoItem} categories={props.categories} subCategories={props.subCategories} brands={props.brands} products={props.products} handlePromotionList={props.handlePromotionList} />
+        <UpdatePromotion isShowUpdate={HandlePromotion.ProUpdate} closeUpdate={() => closeModal("ProUpdate")} InfoItem={InfoItem} categories={categories} subCategories={subCategories} brands={brands} products={products} handlePromotionList={handlePromotionList} />
         <ViewPromotion isShowView={HandlePromotion.ProView} closeView={() => closeModal("ProView")} InfoItem={InfoItem} />
-        <DeletePromotion isShowDelete={HandlePromotion.ProDelete} closeDelete={() => closeModal("ProDelete")} InfoItem={InfoItem} handlePromotionList={props.handlePromotionList} />
+        <DeletePromotion isShowDelete={HandlePromotion.ProDelete} closeDelete={() => closeModal("ProDelete")} InfoItem={InfoItem} handlePromotionList={handlePromotionList} />
       </>
     </div>
   );

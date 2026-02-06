@@ -17,6 +17,10 @@ const AddImport = ({ isActive, close, handleReload, getListImport }) => {
     const temp = localStorage.getItem("user");
     setUser(JSON.parse(temp));
   };
+  const clearImport = () => {
+    setFormImport({ importCode: "", importNote: "" });
+    setSelectedItems([]);
+  };
   const [newItem, setNewItem] = useState({
     product: null,
     variant: null,
@@ -54,7 +58,6 @@ const AddImport = ({ isActive, close, handleReload, getListImport }) => {
     list.splice(index, 1);
     setSelectedItems(list);
   };
-
   const handleSubmit = async () => {
     if (!formImport.importCode) {
       toast.error("Vui lòng nhập Mã phiếu nhập hàng");
@@ -85,6 +88,7 @@ const AddImport = ({ isActive, close, handleReload, getListImport }) => {
       setIsLoading(true);
       getListImport();
       toast.success("Thêm đơn nhập hàng thành công!");
+      clearImport();
       close();
       handleReload && handleReload();
     } catch (e) {

@@ -4,11 +4,13 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Data
 @Table(name = "Orders")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -16,9 +18,10 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
     private Double total;
-    @OneToMany(mappedBy = "order" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
     List<OrderItem> orderDetails;
-    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "payment_id")
     private Payment payment;
 

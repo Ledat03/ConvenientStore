@@ -6,6 +6,7 @@ import Logo from "../../assets/Winmart.svg";
 import { Bounce, ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
+import { FormEvent } from "react";
 const Authentication = () => {
   const navigate = useNavigate();
   const [isLogin, setLogin] = useState(true);
@@ -22,7 +23,8 @@ const Authentication = () => {
   const ClearInput = () => {
     setEmail(""), setPassword(""), setUserName(""), setFirstName(""), setLastName(""), setRePassword(""), setAddress(""), setPhone("");
   };
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     let user = {
       username: Email,
       password: Password,
@@ -30,10 +32,16 @@ const Authentication = () => {
     try {
       const response = await fetchLogin(user);
       if (response.status == 200) {
-        console.log(response.data.data);
-        localStorage.setItem("accessToken", response.data.data.accessToken);
-        localStorage.setItem("user", JSON.stringify(response.data.data.user));
-        if (response.data.data.user.role === "admin") {
+        console.log(response.data);
+        localStorage.setItem("accessToken", response.data.accessToken);
+        const user = {
+          id: response.data.id,
+          name: response.data.name,
+          role: response.data.role,
+          username: response.data.username,
+        };
+        localStorage.setItem("user", JSON.stringify(user));
+        if (user.role === "admin") {
           navigate("/admin");
         } else {
           navigate("/");
@@ -57,30 +65,37 @@ const Authentication = () => {
   };
   const checkValidate = () => {
     const error = {};
-    if (!user.username.trim()) error.username = "Bạn cần nhập trường này";
-    if (!user.email.trim()) error.email = "Email không được để trống";
-    if (!user.passwordHash.trim()) error.password = "Bạn cần nhập trường này";
-    if (!user.firstName.trim()) error.firstName = "Bạn cần nhập trường này";
-    if (!user.lastName.trim()) error.lastName = "Bạn cần nhập trường này";
-    if (!user.phone.trim()) error.phoneNumber = "Số điện thoại không được trống";
-    if (!user.address.trim()) error.address = "Bạn cần nhập trường này";
+    if (!user.username.trim()) error.username = "Username mustn't blank";
+    if (!user.email.trim()) error.email = "Email mustn't blank";
+    if (!user.passwordHash.trim()) error.password = "Password mustn't blank";
+    if (!user.firstName.trim()) error.firstName = "Your First Name mustn't blank";
+    if (!user.lastName.trim()) error.lastName = "Your Last Name mustn't blank";
+    if (!user.phone.trim()) error.phoneNumber = "Phone mustn't blank";
+    if (!user.address.trim()) error.address = "Address mustn't blank";
     setValidate(error);
     return Object.keys(error).length === 0;
   };
   const handleSignUp = async () => {
     if (!checkValidate()) return;
     if (Password !== RePassword) {
-      toast.error("Mật khẩu nhập lại không trùng khớp");
+      toast.error("Re-Password doesn't match !");
       return;
     }
     try {
       const res = await fetchRegister(user);
+      console.log(res);
       if (res.status < 400) {
         toast.success("Đăng Kí Thành Công !");
         setLogin(true);
       }
     } catch (error) {
-      toast.error("Đăng kí không thành công Email đã tồn tại");
+      if(error.response.status === 400){
+        error.response.data.map((e) => toast.error(e));
+      
+      }else{
+        toast.error("Something wrong!");
+      }
+      return;
     }
   };
   const handleCheckEmail = async () => {
@@ -131,7 +146,7 @@ const Authentication = () => {
               </Link>
 
               <h4>
-                <strong>{isLogin ? "ĐĂNG NHẬP" : "ĐĂNG KÍ"}</strong>
+                <strong>{isLogin ? "Login" : "Sign Up"}</strong>
               </h4>
               <div className="Auth-Option">
                 <Button
@@ -141,7 +156,7 @@ const Authentication = () => {
                     setLogin(true);
                   }}
                 >
-                  <strong>Đăng Nhập</strong>
+                  <strong>Login</strong>
                 </Button>
                 <Button
                   className={`Auth-Option__Register ${!isLogin ? "active" : ""} btn-danger`}
@@ -150,15 +165,15 @@ const Authentication = () => {
                     setLogin(false);
                   }}
                 >
-                  <strong>Đăng Kí</strong>
+                  <strong>Sign Up</strong>
                 </Button>
               </div>
             </div>
             {isLogin ? (
-              <Form action="" className="Login-Form">
+              <Form action="" className="Login-Form" onSubmit={handleLogin}>
                 <FormGroup>
-                  <Form.Control className="txt-SignIn" type="text" placeholder="Nhập email của bạn " value={Email} onChange={(e) => setEmail(e.target.value)} />
-                  <Form.Control className="txt-SignIn" type="password" placeholder="Nhập mật khẩu" value={Password} onChange={(e) => setPassword(e.target.value)} />
+                  <Form.Control className="txt-SignIn" type="text" placeholder="Your Email" value={Email} onChange={(e) => setEmail(e.target.value)} />
+                  <Form.Control className="txt-SignIn" type="password" placeholder="Password" value={Password} onChange={(e) => setPassword(e.target.value)} />
                 </FormGroup>
                 <FormGroup className="SignIn-Option">
                   <span
@@ -166,11 +181,12 @@ const Authentication = () => {
                       setForgot(true);
                     }}
                   >
-                    Quên Mật Khẩu ?
+                    Forgot Password ?
                   </span>
                 </FormGroup>
-                <Button className="Auth-Button btn-danger" onClick={handleLogin}>
-                  Đăng Nhập
+                <Button className="Auth-Button btn-danger" 
+                  type="submit">
+                  Login
                 </Button>
               </Form>
             ) : (

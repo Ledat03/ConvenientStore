@@ -16,7 +16,7 @@ const ManageImport = () => {
     updateImport: false,
     deleteImport: false,
   });
-  const itemsPerPage = 1;
+  const itemsPerPage = 6;
   const totalItem = ListImport.length;
   const [PaginatedItem, setPaginatedItem] = useState([]);
   const [selectedImport, setSelectedImport] = useState();
@@ -43,42 +43,36 @@ const ManageImport = () => {
   }, []);
   const getListImport = async () => {
     const res = await viewImport();
-    setListImport(res.data.data);
+    setListImport(res.data);
   };
 
-  const totalCost = ListImport.reduce((sum, importItem) => {
-    const detailsTotal = importItem.inventoryImportDetails.reduce((detailSum, item) => {
+  const detailsTotal = (importItem) =>
+    importItem.inventoryImportDetails.reduce((detailSum, item) => {
       return detailSum + (item.total_cost || 0);
     }, 0);
-
-    return sum + detailsTotal;
-  }, 0);
   return (
     <div className="manage-order">
       <div className="header">
         <div className="breadcrumb">
-          <span className="breadcrumb-item">Trang chủ</span>
+          <span className="breadcrumb-item">Dashboard</span>
           <span className="breadcrumb-separator">/</span>
-          <span className="breadcrumb-item active">Danh sách nhập hàng</span>
-        </div>
-        <div className="header-actions">
-          <button className="btn-secondary">Export</button>
+          <span className="breadcrumb-item active">Manage Import</span>
         </div>
       </div>
-      <h1 className="page-title">Danh sách nhập hàng</h1>
+      <h1 className="page-title">Manage Import</h1>
       <div className="controls">
         <div className="controls-left">
-          <div className="search-container">
-            <input type="text" placeholder="Tìm kiếm thông tin" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} className="search-input" />
-            <span className="search-icon">🔍</span>
-          </div>
+
           <Button onClick={() => setActive({ ...isActive, addImport: true })}>
             <FaPlus />
           </Button>
         </div>
-        <div className="controls-right">
+        <div className="controls-right"> <div className="search-container">
+          <input type="text" placeholder="Search Information" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} className="search-input" />
+          <span className="search-icon">🔍</span>
+        </div>
           <select value={filters.time} onChange={(e) => setFilters({ ...filters, time: e.target.value })} className="time-filter">
-            <option value="Default">Khoảng thời gian</option>
+            <option value="Default">Import Time</option>
             <option value={30}>Last 30 days</option>
             <option value={7}>Last 7 days</option>
             <option value={90}>Last 90 days</option>
@@ -93,14 +87,14 @@ const ManageImport = () => {
                 <input type="checkbox" />
               </th>
               <th>ID</th>
-              <th>Ngày nhập hàng</th>
-              <th>Mã đơn hàng nhập</th>
-              <th>Người nhập hàng</th>
-              <th>Tổng tiền</th>
+              <th>Import Date</th>
+              <th>Import Code</th>
+              <th>Importer</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
-            {PaginatedItem.map((item, index) => (
+            {ListImport.map((item, index) => (
               <tr
                 key={index}
                 onClick={() => {
@@ -125,7 +119,7 @@ const ManageImport = () => {
                 </td>
                 <td className="customer">
                   <div className="customer-info">
-                    <span className="customer-name">{totalCost.toLocaleString("vi-VN")}VNĐ</span>
+                    <span className="customer-name">{detailsTotal(item).toLocaleString("vi-VN")}VNĐ</span>
                   </div>
                 </td>
                 <td>
@@ -164,7 +158,7 @@ const ManageImport = () => {
           </tbody>
         </table>{" "}
         <div className="pagination-container">
-          <Paginate itemsPerPage={itemsPerPage} totalItem={totalItem} item={filterList} setPaginatedItem={setPaginatedItem} sortBy={filters} />
+          {/* <Paginate itemsPerPage={itemsPerPage} totalItem={totalItem} item={filterList} setPaginatedItem={setPaginatedItem} sortBy={filters} reload={ListImport} /> */}
         </div>
       </div>
       <>

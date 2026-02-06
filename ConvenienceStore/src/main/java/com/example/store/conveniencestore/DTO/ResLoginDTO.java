@@ -6,18 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ResLoginDTO {
     private String accessToken;
-    private UserLogin user;
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class UserLogin{
-        private long id;
-        @NotBlank(message = "Trường thông tin không được để trống")
-        private String username;
-        @NotBlank(message = "Trường thông tin không được để trống")
-        private String name;
-        private String role;
-    }
+    private long id;
+    private String username;
+    private String name;
+    private String role;
 }

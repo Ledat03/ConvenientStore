@@ -53,6 +53,9 @@ const BestDeal = (props) => {
               .filter((product) => {
                 if (product.stock != 0) return true;
               })
+              .filter((product) => {
+                if (product.Active == "true") return true;
+              })
               .map((item, index) => {
                 return (
                   <Link to={`products/product/${item.productId}?variant=${item.calUnit}`} className="product-card" key={index}>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const FilterProducts = ({ filters, onFilterChange, filterSubCategory, filterUnit, filterBrand, products, subCate }) => {
   const FilterSection = ({ title, options, selected, onChange, type, showMore = true }) => {
@@ -9,8 +9,10 @@ const FilterProducts = ({ filters, onFilterChange, filterSubCategory, filterUnit
       const newSelected = selected.includes(optionId) ? selected.filter((id) => id !== optionId) : [...selected, optionId];
       onChange(newSelected);
     };
-    const displayOptions = showMore && !showAll ? options.slice(0, 4) : options;
-
+    const displayOptions = () => {
+      if (options) return showMore && !showAll ? options.slice(0, 4) : options;
+      return [];
+    };
     return (
       <div className="filter-section">
         <button className="filter-section__header" onClick={() => setIsExpanded(!isExpanded)}>
@@ -21,7 +23,7 @@ const FilterProducts = ({ filters, onFilterChange, filterSubCategory, filterUnit
         </button>
         {isExpanded && (
           <div>
-            {displayOptions.map((option) => (
+            {options.map((option) => (
               <label key={option.id} className="filter-section__option">
                 <input type="checkbox" checked={selected.includes(option.id)} onChange={() => handleCheckboxChange(option.id)} className="filter-section__checkbox" />
                 {option.label}
@@ -45,27 +47,35 @@ const FilterProducts = ({ filters, onFilterChange, filterSubCategory, filterUnit
   ];
 
   const saleOptions = [
-    { id: "clearance", label: "Giá Siêu Ưu Đãi" },
+    { id: "sale-price", label: "Giá Siêu Ưu Đãi" },
     { id: "regular", label: "Mua Với Giá Gốc" },
   ];
+  const UnitOptions = () => {
+    if (filterUnit) return filterUnit.map((item) => ({ id: item, label: item }));
+    return [];
+  };
+  const BrandOptions = () => {
+    if (filterBrand) return filterBrand.map((item) => ({ id: item, label: item }));
+    return [];
+  };
 
-  const UnitOptions = filterUnit.map((item) => ({ id: item, label: item }));
-
-  const BrandOptions = filterBrand.map((item) => ({ id: item, label: item }));
-
-  const categoryOptions = filterSubCategory.map((item) => ({
-    id: item,
-    label: item,
-  }));
+  const categoryOptions = () => {
+    if (filterSubCategory)
+      return filterSubCategory.map((item) => ({
+        id: item,
+        label: item,
+      }));
+    return [];
+  };
   return (
     <>
       {products != null && (
         <aside className="sidebar">
           <FilterSection title="Tình trạng" options={availabilityOptions} selected={filters.availability} onChange={(value) => onFilterChange("availability", value)} type="checkbox" />
-          <FilterSection title="Ưu Đãi" options={saleOptions} selected={filters.sale} onChange={(value) => onFilterChange("sale", value)} type="" />
-          <FilterSection title="Đơn Vị Tính" options={UnitOptions} selected={filters.unit} onChange={(value) => onFilterChange("unit", value)} type="checkbox" showMore={true} />
-          {subCate == null && <FilterSection title="Loại Sản Phẩm" options={categoryOptions} selected={filters.category} onChange={(value) => onFilterChange("category", value)} type="checkbox" showMore={true} />}
-          <FilterSection title="Hãng" options={BrandOptions} selected={filters.brand} onChange={(value) => onFilterChange("brand", value)} type="checkbox" />
+          <FilterSection title="Ưu Đãi" options={saleOptions} selected={filters.sale} onChange={(value) => onFilterChange("sale", value)} type="checkbox" />
+          <FilterSection title="Đơn Vị Tính" options={UnitOptions()} selected={filters.unit} onChange={(value) => onFilterChange("unit", value)} type="checkbox" showMore={true} />
+          {subCate == null && <FilterSection title="Loại Sản Phẩm" options={categoryOptions()} selected={filters.category} onChange={(value) => onFilterChange("category", value)} type="checkbox" showMore={true} />}
+          <FilterSection title="Hãng" options={BrandOptions()} selected={filters.brand} onChange={(value) => onFilterChange("brand", value)} type="checkbox" />
           <div className="sidebar__filter-section">
             <h3 className="sidebar__title">Giá</h3>
             <div className="sidebar__price-range">

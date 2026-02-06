@@ -8,6 +8,7 @@ import { Modal, Button } from "react-bootstrap";
 import _ from "lodash";
 import { toast } from "react-toastify";
 import Logo from "../../assets/Winmart.svg";
+import { ToastContainer, Bounce } from "react-toastify";
 const UserProfile = () => {
   const [controlModal, setActive] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
@@ -15,6 +16,7 @@ const UserProfile = () => {
   const [Order, setOrder] = useState();
   const location = useLocation();
   const user = location.state.User;
+  const orderActive = location.state.ActiveTab;
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -57,6 +59,10 @@ const UserProfile = () => {
   useEffect(() => {
     fetchUserInfo(user.id);
     getListOrder();
+    if (orderActive) {
+      setActiveTab(orderActive);
+      toast.error("Thanh toán không thành công !");
+    }
   }, []);
   const fetchUserInfo = async () => {
     const res = await getUserProfile(user.id);
@@ -276,12 +282,12 @@ const UserProfile = () => {
           {activeTab === "orders" && (
             <div className="tab-content">
               <div className="orders-list">
-                {Order.length === 0 ? (
+                {Order?.length === 0 ? (
                   <div className="empty-orders">
                     <p>Bạn chưa có đơn hàng nào</p>
                   </div>
                 ) : (
-                  Order.map((order) => (
+                  Order?.map((order) => (
                     <div key={order.orderId} className="order-card">
                       <div className="order-header">
                         <div className="order-info">
@@ -401,6 +407,7 @@ const UserProfile = () => {
           </div>
         </div>
       )}
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
     </div>
   );
 };

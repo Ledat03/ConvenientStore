@@ -117,7 +117,7 @@ export const UserTable = (props) => {
       </Table>
 
       <div className="pagination-container">
-        <Paginate itemsPerPage={itemsPerPage} totalItem={usersLength} item={ItemsPaginated} setPaginatedItem={setUserPaginated} sortBy={props.Filter} />
+        <Paginate itemsPerPage={itemsPerPage} totalItem={usersLength} item={ItemsPaginated} setPaginatedItem={setUserPaginated} sortBy={props.Filter} reload={props.Users} />
       </div>
       <>
         <UpdateUser handleUsers={props.handleUsers} isShowUpdate={CRUDState.UpdateModal} closeUpdate={() => closeModal("UpdateModal")} openUpdate={() => openModal("UpdateModal")} InfoUser={InfoUser} />

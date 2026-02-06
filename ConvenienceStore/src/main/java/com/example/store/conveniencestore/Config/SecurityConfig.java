@@ -3,10 +3,12 @@ package com.example.store.conveniencestore.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -37,7 +39,7 @@ public class SecurityConfig {
     private final UserService userService;
     private final EntryPointConfig entryPointConfig;
 
-    public SecurityConfig(UserService userService, EntryPointConfig entryPointConfig) {
+    public SecurityConfig(UserService userService , EntryPointConfig entryPointConfig) {
         this.userService = userService;
         this.entryPointConfig = entryPointConfig;
     }
@@ -82,26 +84,62 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    public SecurityFilterChain publicFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(c -> c.disable())
-                .authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests
-                                .requestMatchers("/","/api/**","/product/view/**","/variant/view/**","/cart/view/**","/main/","/brand/view","/promotion/**","/order/vnpay_jsp/vnpay_return","/api/check/auth/refresh","/order/**","/api/check/forgot","/user/re-password").permitAll()
-                                .anyRequest().authenticated())
-                .oauth2ResourceServer(
-                        (oauth2) -> oauth2.jwt(Customizer.withDefaults())
-                                .authenticationEntryPoint(entryPointConfig))
+                .securityMatcher(
+                        "/",
+                        "user/**",
+                        "order/**",
+                        "/api/**",
+                        "api/check/signup",
+                        "/product/view/**",
+                        "/variant/view/**",
+                        "/main/",
+                        "/product/all_products",
+                        "/brand/view",
+                        "/promotion/**",
+                        "/order/vnpay_jsp/vnpay_return",
+                        "/user/re-password"
+                )
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .cors(cors -> cors.configurationSource(request -> {
-            CorsConfiguration corsConfiguration = new CorsConfiguration();
-            corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
-            corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-            corsConfiguration.setAllowCredentials(true);
-            corsConfiguration.addAllowedHeader("*");
-            corsConfiguration.addExposedHeader("Set-Cookie");
-            return corsConfiguration;
-        }))
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of("http://localhost:3000"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+                    config.setAllowCredentials(true);
+                    config.addAllowedHeader("*");
+                    config.addExposedHeader("Set-Cookie");
+                    return config;
+                }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
+     http
+                .securityMatcher("/**")
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(Customizer.withDefaults())
+                                .authenticationEntryPoint(entryPointConfig)
+                )
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of("http://localhost:3000"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+                    config.setAllowCredentials(true);
+                    config.addAllowedHeader("*");
+                    config.addExposedHeader("Set-Cookie");
+                    return config;
+                }))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         return http.build();
     }
     @Bean

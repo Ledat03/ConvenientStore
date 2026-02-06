@@ -3,10 +3,13 @@ import "../../assets/scss/home.scss";
 import logo from "../../assets/order.png";
 import { useEffect } from "react";
 const Thankyou = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const status = searchParams.get("status");
   useEffect(() => {
+    const User = JSON.parse(localStorage.getItem("user"));
     if (status != "00") {
+      navigate("/userprofile", { state: { User: User, ActiveTab: "orders" } });
     }
   });
   return (

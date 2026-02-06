@@ -13,7 +13,7 @@ export const ManageBrand = () => {
   const handleBrands = async () => {
     try {
       const listBrand = await viewBrand();
-      setBrands(listBrand.data.data);
+      setBrands(listBrand.data);
       setLoading(false);
       setError(null);
     } catch (e) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import TablePromotion from "./managepromotion/TablePromotion";
-import { fetchListPromotion, handleCategories, handleListSubCate, viewBrand, fetchListProduct } from "../../services/GetAPI";
+import { fetchListPromotion, handleCategories, handleListSubCate, viewBrand, getAllProducts } from "../../services/GetAPI";
 import LoadingAnimation from "../common/LoadingAnimation";
 const ManagePromotion = () => {
   const [InfoPromotion, setInfoPromotion] = useState([]);
@@ -10,14 +10,15 @@ const ManagePromotion = () => {
   const [subCategories, setSubCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [brands, setBrands] = useState([]);
-
+  console.log()
   useEffect(() => {
     handlePromotionList();
     loadInitialData();
   }, []);
   const handlePromotionList = async () => {
     let response = await fetchListPromotion();
-    setInfoPromotion(response.data.data);
+    console.log(response.data)
+    setInfoPromotion(response.data);
     setLoading(false);
   };
   const loadInitialData = async () => {
@@ -28,47 +29,51 @@ const ManagePromotion = () => {
       await getListProducts();
       await getListBrands();
     } catch (error) {
-      toast.error("Lỗi khi tải dữ liệu");
+      toast.error("Error fetch all data");
     }
     setLoading(false);
   };
   const getListCategories = async () => {
     try {
       const response = await handleCategories();
-      setCategories(response.data.data);
+      setCategories(response.data);
+      console.log(response)
     } catch (error) {
-      console.error("Lỗi Khi Lấy Thông tin danh mục:", error);
+      console.error("Error fetch category data : ", error);
     }
   };
   const getListSubCategories = async () => {
     try {
       const response = await handleListSubCate();
-      setSubCategories(response.data.data);
+      setSubCategories(response.data);
+      console.log(response)
     } catch (error) {
-      console.error("Lỗi khi lấy thông tin danh mục nhánh:", error);
+      console.error("Error fetch subCategory", error);
     }
   };
   const getListProducts = async () => {
     try {
-      const response = await fetchListProduct();
-      setProducts(response.data.data);
+      const response = await getAllProducts();
+      console.log(response)
+      setProducts(response.data);
     } catch (error) {
-      console.error("Lỗi khi lấy thông tin sản phẩm:", error);
+      console.error("Error fetch product", error);
     }
   };
   const getListBrands = async () => {
     try {
       const response = await viewBrand();
-      setBrands(response.data.data);
+      setBrands(response.data);
+      console.log(response)
     } catch (error) {
-      console.error("Lỗi khi lấy thông tin hãng sản phẩm:", error);
+      console.error("Error fetch brand:", error);
     }
   };
   if (loading) {
     return <LoadingAnimation />;
   }
   if (error != null) {
-    return <div>Không thể hiển thị mã giảm giá do {error}</div>;
+    return <div>{error}</div>;
   }
   return (
     <>

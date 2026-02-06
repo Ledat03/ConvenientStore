@@ -3,13 +3,14 @@ import { useEffect, useState } from "react";
 function Paginate(props) {
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
+  console.log(props.item);
   useEffect(() => {
     if (props.item) {
       const endOffset = itemOffset + props.itemsPerPage;
       props.setPaginatedItem(props.item.slice(itemOffset, endOffset));
       setPageCount(Math.ceil(props.totalItem / props.itemsPerPage));
     }
-  }, [itemOffset, props.itemsPerPage, props.filters, props.totalItem, props.sortBy]);
+  }, [itemOffset, props.itemsPerPage, props.filters, props.totalItem, props.sortBy, props.reload]);
   const handlePageClick = (event) => {
     const newOffset = (event.selected * props.itemsPerPage) % props.item.length;
     setItemOffset(newOffset);

@@ -1,40 +1,21 @@
 import axios from "axios";
-import { Cookies } from "react-cookie";
-import { toast } from "react-toastify";
 
 const APIsCustomize = axios.create({
   baseURL: "http://localhost:8080/",
   withCredentials: true,
 });
-const cookies = new Cookies();
 APIsCustomize.interceptors.request.use(
-  function (config) {
+  (config) => {
     const getToken = localStorage.getItem("accessToken");
-    if (getToken) {
+    if (getToken && !config.url.includes("api/check")) {
       config.headers["Authorization"] = `Bearer ${getToken}`;
     }
     return config;
   },
-  function (error) {
+  (error) => {
     return Promise.reject(error);
   }
 );
-
-const handleRefreshToken = async () => {
-  try {
-    const response = await APIsCustomize.get("api/check/auth/refresh");
-    const { accessToken } = response.data.data;
-    console.log(accessToken);
-    return accessToken;
-  } catch (error) {
-    await fetchLogOut();
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
-    window.location.href = "/authenticate";
-    toast.error("Phiên của bạn đã hết hạn !");
-    return null;
-  }
-};
 
 APIsCustomize.interceptors.response.use(
   (res) => {
@@ -43,15 +24,24 @@ APIsCustomize.interceptors.response.use(
   },
   async (error) => {
     console.log("Error occurred:", error);
-    if (error.response.status === 401 && !error.config._retry) {
-      error.config._retry = true;
-      const Token = cookies.get("refreshToken");
-      console.log(Token);
-      if (!Token) {
-        return Promise.reject(error);
+    if (error.response.status === 401) {
+      console.log(error.config.url);
+      if (!error.config.url?.includes("refresh") && !error.config._retry) {
+        error.config._retry = true;
+        try {
+          const response = await APIsCustomize.post("api/check/auth/refresh");
+          console.log(response);
+          localStorage.setItem("accessToken", response.data.accessToken);
+          return APIsCustomize.request(error.config);
+        } catch (refreshError) {
+          return Promise.reject(refreshError);
+        }
       }
+      return Promise.reject(error);
+    }
+    if (error.response.status === 403) {
       try {
-        const response = await APIsCustomize.get("api/check/auth/refresh", { params: { refreshToken: Token } });
+        const response = await APIsCustomize.get("api/check/auth/refresh");
         console.log(response);
       } catch (refreshError) {
         console.error("Refresh token failed:", refreshError);
@@ -62,7 +52,7 @@ APIsCustomize.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-    return Promise.reject(error);
+     return Promise.reject(error);
   }
 );
 

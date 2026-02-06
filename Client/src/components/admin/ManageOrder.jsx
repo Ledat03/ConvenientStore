@@ -26,23 +26,23 @@ const ManageOrder = () => {
 
   const getListOrder = async () => {
     const res = await fetchListOrder();
-    setListOrder(res.data.data);
+    setListOrder(res.data);
     console.log("Updated");
   };
   const setStatus = (status) => {
     switch (status) {
       case "PENDING":
-        return "Chưa giao hàng";
+        return "Pending";
       case "SHIPPED":
-        return "Đang giao hàng";
+        return "Shipping";
       case "DELIVERED":
-        return "Đã giao hàng";
+        return "Delivered";
       case "FAILED":
-        return "Đã hủy";
+        return "Failed";
       case "RETURNED":
-        return "Đã hoàn tiền";
+        return "Returned";
       case "CANCELLED":
-        return "Đã hoàn hàng";
+        return "Cancelled";
     }
   };
   const getStatusClass = (status, type) => {
@@ -90,44 +90,40 @@ const ManageOrder = () => {
     <div className="manage-order">
       <div className="header">
         <div className="breadcrumb">
-          <span className="breadcrumb-item">Trang chủ</span>
+          <span className="breadcrumb-item">Dashboard</span>
           <span className="breadcrumb-separator">/</span>
-          <span className="breadcrumb-item active">Quản lí đơn hàng</span>
-        </div>
-        <div className="header-actions">
-          <button className="btn-secondary">Export</button>
+          <span className="breadcrumb-item active">Manage Order</span>
         </div>
       </div>
-      <h1 className="page-title">Quản lí đơn hàng</h1>
+      <h1 className="page-title">Manage Order</h1>
       <div className="controls">
         <div className="controls-left">
           <div className="search-container">
             <input type="text" placeholder="Search order" value={filters.search} onChange={(e) => setFilters({ ...filters, search: e.target.value })} className="search-input" />
-            <span className="search-icon">🔍</span>
           </div>
         </div>
         <div className="controls-right">
           <select value={filters.time} onChange={(e) => setFilters({ ...filters, time: e.target.value })} className="time-filter">
-            <option value="Default">Theo thời gian</option>
+            <option value="Default">By time</option>
             <option value={30}>Last 30 days</option>
             <option value={7}>Last 7 days</option>
             <option value={90}>Last 90 days</option>
           </select>
           <select value={filters.delivery_Status} onChange={(e) => setFilters({ ...filters, delivery_Status: e.target.value })} className="time-filter">
-            <option value="Default">Trang thái giao hàng</option>
-            <option value="PENDING">Đang chờ giao hàng</option>
-            <option value="SHIPPED">Đang giao hàng</option>
-            <option value="DELIVERED">Đã giao hàng</option>
-            <option value="RETURNED">Hoàn hàng</option>
-            <option value="FAILED">Lỗi giao hàng</option>
-            <option value="CANCELLED">Hàng đã được hoàn lại</option>
+            <option value="Default">Delivery State</option>
+            <option value="PENDING">Pending</option>
+            <option value="SHIPPED">Shipped</option>
+            <option value="DELIVERED">Delivered</option>
+            <option value="RETURNED">Return</option>
+            <option value="FAILED">Failed</option>
+            <option value="CANCELLED">Cancelled</option>
           </select>
           <select value={filters.payment_Status} onChange={(e) => setFilters({ ...filters, payment_Status: e.target.value })} className="time-filter">
-            <option value="Default">Trang thái thanh toán</option>
-            <option value="PENDING">Đang chờ thanh toán</option>
-            <option value="SUCCESS">Thanh Toán Thành Công</option>
-            <option value="RETURNED">Hoàn Tiền</option>
-            <option value="FAILED">Lỗi Giao Dịch</option>
+            <option value="Default">Payment Status</option>
+            <option value="PENDING">Pending</option>
+            <option value="SUCCESS">Success</option>
+            <option value="RETURNED">Returned</option>
+            <option value="FAILED">Failed</option>
           </select>
         </div>
       </div>
@@ -138,17 +134,17 @@ const ManageOrder = () => {
               <th>
                 <input type="checkbox" />
               </th>
-              <th>Đơn hàng</th>
-              <th>Ngày giao hàng hàng</th>
-              <th>Tên người dùng</th>
-              <th>Trạng thái thanh toán</th>
-              <th>Trạng thái giao hàng</th>
-              <th>Phương thức thanh toán</th>
-              <th>Tổng tiền</th>
+              <th>Order</th>
+              <th>Delivery Date</th>
+              <th>User Email</th>
+              <th>Payment State</th>
+              <th>Delivery State</th>
+              <th>Payment Method</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
-            {PaginatedItem.map((order, index) => (
+            {ListOrder.map((order, index) => (
               <tr
                 key={index}
                 onClick={() => {
@@ -160,7 +156,7 @@ const ManageOrder = () => {
                   <input type="checkbox" />
                 </td>
                 <td className="order-id">{order.orderId}</td>
-                <td className="order-date">{order.delivery.deliveryDate ? new Date(order.delivery.deliveryDate).toLocaleDateString("vi-VN") : "Chưa giao hàng"}</td>
+                <td className="order-date">{order.delivery.deliveryDate ? new Date(order.delivery.deliveryDate).toLocaleDateString("vi-VN") : "Pending"}</td>
                 <td className="customer">
                   <div className="customer-info">
                     <span className="customer-name">{order.user.username}</span>
@@ -188,7 +184,7 @@ const ManageOrder = () => {
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                       <div className="dropdown-submenu">
-                        <Dropdown.Item className="submenu-toggle">Sửa Thông Tin</Dropdown.Item>
+                        <Dropdown.Item className="submenu-toggle">Change</Dropdown.Item>
                         <div className="submenu">
                           <div
                             className="dropdown-item"
@@ -197,7 +193,7 @@ const ManageOrder = () => {
                               setActive({ ...isActive, UpdateDelivery: true });
                             }}
                           >
-                            Thông Tin Giao Hàng
+                            Information
                           </div>
                           <div
                             className="dropdown-item"
@@ -206,7 +202,7 @@ const ManageOrder = () => {
                               setActive({ ...isActive, UpdatePayment: true });
                             }}
                           >
-                            Thông Tin Thanh Toán
+                            Payment Information
                           </div>
                         </div>
                       </div>
@@ -217,7 +213,7 @@ const ManageOrder = () => {
                           setActive({ ...isActive, Delete: true });
                         }}
                       >
-                        Xóa
+                        Delete
                       </Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
@@ -227,7 +223,7 @@ const ManageOrder = () => {
           </tbody>
         </table>
         <div className="pagination-container">
-          <Paginate itemsPerPage={itemsPerPage} totalItem={totalItem} item={filterList} setPaginatedItem={setPaginatedItem} sortBy={filters} />
+          {/* <Paginate itemsPerPage={itemsPerPage} totalItem={totalItem} item={filterList} setPaginatedItem={setPaginatedItem} sortBy={filters} reload={ListOrder} /> */}
         </div>
       </div>
       <>

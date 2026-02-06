@@ -80,7 +80,7 @@ const UpdateDelivery = (props) => {
               <Form.Group as={Col}>
                 <Form.Label>Thời Gian Nhận Hàng</Form.Label>
                 <Form.Control
-                  value={Delivery.deliveredTime ? new Date(props.Order.delivery.deliveredTime).toISOString().slice(0, 16) : ""}
+                  value={Delivery.deliveredTime ? Delivery.deliveredTime : ""}
                   onChange={(e) => {
                     setDelivery({ ...Delivery, deliveredTime: e.target.value });
                   }}

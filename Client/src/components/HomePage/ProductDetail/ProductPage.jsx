@@ -25,8 +25,8 @@ const ProductPage = () => {
     try {
       const res = await fetchProductById(productId);
       const data = await fetchListProduct();
-      setProducts(data.data.data);
-      setProduct(res.data.data);
+      setProducts(data.data);
+      setProduct(res.data);
       setUnit(calUnit);
       setLoading(false);
     } catch (error) {
@@ -39,7 +39,7 @@ const ProductPage = () => {
       ...variant,
       productName: product.productName,
       brand: product.brand,
-      subCategory: product.subCategory,
+      subCategory: product.subCategory.subCategoryName,
       productId: product.productId,
       image: product.image,
       status: product.status,
@@ -64,6 +64,7 @@ const ProductPage = () => {
       ) : (
         <>
           <div className="product-detail">
+            {console.log(productData)}
             <div className="product-detail__container">
               <nav className="product-breadcrumb">
                 <a href="/" className="product-breadcrumb__link">
@@ -71,8 +72,8 @@ const ProductPage = () => {
                 </a>
                 <span className="product-breadcrumb__separator">/</span>
 
-                <Link to={`/products?category=${productData.category}`} className="product-breadcrumb__link">
-                  {productData.category} - {productData.subCategory}
+                <Link to={`/products?category=${productData.category.categoryName}`} className="product-breadcrumb__link">
+                  {productData.category.categoryName} - {productData.subCategory.subCategoryName}
                 </Link>
                 <span className="product-breadcrumb__separator">/</span>
 

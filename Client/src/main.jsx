@@ -7,7 +7,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Home } from "./components//HomePage/Home.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AdminPage } from "./components/admin/AdminPage.jsx";
-import { AdminManageUser } from "./components/admin/AdminManageUser.jsx";
+import { AdminManageUser } from "./components/admin/ManageUser.jsx";
 import { ManageProduct } from "./components/admin/ManageProduct.jsx";
 import MainPage from "./components/admin/MainPage.jsx";
 import ProductPage from "./components/HomePage/ProductDetail/ProductPage.jsx";

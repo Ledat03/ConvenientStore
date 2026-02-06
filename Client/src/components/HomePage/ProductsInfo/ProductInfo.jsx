@@ -85,10 +85,22 @@ const ProductInfo = () => {
       Active: product.isActive,
     }))
   );
-  const filterBrand = [...new Set(flatVariant?.map((product) => product.brand))];
-  const filterSubCategory = [...new Set(flatVariant?.map((product) => product.subCategory))];
-  const filterStock = [...new Set(flatVariant?.map((product) => product.stock))];
-  const filterUnit = [...new Set(flatVariant?.map((product) => product.calUnit))];
+  const filterBrand = () => {
+    if (flatVariant) return [...new Set(flatVariant.map((product) => product.brand.brandName))];
+    return [];
+  };
+  const filterSubCategory = () => {
+    if (flatVariant) return [...new Set(flatVariant.map((product) => product.subCategory.subCategoryName))];
+    return [];
+  };
+  const filterStock = () => {
+    if (flatVariant) return [...new Set(flatVariant.map((product) => product.stock))];
+    return [];
+  };
+  const filterUnit = () => {
+    if (flatVariant) return [...new Set(flatVariant.map((product) => product.calUnit))];
+    return [];
+  };
   if (Loading) {
     return (
       <div>
@@ -101,9 +113,9 @@ const ProductInfo = () => {
       {flatVariant ? (
         <div className="products-container">
           <SearchHeader product={flatVariant} category={category} subCate={subCate} sortBy={sortBy} setSortBy={setSortBy} />
-          <PromotionFilter category={category} flatVariant={flatVariant} filterBrand={filterBrand} promotion User={User} />
+          <PromotionFilter category={category} flatVariant={flatVariant} filterBrand={filterBrand()} promotion User={User} />
           <div className="products-main-content">
-            <FilterProducts products={flatVariant} filters={filters} onFilterChange={handleFilterChange} filterBrand={filterBrand} filterStock={filterStock} filterSubCategory={filterSubCategory} filterUnit={filterUnit} subCate={subCate} />
+            <FilterProducts products={flatVariant} filters={filters} onFilterChange={handleFilterChange} filterBrand={filterBrand()} filterStock={filterStock} filterSubCategory={filterSubCategory()} filterUnit={filterUnit()} subCate={subCate} />
             <div className="product-table">
               <ProductCard Loading={Loading} products={flatVariant} filters={filters} onSortChange={onSortChange} sortBy={sortBy} />
             </div>
