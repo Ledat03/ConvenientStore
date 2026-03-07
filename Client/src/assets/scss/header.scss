@@ -11,6 +11,21 @@ a {
   z-index: 1000;
   &__dropdown-Submenu {
     position: absolute !important;
+    &__item {
+      height: 50px;
+      padding-left: 5px;
+      &:hover > a {
+        background-color: var.$red-accent !important;
+        color: white;
+      }
+      position: relative;
+      a {
+        position: absolute;
+        color: black;
+        top: 10px;
+        font-weight: 500;
+      }
+    }
   }
 
   &__infoUser {
@@ -102,17 +117,18 @@ a {
     flex-shrink: 0;
 
     a {
+      position: relative;
       display: flex;
       align-items: center;
       flex-direction: column;
       gap: var.$spacing-2;
+      h1 {
+        position: absolute;
+        color: #fff;
+        font-weight: bold;
+        top: 5px;
+      }
     }
-
-    img {
-      height: 40px;
-      width: auto;
-    }
-
     .header__tagline {
       font-size: var.$font-size-xs;
       color: var.$gray-medium;

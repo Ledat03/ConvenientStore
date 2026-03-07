@@ -54,12 +54,23 @@
       display: flex;
       align-items: center;
       gap: 16px;
+      button {
+        background-color: #000;
+      }
     }
 
     .controls-right {
       display: flex;
       align-items: center;
       gap: 12px;
+      &__search {
+        height: 35px;
+        width: 80px;
+      }
+      &__clear {
+        height: 35px;
+        width: 80px;
+      }
     }
 
     .search-container {
@@ -312,7 +323,7 @@
       }
     }
 
-    .order-total {
+    .order-pay {
       font-weight: 600;
       color: #111827;
     }

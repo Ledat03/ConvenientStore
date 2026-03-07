@@ -26,7 +26,7 @@ const CustomVariant = (props) => {
   };
   return (
     <>
-      <Modal show={props.isShowVariant} onHide={props.closeModal}>
+      <Modal className="admin-crud-modal" show={props.isShowVariant} onHide={props.closeModal}>
         <Modal.Header closeButton>Chỉnh sửa khác</Modal.Header>
         <Modal.Body>
           <FaPlusCircle

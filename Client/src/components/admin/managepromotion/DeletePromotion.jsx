@@ -16,7 +16,7 @@ const DeletePromotion = (props) => {
   console.log(props.InfoItem);
   return (
     <>
-      <Modal size="x" show={props.isShowDelete} onHide={props.closeDelete}>
+      <Modal className="admin-crud-modal" size="x" show={props.isShowDelete} onHide={props.closeDelete}>
         <Modal.Header closeButton>Xóa mã giảm giá</Modal.Header>
         <Modal.Body>
           <p>Bạn có chắc chắn muốn xóa phiếu giảm giá này hay không</p>

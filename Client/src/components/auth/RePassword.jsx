@@ -1,6 +1,5 @@
 import "./css/auth.scss";
 import { Link, useLocation } from "react-router-dom";
-import Logo from "../../assets/Winmart.svg";
 import { Button, Form, FormGroup } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { forgotPassword, re_Password } from "../../services/AuthAPI";
@@ -33,7 +32,7 @@ const RePassword = () => {
           <div className="Authentication-Function">
             <div className="Authentication-Function__Handle">
               <Link to="/" className="Logo">
-                <img src={Logo} alt="Winmart" />
+                <h1>Base</h1>
               </Link>
               <h4>
                 <strong>XÁC NHẬN TÀI KHOẢN</strong>

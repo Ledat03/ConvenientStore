@@ -4,6 +4,7 @@ import com.example.store.conveniencestore.DTO.*;
 import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.Repository.*;
 import com.example.store.conveniencestore.Util.Specification.ProductSpec;
+import com.example.store.conveniencestore.Util.Specification.PromotionSpec;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,7 @@ public class PromotionService {
     }
 
     public List<Promotion> findAll() {
-        return promotionRepository.findAll();
+        return promotionRepository.findAll(PromotionSpec.specPromotion());
     }
     @Transactional
     public Promotion savePromotion(PromotionDTO promotionDTO) {

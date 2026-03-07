@@ -1,4 +1,4 @@
-import { Table, Dropdown, ButtonGroup } from "react-bootstrap";
+import { Dropdown, ButtonGroup } from "react-bootstrap";
 import UpdateUser from "./UpdateUser";
 import ViewUser from "./ViewUser";
 import DeleteUser from "./DeleteUser";
@@ -6,6 +6,9 @@ import { useState } from "react";
 import { FaEllipsisV } from "react-icons/fa";
 import Paginate from "../../common/Paginate";
 import LoadingAnimation from "../../common/LoadingAnimation";
+import AdminDataTable from "../common/AdminDataTable";
+import { handleDeleteUser } from "../../../services/GetAPI";
+import { toast } from "react-toastify";
 export const UserTable = (props) => {
   const itemsPerPage = 4;
   const [Loading, setLoading] = useState(false);
@@ -39,82 +42,75 @@ export const UserTable = (props) => {
     }
   };
   const ItemsPaginated = FilledUsers();
+
+  const userColumns = [
+    { key: "id", title: "ID" },
+    { key: "username", title: "Tên người dùng" },
+    { key: "email", title: "Email" },
+    {
+      key: "role",
+      title: "Quyền hạn",
+      render: (item) => (
+        <span className={item.role == "admin" ? "role-custom_red" : "role-custom_green"}>
+          {item.role == "admin" && "Quản trị viên"}
+          {item.role == "employee" && "Nhân viên"}
+          {item.role == "user" && "Người dùng"}
+        </span>
+      ),
+    },
+  ];
+
+  const renderUserActions = (item) => (
+    <Dropdown>
+      <Dropdown.Toggle as={ButtonGroup}>
+        <FaEllipsisV />
+      </Dropdown.Toggle>
+      <Dropdown.Menu>
+        <Dropdown.Item
+          onClick={() => {
+            openModal("ViewModal");
+            handleUser(item);
+          }}
+        >
+          Thông tin
+        </Dropdown.Item>
+        <Dropdown.Item
+          onClick={() => {
+            openModal("UpdateModal");
+            handleUser(item);
+          }}
+        >
+          Cập nhật
+        </Dropdown.Item>
+        <Dropdown.Item
+          onClick={() => {
+            openModal("DeleteModal");
+            handleUser(item);
+          }}
+        >
+          Xóa người dùng
+        </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+
+  const handleBulkDelete = async (userIds) => {
+    try {
+      await Promise.all(userIds.map((id) => handleDeleteUser(id)));
+      await props.handleUsers();
+      toast.success("Đã xóa người dùng đã chọn");
+    } catch (error) {
+      toast.error("Xóa người dùng thất bại");
+      throw error;
+    }
+  };
+
   if (Loading) {
     return <LoadingAnimation />;
   }
   return (
     <>
-      <Table hover>
-        <thead>
-          <tr>
-            <td>ID</td>
-            <td>Tên người dùng</td>
-            <td>Email</td>
-            <td>Quyền hạn</td>
-          </tr>
-        </thead>
-        <tbody>
-          {UserPaginated?.length > 0 ? (
-            UserPaginated?.map((item) => {
-              return (
-                <tr key={item.id}>
-                  <td className="user-info-td">
-                    <span>{item.id}</span>
-                  </td>
-                  <td className="user-info-td">
-                    <span className="user-name">{item.username} </span>
-                  </td>
-                  <td className="user-info-td">{item.email}</td>
-                  <td className="user-info-td">
-                    <span className={item.role == "admin" ? "role-custom_red" : "role-custom_green"}>
-                      {item.role == "admin" && "Quản trị viên"}
-                      {item.role == "employee" && "Nhân viên"}
-                      {item.role == "user" && "Người dùng"}
-                    </span>
-                  </td>
-                  <td className="crud-group-btn">
-                    <Dropdown>
-                      <Dropdown.Toggle as={ButtonGroup}>
-                        <FaEllipsisV />
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu>
-                        <Dropdown.Item
-                          onClick={() => {
-                            openModal("ViewModal");
-                            handleUser(item);
-                          }}
-                        >
-                          Thông tin
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => {
-                            openModal("UpdateModal");
-                            handleUser(item);
-                          }}
-                        >
-                          Cập nhật
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          onClick={() => {
-                            openModal("DeleteModal");
-                            handleUser(item);
-                          }}
-                        >
-                          Xóa người dùng
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
-            <tr>
-              <td colSpan={4}> System doesn't have any user </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+      <AdminDataTable columns={userColumns} data={UserPaginated || []} rowKey="id" renderActions={renderUserActions} onBulkDelete={handleBulkDelete} emptyText="System doesn't have any user" />
 
       <div className="pagination-container">
         <Paginate itemsPerPage={itemsPerPage} totalItem={usersLength} item={ItemsPaginated} setPaginatedItem={setUserPaginated} sortBy={props.Filter} reload={props.Users} />

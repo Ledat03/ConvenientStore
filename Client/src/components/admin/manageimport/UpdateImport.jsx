@@ -108,7 +108,7 @@ const UpdateImport = ({ isActive, close, handleReload, Import, getListImport }) 
   };
 
   return (
-    <Modal show={isActive.updateImport} size="xl" onHide={close}>
+    <Modal className="admin-crud-modal" show={isActive.updateImport} size="xl" onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>Cập Nhật Phiếu Nhập Hàng</Modal.Title>
       </Modal.Header>

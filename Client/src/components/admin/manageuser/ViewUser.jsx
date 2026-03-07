@@ -2,7 +2,7 @@ import { Modal, Button, Form, Col, Row } from "react-bootstrap";
 const ViewUser = (props) => {
   return (
     <>
-      <Modal size="xl" show={props.isShowView} onHide={props.closeView}>
+      <Modal className="admin-crud-modal" size="xl" show={props.isShowView} onHide={props.closeView}>
         <Modal.Header closeButton> Thông tin người dùng</Modal.Header>
         <Modal.Body>
           <Form>

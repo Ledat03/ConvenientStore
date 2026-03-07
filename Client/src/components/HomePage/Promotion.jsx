@@ -86,9 +86,6 @@ const Promotion = ({ User }) => {
                         <span>Cho đơn tối thiểu {promo.minOrderValue.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
                         <span className="promo-code">{promo.code}</span>
                       </div>
-                      <Link to={`/products?promotion=${promo.code}`} className="get-now-btn">
-                        Lấy Ngay
-                      </Link>
                     </div>
                   </div>
                 </div>

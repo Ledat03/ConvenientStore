@@ -8,7 +8,6 @@ export const AdminManageUser = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [Filter, setFilter] = useState({ role: "Default", search: "" });
-  const [Search, setSearch] = useState("");
   useEffect(() => {
     handleUsers();
   }, []);
@@ -63,7 +62,7 @@ export const AdminManageUser = () => {
             <option value="employee">Employee</option>
             <option value="user">User</option>
           </select>
-          <button>Clear</button>
+          <button className="filters-right__Clear">Clear</button>
         </div>
 
       </div>

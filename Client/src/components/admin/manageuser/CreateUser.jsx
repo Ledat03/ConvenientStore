@@ -77,7 +77,7 @@ const CreateUser = (props) => {
       >
         <FaPlus className="i i-add-user" />
       </Button>
-      <Modal size="xl" show={isShow} onHide={close}>
+      <Modal className="admin-crud-modal" size="xl" show={isShow} onHide={close}>
         <Modal.Header closeButton> Thêm Người Dùng</Modal.Header>
         <Modal.Body>
           <Form>

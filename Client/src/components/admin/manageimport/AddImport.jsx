@@ -2,7 +2,7 @@ import { Modal, Button, Form, Col, Row, Spinner, Table } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Select from "react-select";
-import { fetchListProduct, addImport } from "../../../services/GetAPI";
+import { getAllProducts, addImport } from "../../../services/GetAPI";
 const AddImport = ({ isActive, close, handleReload, getListImport }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
@@ -13,6 +13,7 @@ const AddImport = ({ isActive, close, handleReload, getListImport }) => {
     importCode: "",
     importNote: "",
   });
+  console.log(products)
   const handleUser = () => {
     const temp = localStorage.getItem("user");
     setUser(JSON.parse(temp));
@@ -28,9 +29,9 @@ const AddImport = ({ isActive, close, handleReload, getListImport }) => {
     cost_price: 0,
   });
   const fetchProducts = async () => {
-    const res = await fetchListProduct();
+    const res = await getAllProducts();
     console.log(res);
-    setProducts(res.data.data);
+    setProducts(res.data);
   };
 
   useEffect(() => {
@@ -99,7 +100,7 @@ const AddImport = ({ isActive, close, handleReload, getListImport }) => {
   };
 
   return (
-    <Modal show={isActive.addImport} size="xl" onHide={close}>
+    <Modal className="admin-crud-modal" show={isActive.addImport} size="xl" onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>Thêm Phiếu Nhập Hàng</Modal.Title>
       </Modal.Header>

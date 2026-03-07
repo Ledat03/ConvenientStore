@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button, Form, FormGroup, Col, Row } from "react-bootstrap";
 import "./css/auth.scss";
 import { fetchLogin, fetchRegister } from "../../services/AuthAPI";
-import Logo from "../../assets/Winmart.svg";
 import { Bounce, ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
-import { FormEvent } from "react";
 const Authentication = () => {
   const navigate = useNavigate();
   const [isLogin, setLogin] = useState(true);
@@ -89,10 +87,10 @@ const Authentication = () => {
         setLogin(true);
       }
     } catch (error) {
-      if(error.response.status === 400){
+      if (error.response.status === 400) {
         error.response.data.map((e) => toast.error(e));
-      
-      }else{
+
+      } else {
         toast.error("Something wrong!");
       }
       return;
@@ -113,7 +111,7 @@ const Authentication = () => {
           <div className="Authentication-Function">
             <div className="Authentication-Function__Handle">
               <Link to="/" className="Logo">
-                <img src={Logo} alt="Winmart" />
+                <h1>Base</h1>
               </Link>
               <h4>
                 <strong>QUÊN MẬT KHẨU</strong>
@@ -142,7 +140,7 @@ const Authentication = () => {
           <div className="Authentication-Function">
             <div className="Authentication-Function__Handle">
               <Link to="/" className="Logo">
-                <img src={Logo} alt="Winmart" />
+                <h1>Base</h1>
               </Link>
 
               <h4>
@@ -184,7 +182,7 @@ const Authentication = () => {
                     Forgot Password ?
                   </span>
                 </FormGroup>
-                <Button className="Auth-Button btn-danger" 
+                <Button className="Auth-Button btn-danger"
                   type="submit">
                   Login
                 </Button>

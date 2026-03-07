@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import Paginate from "../../common/Paginate";
 import { toast } from "react-toastify";
 import { AddToCart } from "../../../services/UserSevice";
 const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
-  console.log(sortBy);
   const calSavePrice = (salePrice, price) => {
     let sale = ((salePrice - price) / price) * 100;
     return Math.round(sale);
   };
-  const [PaginatedProduct, setPaginatedProduct] = useState([]);
-  const itemsPerPage = 6;
   const [totalProduct, setTotalProduct] = useState(0);
   const [userData, setUserData] = useState({});
   const navigate = useNavigate();
@@ -23,8 +19,6 @@ const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
     }
     IsLogIn();
   }, [filters, Loading]);
-  console.log(products);
-  console.log(filters);
   const ActiveProduct = products
     .filter((item) => item.Active == true)
     .filter((item) => {
@@ -102,55 +96,53 @@ const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
       userId: userData.id,
       variantId: variantId,
       productId: productId,
+      quantity: 1
     };
     await AddToCart(info);
     toast.success("Thêm Vào Giỏ Hàng Thành Công");
-    console.log("thông tin gửi đi - " + info.userId + " " + info.variantId + " " + info.productId);
+
   };
 
   const sortedProducts = onSortChange(ActiveProduct, sortBy);
-  console.log(ActiveProduct);
-
-  console.log(PaginatedProduct);
   return (
     <>
       <div className="product-grid">
-        {PaginatedProduct.length != 0 ? (
-          PaginatedProduct.map((item, index) => {
-            console.log(item);
+        {products.length != 0 ? (
+          products.map((item, index) => {
             return (
-              <Link to={`product/${item.productId}?variant=${item.calUnit}`} className="product-card" key={index}>
+              <Link to={`product/${item.productId}?variant=${item.calUnit}`} className="product-card-detail" key={index}>
                 {item.stock >= 0 && (
-                  <div className={`product-card__badge ${item.stock > 20 && "product-card__badge--high-stock"} ${item.stock === 0 && "product-card__badge--out-stock"}`}>
+                  <div className={`product-card-detail__badge ${item.stock > 20 && "product-card-detail__badge--high-stock"} ${item.stock === 0 && "product-card-detail__badge--out-stock"}`}>
                     {item.stock > 20 && "Còn Hàng"}
                     {item.stock === 0 && "Hết Hàng"}
                     {item.stock > 0 && item.stock <= 20 && "Sắp Hết Hàng"}
                   </div>
                 )}
-                <div className="product-card__image-container">
-                  <img src={item.productImage[0] || "/placeholder.svg?height=200&width=200"} alt={item.productName} className="product-card__image" />
+
+                <div className="product-card-detail__image-container">
+                  <img src={item.image || "/placeholder.svg?height=200&width=200"} alt={item.productName} className="product-card-detail__image" />
                 </div>
-                <div className="product-card__info">
-                  <h3 className="product-card__name">{item.productName}</h3>
-                  <div className="product-card__tags">
-                    <span className="product-card__tag">{item.subCategory.subCategoryName}</span>
-                    <span className="product-card__tag">{item.brand.brandName}</span>
-                    <span className="product-card__tag">{item.calUnit}</span>
+                <div className="product-card-detail__info">
+                  <h3 className="product-card-detail__name">{item.productName}</h3>
+                  <div className="product-card-detail__tags">
+                    <span className="product-card-detail__tag">{item.subCategory}</span>
+                    <span className="product-card-detail__tag">{item.brand}</span>
+                    <span className="product-card-detail__tag">{item.calUnit}</span>
                   </div>
 
                   {item.salePrice != 0 ? (
-                    <div className="product-card__pricing">
-                      <span className="product-card__current-price">{item.salePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
-                      <span className="product-card__original-price">{item.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                    <div className="product-card-detail__pricing">
+                      <span className="product-card-detail__current-price">{item.salePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                      <span className="product-card-detail__original-price">{item.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
                       {item.salePrice != 0 && (
                         <>
-                          <span className="product-card__discount">Save {calSavePrice(item.price, item.salePrice)}%</span>
+                          <span className="product-card-detail__discount">Save {calSavePrice(item.price, item.salePrice)}%</span>
                         </>
                       )}
                     </div>
                   ) : (
-                    <div className="product-card__pricing">
-                      <span className="product-card__current-price">{item.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                    <div className="product-card-detail__pricing">
+                      <span className="product-card-detail__current-price">{item.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
                     </div>
                   )}
 
@@ -179,7 +171,7 @@ const ProductCard = ({ products, filters, Loading, onSortChange, sortBy }) => {
         )}
       </div>
       <div className="pagination-container">
-        <Paginate itemsPerPage={itemsPerPage} totalItem={totalProduct} item={sortedProducts} setPaginatedItem={setPaginatedProduct} filters={filters} sortBy={sortBy} />
+
       </div>
     </>
   );

@@ -24,7 +24,7 @@ const ViewVariant = (props) => {
     { label: "Số lượng tồn kho", value: stock },
   ];
   return (
-    <Modal size="xl" show={props.isShowVariant} onHide={props.closeVariant} className="product-view-modal">
+    <Modal size="xl" show={props.isShowVariant} onHide={props.closeVariant} className="product-view-modal admin-crud-modal">
       <Modal.Header closeButton className="product-modal-header">
         <div className="product-header-content">
           <div className="product-header-text">

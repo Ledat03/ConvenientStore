@@ -15,7 +15,7 @@ const DeleteUser = (props) => {
   };
   return (
     <>
-      <Modal size="x" show={props.isShowDelete} onHide={props.closeDelete}>
+      <Modal className="admin-crud-modal" size="x" show={props.isShowDelete} onHide={props.closeDelete}>
         <Modal.Header closeButton>Xóa người dùng</Modal.Header>
         <Modal.Body>
           <p>Bạn có chắc chắn muốn xóa người dùng này ?</p>

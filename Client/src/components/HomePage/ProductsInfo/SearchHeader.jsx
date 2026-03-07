@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-const SearchHeader = ({ sortBy, product, category, subCate, setSortBy }) => {
+const SearchHeader = ({ category, subCate }) => {
   return (
     <>
       <nav className="breadcrumb">
@@ -18,24 +18,7 @@ const SearchHeader = ({ sortBy, product, category, subCate, setSortBy }) => {
         )}
       </nav>
 
-      {
-        (product = !null && (
-          <div className="search-header">
-            <div className="search-header__info">
-              <button className="search-header__button"></button>
-              <span className="search-header__text"></span>
-            </div>
-            <div className="search-header__controls">
-              <span className="search-header__count">{product?.length} Kết Quả</span>
-              <select className="search-header__select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                <option value="recommended">Sắp Xếp Theo</option>
-                <option value="price-low">Giá: Từ thấp đến cao</option>
-                <option value="price-high">Giá: Từ cao đến thấp</option>
-              </select>
-            </div>
-          </div>
-        ))
-      }
+
     </>
   );
 };

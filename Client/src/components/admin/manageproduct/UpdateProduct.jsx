@@ -56,7 +56,7 @@ const UpdateProduct = (props) => {
       };
       await updateProduct(Product);
       toast.success("Cập nhật sản phẩm thành công");
-      props.handleProductsList();
+      props.handleProductsList(props.filters);
       props.closeUpdate();
     } catch (error) {
       toast.error("Cập nhật sản phẩm thất bại");
@@ -64,7 +64,7 @@ const UpdateProduct = (props) => {
   };
   return (
     <>
-      <Modal size="xl" show={props.isShowUpdate} onHide={props.closeUpdate}>
+      <Modal className="admin-crud-modal" size="xl" show={props.isShowUpdate} onHide={props.closeUpdate}>
         <Modal.Header closeButton> Cập nhật sản phẩm</Modal.Header>
         <Modal.Body>
           <Form>

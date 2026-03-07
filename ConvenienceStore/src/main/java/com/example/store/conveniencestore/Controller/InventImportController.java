@@ -4,6 +4,9 @@ import com.example.store.conveniencestore.DTO.*;
 import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.Service.ProductService;
 import com.example.store.conveniencestore.Service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,27 +84,6 @@ public class InventImportController {
         return detail;
     }
 
-    public ResInventDTO convertEntityToResDTO(InventoryImport inventoryImport) {
-        ResInventDTO resInventDTO = new ResInventDTO();
-        List<ResDetailDTO> resDetailDTOS = inventoryImport.getInventoryImportDetails().stream().map(this::convertEntityToResDetailDTO).toList();
-        resInventDTO.setInventoryImportDetails(resDetailDTOS);
-        resInventDTO.setImportId(inventoryImport.getImportId());
-        resInventDTO.setImportCode(inventoryImport.getImportCode());
-        resInventDTO.setImportNote(inventoryImport.getImportNote());
-        resInventDTO.setImportDate(inventoryImport.getImportDate());
-        resInventDTO.setUsername(inventoryImport.getUser().getUsername());
-        return resInventDTO;
-    }
-
-    public ResDetailDTO convertEntityToResDetailDTO(InventoryImportDetail inventoryImportDetail) {
-        ResDetailDTO resDetailDTO = new ResDetailDTO();
-        resDetailDTO.setProduct(convertProductToProductDTO(inventoryImportDetail.getProduct()));
-        resDetailDTO.setVariant(convertVariantToDTO(inventoryImportDetail.getVariant()));
-        resDetailDTO.setQuantity(inventoryImportDetail.getQuantity());
-        resDetailDTO.setCost_price(inventoryImportDetail.getCost_price());
-        resDetailDTO.setTotal_cost(inventoryImportDetail.getTotal_cost());
-        return resDetailDTO;
-    }
 
     @PostMapping("/add")
     public ResponseEntity<Object> addInventory(@RequestBody InventDTO inventDTO) {
@@ -128,7 +110,7 @@ public class InventImportController {
     @GetMapping("/view")
     public ResponseEntity<Object> viewInventory() {
         List<InventoryImport> inventoryImports = productService.findAllInventoryImports();
-        List<ResInventDTO> resInventDTOS = inventoryImports.stream().map(this::convertEntityToResDTO).toList();
+        List<ResInventDTO> resInventDTOS = inventoryImports.stream().map(ResInventDTO::new).toList();
         return ResponseEntity.ok(resInventDTOS);
     }
 
@@ -192,5 +174,14 @@ public class InventImportController {
         }
         return ResponseEntity.badRequest().body("Không tìm thấy phiếu nhập");
     }
-
+    @GetMapping("/filter")
+    public  ResponseEntity<PageRestsponse<List<ResInventDTO>>> getIIByFilter(@RequestParam(value = "code",required = false) String code,
+                                                       @RequestParam(value = "days",required = false,defaultValue = "0") int days,
+                                                       @RequestParam(value = "page",defaultValue = "0") int page){
+        Pageable  pageable = PageRequest.of(page,5);
+        Page<InventoryImport> data = productService.getIIByFilter(code,days,pageable);
+        List<ResInventDTO> resInventDTOS = data.stream().map(ResInventDTO::new).toList();
+        PageRestsponse pageRestsponse = new PageRestsponse(resInventDTOS,data.getTotalElements());
+        return ResponseEntity.ok(pageRestsponse);
+    }
 }

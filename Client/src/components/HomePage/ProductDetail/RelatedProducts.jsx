@@ -52,32 +52,32 @@ const RelatedProduct = (props) => {
           <div className="promotion-scroll-container" ref={scrollContainerRef} onScroll={handleScroll}>
             {saleProduct.map((item, index) => {
               return (
-                <Link to={`/products/product/${item.productId}?variant=${encodeURIComponent(item.calUnit)}`} className="product-card" key={index}>
-                  {item.stock && <div className={`product-card__badge ${item.stock != 0 ? "product-card__badge--low-stock" : "product-card__badge--out-stock"}`}>{item.stock > 0 ? "Còn Hàng" : "Hết Hàng"}</div>}
-                  <div className="product-card__image-container">
-                    <img src={item.productImage[0] || "/placeholder.svg?height=200&width=200"} alt={item.productName} className="product-card__image" />
+                <Link to={`/products/product/${item.productId}?variant=${encodeURIComponent(item.calUnit)}`} className="product-card-sale" key={index}>
+                  {item.stock && <div className={`product-card-sale__badge ${item.stock != 0 ? "product-card-sale__badge--low-stock" : "product-card-sale__badge--out-stock"}`}>{item.stock > 0 ? "Còn Hàng" : "Hết Hàng"}</div>}
+                  <div className="product-card-sale__image-container">
+                    <img src={item.productImage[0] || "/placeholder.svg?height=200&width=200"} alt={item.productName} className="product-card-sale__image" />
                   </div>
-                  <div className="product-card__info">
-                    <h3 className="product-card__name">{item.productName}</h3>
-                    <div className="product-card__tags">
-                      <span className="product-card__tag">{item.subCategory}</span>
-                      <span className="product-card__tag">{item.brand}</span>
-                      <span className="product-card__tag">{item.calUnit}</span>
+                  <div className="product-card-sale__info">
+                    <h3 className="product-card-sale__name">{item.productName}</h3>
+                    <div className="product-card-sale__tags">
+                      <span className="product-card-sale__tag">{item.subCategory}</span>
+                      <span className="product-card-sale__tag">{item.brand}</span>
+                      <span className="product-card-sale__tag">{item.calUnit}</span>
                     </div>
 
                     {item.salePrice != 0 ? (
-                      <div className="product-card__pricing">
-                        <span className="product-card__current-price">{item.salePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
-                        <span className="product-card__original-price">{item.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                      <div className="product-card-sale__pricing">
+                        <span className="product-card-sale__current-price">{item.salePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                        <span className="product-card-sale__original-price">{item.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
                         {item.salePrice != 0 && (
                           <>
-                            <span className="product-card__discount">Save {calSavePrice(item.price, item.salePrice)}%</span>
+                            <span className="product-card-sale__discount">Save {calSavePrice(item.price, item.salePrice)}%</span>
                           </>
                         )}
                       </div>
                     ) : (
-                      <div className="product-card__pricing">
-                        <span className="product-card__current-price">{item.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                      <div className="product-card-sale__pricing">
+                        <span className="product-card-sale__current-price">{item.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
                       </div>
                     )}
 

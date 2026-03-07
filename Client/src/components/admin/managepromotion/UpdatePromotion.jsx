@@ -226,7 +226,7 @@ const UpdatePromotion = (props) => {
 
   return (
     <>
-      <Modal size="xl" show={props.isShowUpdate} onHide={props.closeUpdate}>
+      <Modal className="admin-crud-modal" size="xl" show={props.isShowUpdate} onHide={props.closeUpdate}>
         <Modal.Header closeButton>
           <Modal.Title>Cập nhật mã giảm giá</Modal.Title>
         </Modal.Header>

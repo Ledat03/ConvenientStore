@@ -5,7 +5,6 @@ import { Dropdown, ButtonGroup } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { handleCategories } from "../../services/GetAPI";
 import React from "react";
-import Logo from "../../assets/Winmart.svg";
 import { FiShoppingCart } from "react-icons/fi";
 const HomeHeader = ({ onLogout }) => {
   const [Search, setSearch] = useState(null);
@@ -40,7 +39,7 @@ const HomeHeader = ({ onLogout }) => {
           <div className="header__main-content">
             <div className="header__logo">
               <a href="/">
-                <img src={Logo} alt="Winmart_Logo" />
+                <h1>Base</h1>
               </a>
             </div>
 
@@ -67,21 +66,18 @@ const HomeHeader = ({ onLogout }) => {
                           onMouseLeave={() => setIdx(null)}
                         >
                           <Dropdown.Toggle variant="link" className="custom-nested-dropdown-toggle dropdown-item" id={`dropdown-nested-${cate.categoryId}`}>
-                            <Link to={`/products?category=${cate.categoryName}`}>{cate.categoryName}</Link>
+                            <a href={`/products?category=${cate.categoryName}`}>{cate.categoryName}</a>
 
                             <FaCaretRight style={{ marginLeft: "auto" }} />
                           </Dropdown.Toggle>
                           <Dropdown.Menu className="header__dropdown-Submenu">
                             {cate.subCategories.map((item) => (
-                              <Dropdown.Item
+                              <Dropdown
                                 key={item.id}
-                                href={item.link}
-                                onClick={() => {
-                                  navigate(`/products?category=${cate.categoryName}&sub-category=${item.subCategoryName}`);
-                                }}
+                                className="header__dropdown-Submenu__item"
                               >
-                                {item.subCategoryName}
-                              </Dropdown.Item>
+                                <a href={`/products?sub-category=${item.subCategoryName}`}>{item.subCategoryName}</a>
+                              </Dropdown>
                             ))}
                           </Dropdown.Menu>
                         </Dropdown>
@@ -97,11 +93,11 @@ const HomeHeader = ({ onLogout }) => {
                     setSearch(e.target.value);
                   }}
                 />
-                <Link to={`/products?search=${Search}`} className="header__search-btn">
+                <a href={`/products?search=${Search}`} className="header__search-btn">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
                   </svg>
-                </Link>
+                </a>
               </div>
             </div>
             {!localStorage.getItem("user") ? (

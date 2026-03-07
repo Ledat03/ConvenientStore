@@ -41,7 +41,7 @@ const UpdateDelivery = (props) => {
   };
   return (
     <>
-      <Modal size="xl" show={props.isActive.UpdateDelivery} onHide={props.close}>
+      <Modal className="admin-crud-modal" size="xl" show={props.isActive.UpdateDelivery} onHide={props.close}>
         <Modal.Header closeButton>Cập Nhật Giao Hàng</Modal.Header>
         <Modal.Body>
           <Form>

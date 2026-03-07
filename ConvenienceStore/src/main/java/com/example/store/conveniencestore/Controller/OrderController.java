@@ -9,6 +9,9 @@ import com.example.store.conveniencestore.VNPay.Config;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -216,6 +219,29 @@ public class OrderController {
             return ResponseEntity.ok().body("Xóa đơn hàng thành công ");
         }
         return ResponseEntity.notFound().build();
+    }
+    @GetMapping("/filter")
+    public ResponseEntity<PageRestsponse<List<ResOrderDTO>>> getOrderByFilter(@RequestParam(value = "search" ,required = false) String username,
+                                                           @RequestParam(value = "time"  ,required = false,defaultValue = "0") int days,
+                                                           @RequestParam(value = "deliveryStatus" ,required = false) String deliveryStatus,
+                                                           @RequestParam(value = "paymentStatus"  ,required = false) String paymentStatus,
+                                                           @RequestParam(value = "page"  ,required = false ,defaultValue = "0") int page){
+        String name = null;
+        LocalDateTime now = null,past = null;
+        TransactionStatus ts = null;
+        DeliveryStatus ds = null;
+        if(username != null) name = username;
+        if(days != 0) {
+            now = LocalDateTime.now();
+            past = now.minusDays(days);
+        }
+        if(deliveryStatus != null) ds = DeliveryStatus.valueOf(deliveryStatus);
+        if (paymentStatus != null) ts = TransactionStatus.valueOf(paymentStatus);
+        Pageable pageable = PageRequest.of(page,5);
+        Page<Order> data = orderService.getOrdersByFilter(name,now,past,ds,ts,pageable);
+        List<ResOrderDTO> response = data.stream().map(ResOrderDTO::new).toList();
+        PageRestsponse res = new PageRestsponse(response,data.getTotalElements());
+        return ResponseEntity.ok(res);
     }
     @GetMapping("/vnpay_jsp/vnpay_return")
     public void handleVNPayReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {

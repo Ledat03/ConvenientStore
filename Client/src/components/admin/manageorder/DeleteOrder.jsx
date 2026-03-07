@@ -16,6 +16,7 @@ const DeleteOrder = ({ isActive, close, Order, reload }) => {
   return (
     <>
       <Modal
+        className="admin-crud-modal"
         size="x"
         show={isActive}
         onHide={() => {

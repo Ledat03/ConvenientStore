@@ -15,7 +15,7 @@ const DeleteBrand = (props) => {
   };
   return (
     <>
-      <Modal size="x" show={props.isShowDelete} onHide={props.closeDelete}>
+      <Modal className="admin-crud-modal" size="x" show={props.isShowDelete} onHide={props.closeDelete}>
         <Modal.Header closeButton>Xóa Nhãn Hàng</Modal.Header>
         <Modal.Body>
           <p>Bạn có chắc muốn xóa nhãn hàng này hay không ?</p>

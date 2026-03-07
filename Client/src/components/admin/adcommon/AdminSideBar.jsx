@@ -5,7 +5,6 @@ import { TbBrandDatabricks } from "react-icons/tb";
 import { RiDiscountPercentFill } from "react-icons/ri";
 import { MdBorderColor } from "react-icons/md";
 import { GrAnalytics } from "react-icons/gr";
-import Logo from "../../../assets/Winmart.svg";
 import { useEffect, useState } from "react";
 export const AdminSideBar = ({ collapse } = props) => {
   const [user, setUser] = useState({});
@@ -18,7 +17,7 @@ export const AdminSideBar = ({ collapse } = props) => {
     <Sidebar className="sidebar-admin" collapsed={collapse} collapsedWidth="80px">
       <Menu>
         <MenuItem className="admin-logo" active={collapse}>
-          {!collapse && <img src={Logo} alt="" />}
+          {!collapse && <h1>Base</h1>}
         </MenuItem>
         {user.role === "admin" && (
           <MenuItem href="/admin" icon={<BiCheckCircle size={20} />}>

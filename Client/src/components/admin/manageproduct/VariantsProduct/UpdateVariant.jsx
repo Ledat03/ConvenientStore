@@ -55,7 +55,7 @@ const UpdateVariant = (props) => {
   };
   return (
     <>
-      <Modal size="xl" show={props.isShowVariant} onHide={props.closeVariant}>
+      <Modal className="admin-crud-modal" size="xl" show={props.isShowVariant} onHide={props.closeVariant}>
         <Modal.Header closeButton> Sửa thông tin sản phẩm </Modal.Header>
         <Modal.Body>
           <Form>

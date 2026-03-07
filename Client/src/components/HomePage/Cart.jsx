@@ -30,9 +30,9 @@ const Cart = () => {
   const handleCart = async (info) => {
     const res = await ViewCart(info);
     console.log(res);
-    if (res.data.data?.cartDetailList != undefined) {
-      const selectItems = res.data.data.cartDetailList.map((item) => ({ ...item, selected: false }));
-      const temp = res.data.data;
+    if (res.data?.cartDetailList != undefined) {
+      const selectItems = res.data.cartDetailList.map((item) => ({ ...item, selected: false }));
+      const temp = res.data;
       setCart({ ...temp, cartDetailList: selectItems });
     }
     setLoading(false);
@@ -95,6 +95,7 @@ const Cart = () => {
   if (Loading) {
     return <LoadingAnimation />;
   }
+  console.log(CartInfo)
   return (
     <div className="cart-container">
       {CartInfo && CartInfo?.cartDetailList?.length != 0 ? (

@@ -45,7 +45,7 @@ const AddBrand = (props) => {
       >
         <FaPlus className="i i-add-user" />
       </Button>
-      <Modal size="xl" show={isShow} onHide={close}>
+      <Modal className="admin-crud-modal" size="xl" show={isShow} onHide={close}>
         <Modal.Header closeButton> Thêm Nhãn Hàng</Modal.Header>
         <Modal.Body>
           <Form>

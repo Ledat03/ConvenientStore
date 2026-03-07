@@ -66,12 +66,15 @@
   }
 
   &__section-title {
-    font-size: var.$font-size-sm;
-    font-weight: 700;
+    font-size: var.$font-size-lg;
+    font-weight: bolder;
     color: var.$black;
     margin-bottom: var.$spacing-4;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
+    h1 {
+      font-weight: bold;
+      color: var.$red-accent;
+    }
   }
 
   &__links {

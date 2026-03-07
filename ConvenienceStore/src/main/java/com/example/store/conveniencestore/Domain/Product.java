@@ -44,7 +44,7 @@ public class Product {
     @JoinColumn(name = "category_id")
     @JsonManagedReference
     private Category category;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<ProductVariant> productVariant;
     private LocalDateTime createdAt;

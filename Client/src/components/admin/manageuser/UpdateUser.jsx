@@ -42,7 +42,7 @@ const UpdateUser = (props) => {
   };
   return (
     <>
-      <Modal size="xl" show={props.isShowUpdate} onHide={props.closeUpdate}>
+      <Modal className="admin-crud-modal" size="xl" show={props.isShowUpdate} onHide={props.closeUpdate}>
         <Modal.Header closeButton>Cập nhật người dùng</Modal.Header>
         <Modal.Body>
           <Form>

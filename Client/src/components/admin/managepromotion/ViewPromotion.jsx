@@ -3,7 +3,7 @@ import { Modal, Button } from "react-bootstrap";
 const ViewPromotion = (props) => {
   return (
     <>
-      <Modal size="xl" show={props.isShowView} onHide={props.closeView}>
+      <Modal className="admin-crud-modal" size="xl" show={props.isShowView} onHide={props.closeView}>
         <Modal.Header closeButton> Thông tin mã giảm giá </Modal.Header>
         <Modal.Body>
           <p>Mã giảm giá : {props.InfoItem.code}</p>

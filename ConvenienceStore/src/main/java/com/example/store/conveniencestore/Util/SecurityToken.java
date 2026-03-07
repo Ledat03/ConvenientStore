@@ -83,7 +83,7 @@ public class SecurityToken {
              return decoder.decode(refreshToken);
 
         } catch (Exception e) {
-            System.out.println("refreshToken not valid");
+            System.out.println("refreshToken invalid");
             throw e;
         }
     }

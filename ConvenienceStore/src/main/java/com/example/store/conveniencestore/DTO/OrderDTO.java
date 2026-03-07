@@ -1,5 +1,6 @@
 package com.example.store.conveniencestore.DTO;
 
+import com.example.store.conveniencestore.Domain.Order;
 import jakarta.persistence.Column;
 import lombok.Data;
 

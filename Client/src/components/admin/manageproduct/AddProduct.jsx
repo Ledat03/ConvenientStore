@@ -96,7 +96,7 @@ const AddProduct = (props) => {
       await addNewProduct(formData);
       toast.success("New product is already added !");
       close();
-      props.handleProductsList();
+      props.handleProductsList(props.filters);
       clearInput();
       setLoading(false);
     } catch (error) {
@@ -115,6 +115,7 @@ const AddProduct = (props) => {
         Add New Product
       </Button>
       <Modal
+        className="admin-crud-modal"
         size="xl"
         show={isShow}
         onHide={() => {

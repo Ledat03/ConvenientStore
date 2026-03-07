@@ -4,9 +4,15 @@ import com.example.store.conveniencestore.Domain.Delivery;
 import com.example.store.conveniencestore.Domain.Order;
 import com.example.store.conveniencestore.Domain.OrderItem;
 import com.example.store.conveniencestore.Domain.Payment;
+import com.example.store.conveniencestore.EnumType.DeliveryStatus;
+import com.example.store.conveniencestore.EnumType.TransactionStatus;
 import com.example.store.conveniencestore.Repository.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -59,5 +65,8 @@ public class OrderService {
     }
     public void deleteOrder(Order order) {
         orderRepository.deleteById(order.getId());
+    }
+    public Page<Order> getOrdersByFilter(String name , LocalDateTime now,LocalDateTime past, DeliveryStatus deliveryStatus, TransactionStatus paymentStatus, Pageable pageable) {
+           return orderRepository.getOrdersByNameAndDateAndStateAndPaymentStatus(name,now,past,deliveryStatus,paymentStatus,pageable);
     }
 }

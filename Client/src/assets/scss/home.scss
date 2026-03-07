@@ -13,9 +13,6 @@
 
 .promotion-wrapper {
   position: relative;
-  min-width: 1200px;
-  margin: 0 auto;
-  padding: 0 60px;
 }
 
 .scroll-btn {
@@ -76,13 +73,15 @@
   content: none !important;
 }
 .promotion-card {
-  min-width: 500px;
+  flex: 0 0 clamp(280px, 46vw, 500px);
   display: flex;
   background: white;
   border-radius: 12px;
   border: #000 solid 1px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   .promotion-left {
     color: #fff;
     min-width: 150px;
@@ -255,11 +254,11 @@
 }
 @media (max-width: 768px) {
   .promotion-wrapper {
-    padding: 0 50px;
+    padding: 0 44px;
   }
 
   .promotion-card {
-    flex: 0 0 280px;
+    flex: 0 0 clamp(260px, 72vw, 320px);
   }
 
   .scroll-btn {
@@ -278,11 +277,11 @@
 
 @media (max-width: 480px) {
   .promotion-wrapper {
-    padding: 0 40px;
+    padding: 0 36px;
   }
 
   .promotion-card {
-    flex: 0 0 260px;
+    flex: 0 0 clamp(240px, 82vw, 280px);
   }
 
   .promotion-title {
@@ -291,5 +290,168 @@
 
   .promotion-description {
     font-size: 13px;
+  }
+}
+.product-card-sale {
+  background: white;
+  border: solid 1px;
+  flex: 0 0 clamp(240px, 72vw, 350px);
+  min-height: 460px;
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  position: relative;
+  border-color: var.$red-accent;
+  &__badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    z-index: 1;
+  }
+
+  &__badge--low-stock {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+
+  &__badge--out-stock {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  &__image-container {
+    width: 100%;
+    height: clamp(180px, 30vw, 300px);
+    overflow: hidden;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__info {
+    padding: 15px;
+    max-height: 183px;
+  }
+
+  &__name {
+    height: 40px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  &__tags {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  &__tag {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+  }
+
+  &__note {
+    font-size: 12px;
+    color: #dc3545;
+    margin-bottom: 8px;
+  }
+
+  &__reviews {
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  &__pricing {
+    display: flex;
+    gap: 12px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .product-card-sale__discount {
+    width: 70px;
+    height: 20px;
+    text-align: center;
+    border: 1px solid #28a745;
+    border-radius: 10%;
+    font-size: 12px;
+    background-color: #28a745;
+    color: #fff;
+    font-weight: 500;
+  }
+  .Card-ButtonGroup {
+    margin: 0 auto;
+    width: 90%;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    .Card-Button {
+      width: 100%;
+      background-color: var.$red-accent;
+      border: none;
+      &:hover {
+        background-color: #fff;
+        color: var.$red-accent;
+        transition: all 0.3s ease;
+        border: 1px solid var.$red-accent;
+      }
+    }
+  }
+
+  &__current-price {
+    font-size: 18px;
+    font-weight: 700;
+    margin-right: 10px;
+    color: #333;
+  }
+
+  &__original-price {
+    font-size: 14px;
+    color: #6c757d;
+    text-decoration: line-through;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-card-sale {
+    min-height: 420px;
+
+    .Card-ButtonGroup {
+      position: static;
+      width: 100%;
+      margin-top: 10px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card-sale {
+    min-height: auto;
+
+    &__info {
+      padding: 12px;
+    }
+
+    &__name {
+      font-size: 13px;
+    }
   }
 }

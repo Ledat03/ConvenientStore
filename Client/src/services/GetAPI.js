@@ -51,21 +51,45 @@ const updateProduct = async (Product) => {
   await APIsCustomize.put("product/update", Product, { headers: { "Content-Type": "application/json" } });
 };
 const fetchListProduct = async (filter) => {
-  if(filter !==  undefined){
-  const params = { ...filter };
-  if (params.state === "null" || params.state === "") {
-    params.state = null;
+  if (filter !== undefined) {
+    const params = { ...filter };
+    if (params.state === "null" || params.state === "") {
+      params.state = null;
+    }
+    if (params.status === "null" || params.status === "") {
+      params.status = null;
+    }
+    if (params.name === "") {
+      params.name = null;
+    }
+    return await APIsCustomize.get("/product/view", { params: params, headers: { "Content-Type": "application/json" } });
   }
-  if (params.status === "null" || params.status === "") {
-    params.status = null;
+};
+const getProductByAdvFilter = async (fetchData) => {
+  if (fetchData) {
+    let temp = { ...fetchData };
+    if (temp.unit && temp.unit.length === 0) {
+      temp.unit = null;
+    }
+    if (temp.subCategory && temp.subCategory.length === 0) {
+      temp.subCategory = null;
+    }
+    if (temp.priceRange && temp.priceRange[0] === "") {
+      temp.priceRange[0] = 0;
+    }
+    if (temp.priceRange && temp.priceRange[1] === "") {
+      temp.priceRange[1] = 1000000;
+    }
+    if (temp.brand && temp.brand.length === 0) {
+      temp.brand = null;
+    }
+
+    return APIsCustomize.post("product/view/multi_filter", temp, { headers: { "Content-Type": "application/json" } });
   }
-  if (params.name === "") {
-    params.name = null;
-  }
-    return await APIsCustomize.get("/product/view", {params: params,headers: { "Content-Type": "application/json" }})
-  } 
-}
-const getAllProducts = async () => APIsCustomize.get("/product/all_products", { headers: { "Content-Type": "application/json" } })
+};
+const getNewProduct = (data) => APIsCustomize.get("/product/view/spec_product", { params: data, headers: { "Content-Type": "application/json" } });
+const getFilterData = async (cdt) => APIsCustomize.post("product/view/filter", cdt, { headers: { "Content-Type": "application/json" } });
+const getAllProducts = async () => APIsCustomize.get("/product/all_products", { headers: { "Content-Type": "application/json" } });
 const deleteProduct = async (id) => await APIsCustomize.delete(`/product/delete/${id}`, { headers: { "Content-Type": "application/json" } });
 const fetchProductById = async (productId) => await APIsCustomize.get(`/product/view/product-info/${productId}`, { headers: { "Content-Type": "application/json" } });
 //Variant Controller
@@ -86,7 +110,26 @@ const fetchListPromotionByFilter = async (code) => await APIsCustomize.get("/pro
 const updatePromotion = async (promotion) => await APIsCustomize.put("/promotion/update", promotion, { headers: { "Content-Type": "application/json" } });
 const deletePromotion = async (id) => await APIsCustomize.delete(`/promotion/delete?id=${id}`);
 //OrderController
-const fetchListOrder = async () => await APIsCustomize.get("/order/view");
+const fetchListOrder = async (data) => {
+  if (data !== undefined) {
+    const params = { ...data };
+    if (params.paymentStatus === "null" || params.paymentStatus === "") {
+      params.paymentStatus = null;
+    }
+    if (params.deliveryStatus === "null" || params.deliveryStatus === "") {
+      params.deliveryStatus = null;
+    }
+    if (params.search === "") {
+      params.search = null;
+    }
+    return await APIsCustomize.get("/order/filter", { params: params, headers: { "Content-Type": "application/json" } });
+  } else {
+    return await APIsCustomize.get("/order/filter", { params: data, headers: { "Content-Type": "application/json" } });
+  }
+};
+const getRelatedProducts = async (params) => await APIsCustomize.get("/product/view/related_product", { params: { id: params }, headers: { "Content-Type": "application/json" } });
+const getAllOrder = async () => await APIsCustomize.get("/order/view", { headers: { "Content-Type": "application/json" } });
+const getAllImport = async () => await APIsCustomize.get("/import/view", { headers: { "Content-Type": "application/json" } });
 const fetchListOrderById = async (id) => await APIsCustomize.get(`/order/view/id`, { params: { id }, headers: { "Content-Type": "application/json" } });
 const updateDelivery = async (delivery) => await APIsCustomize.put("/order/update/delivery", delivery, { headers: { "Content-Type": "application/json" } });
 const updatePayment = async (payment) => await APIsCustomize.put("/order/update/payment", payment, { headers: { "Content-Type": "application/json" } });
@@ -94,7 +137,13 @@ const deleteOrder = async (id) => await APIsCustomize.delete(`/order/delete?id=$
 //InventoryImport
 
 const addImport = async (inventImport) => await APIsCustomize.post("/import/add", inventImport, { headers: { "Content-Type": "application/json" } });
-const viewImport = async () => await APIsCustomize.get("/import/view");
+const viewImport = async (filter) => {
+  let params = { ...filter };
+  if (params.code === "") {
+    params.code = null;
+  }
+  return await APIsCustomize.get("/import/filter", { params: params, headers: { "Content-Type": "application/json" } });
+};
 const updateImport = async (inventImport) => await APIsCustomize.put("/import/update", inventImport, { headers: { "Content-Type": "application/json" } });
 const deleteImport = async (id) => await APIsCustomize.delete(`/import/delete?id=${id}`, { headers: { "Content-Type": "application/json" } });
-export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct,getAllProducts, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, updatePromotion, fetchListPromotionByFilter, deletePromotion, fetchListOrder, fetchListOrderById, updateDelivery, updatePayment, addImport, viewImport, updateImport, deleteImport, deleteOrder };
+export { createNewUser, handleListUser, handleUpdate, handleDeleteUser, handleCategories, handleListSubCate, addNewProduct, fetchListProduct, getProductByAdvFilter, getFilterData, getNewProduct, getAllProducts, getRelatedProducts, getAllOrder, updateProduct, deleteProduct, AddNewVariant, GetListVariant, deleteVariant, UpdateVariantItem, fetchProductById, addNewPromotion, addBrand, updateBrand, deleteBrand, viewBrand, fetchListPromotion, updatePromotion, fetchListPromotionByFilter, deletePromotion, fetchListOrder, fetchListOrderById, updateDelivery, updatePayment, addImport, viewImport, updateImport, deleteImport, deleteOrder, getAllImport };

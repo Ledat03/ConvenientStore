@@ -1,7 +1,6 @@
 package com.example.store.conveniencestore.Controller;
 
-import com.example.store.conveniencestore.DTO.ProductDTO;
-import com.example.store.conveniencestore.DTO.ManageProductDTO;
+import com.example.store.conveniencestore.DTO.*;
 import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.EnumType.DiscountScope;
 import com.example.store.conveniencestore.Service.CloudinaryService;
@@ -89,7 +88,11 @@ public class ProductController {
         List<Category> listOfCate = productService.findAllCategories();
         return ResponseEntity.ok(listOfCate);
     }
-
+    @GetMapping("/count_product")
+    public ResponseEntity<Long> countProduct(){
+        long totalProduct = productService.countProduct();
+        return ResponseEntity.ok(totalProduct);
+    }
     @PostMapping("/add")
     public ResponseEntity<Object> addNewProduct(@RequestParam(value = "productName", required = false) String productName,
             @RequestParam(value = "productDescription", required = false) String productDescription,
@@ -145,13 +148,25 @@ public class ProductController {
         List<ProductDTO> productDTOs = products.stream().map(ProductDTO::new).toList();
         return ResponseEntity.ok().body(productDTOs);
     }
-
-        @GetMapping("/view")
-        public ResponseEntity<?> ViewProduct(ManageProductDTO manageProductDTO){
+    @PostMapping("/view/multi_filter")
+    public ResponseEntity<?> getProductsByMultiFilter(@RequestBody AdvFilter advFilter){
+        Pageable pageable = PageRequest.of(advFilter.getPage(),8);
+        Page<ProductVariant> data = productService.getProductByAdvFilter(advFilter,pageable);
+        List<ProductFormat> dto = data.stream().map(ProductFormat::new).toList();
+        PageRestsponse<List<ProductFormat>> response = new PageRestsponse<>(dto, data.getTotalElements());
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("/view/filter")
+    public ResponseEntity<?> getFilterData(@RequestBody AdvFilter advFilter){
+        FilterData data = productService.getFilterData(advFilter);
+        return ResponseEntity.ok(data);
+    }
+    @GetMapping("/view")
+    public ResponseEntity<?> ViewProduct(ManageProductDTO manageProductDTO){
         PageRestsponse<List<ProductDTO>> response = new PageRestsponse<>();
                 if(manageProductDTO.getName() != null || manageProductDTO.getStatus() != null || manageProductDTO.getState() != null) {
                     try {
-                        Pageable pageable = PageRequest.of(Integer.parseInt(manageProductDTO.getPage()), 8);
+                        Pageable pageable = PageRequest.of(Integer.parseInt(manageProductDTO.getPage()), 5);
                         Page<Product> prodData = productService.getProductWithNameAndStatusAndState(manageProductDTO, pageable);
                         List<ProductDTO> resData = prodData.stream().map(ProductDTO::new).toList();
                         response.setData(resData);
@@ -161,18 +176,43 @@ public class ProductController {
                         throw new RuntimeException(e);
                     }
                 }
-            Pageable pageable = PageRequest.of(Integer.parseInt(manageProductDTO.getPage()),8);
+            Pageable pageable = PageRequest.of(Integer.parseInt(manageProductDTO.getPage()),5);
             Page<Product> ListProducts = productService.findAllProducts(pageable);
             List<ProductDTO> products = ListProducts.stream().map(ProductDTO::new).toList();
             response.setData(products);
             response.setTotalItems(ListProducts.getTotalElements());
             return ResponseEntity.ok(response);
         }
-
-    @GetMapping("/view/product-info/{id}")
-    public ResponseEntity<Product> getProductInfo(@PathVariable long id) {
+    @GetMapping("/view/spec_product")
+    public ResponseEntity<?> getBestSeller(
+            @RequestParam("type") String type,
+            @RequestParam("page") int page) {
+        Pageable pageable = PageRequest.of(page,8);
+        PageRestsponse<List<ProductFormat>> resData = new PageRestsponse<>();
+        List<ProductFormat> response;
+        if(type != null){
+            Page<ProductVariant> data = productService.getNewProducts(type,pageable);
+            if(data != null){
+            response = data.stream().map(ProductFormat::new).toList();
+            resData.setData(response);
+            resData.setTotalItems(data.getTotalElements());
+            }
+        }
+        return ResponseEntity.ok(resData);
+    }
+    @GetMapping("/view/related_product")
+    public ResponseEntity<?> getRelatedProducts(@RequestParam long id) {
         Product product = productService.findProductById(id);
-        return ResponseEntity.ok(product);
+        Page<ProductVariant> data = productService.getRelatedProducts(product);
+        List<ProductFormat> formatData = data.stream().map(ProductFormat::new).toList();
+        PageRestsponse<List<ProductFormat>> res = new PageRestsponse<>(formatData, data.getTotalElements());
+        return ResponseEntity.ok(res);
+    }
+    @GetMapping("/view/product-info/{id}")
+    public ResponseEntity<ProductDTO> getProductInfo(@PathVariable long id) {
+        Product product = productService.findProductById(id);
+        ProductDTO response = new ProductDTO(product);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/update")

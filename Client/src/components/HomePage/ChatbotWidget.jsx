@@ -1,6 +1,6 @@
 import "../../assets/scss/chatcustom.scss";
 import { useEffect, useState } from "react";
-import { fetchListProduct, fetchListPromotion } from "../../services/GetAPI";
+import { getAllProducts, fetchListPromotion } from "../../services/GetAPI";
 import { AiOutlineClose } from "react-icons/ai";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -16,9 +16,9 @@ const ChatbotWidget = () => {
   const genAI = new GoogleGenerativeAI("AIzaSyADoMNR5Rp5GpTCegzhVo995jpZb5riHw0");
   const MIN_REQUEST_INTERVAL = 2000;
   const getInfomation = async () => {
-    const productData = await fetchListProduct();
+    const productData = await getAllProducts();
     const promotionData = await fetchListPromotion();
-    setProducts(productData.data.data);
+    setProducts(productData.data);
     setPromotions(promotionData.data.data);
   };
 
@@ -85,7 +85,7 @@ const ChatbotWidget = () => {
     const promotionsData = Promotions.map((promo) => `- Mã: ${promo.code || promo.title} - ${promo.description || ""}`).join("\n");
     console.log(productsData);
     console.log(promotionsData);
-    const prompt = `Bạn là trợ lý AI của WinMart - website thương mại điện tử bán lẻ hàng đầu Việt Nam.
+    const prompt = `Bạn là trợ lý AI của Base - website thương mại điện tử bán lẻ hàng đầu Việt Nam.
 
 DANH SÁCH TẤT CẢ SẢN PHẨM HIỆN CÓ:
 ${productsData}
@@ -127,7 +127,7 @@ HƯỚNG DẪN TRẢ LỜI CHI TIẾT:
      "Áp dụng mã **[MÃ]** để được ưu đãi thêm!"
      "[Xem tất cả sản phẩm khuyến mãi](http://localhost:3000/products?promotion=[MÃ])"
 
-4. Thông tin dịch vụ WinMart:
+4. Thông tin dịch vụ Base:
    Giao hàng:
    - MIỄN PHÍ vận chuyển cho đơn hàng từ 500.000đ
    - Giao trong ngày: Bán kính 20-30km
@@ -140,7 +140,7 @@ HƯỚNG DẪN TRẢ LỜI CHI TIẾT:
    
    Hỗ trợ khách hàng:
    - Hotline: 1900-8888 (8h-22h hàng ngày)
-   - Email: support@winmart.vn
+   - Email: support@Base.vn
 
 5. Phong cách trả lời:
    - Thân thiện, lịch sự, gọi khách là "Quý khách" hoặc "Bạn"
@@ -153,8 +153,8 @@ HƯỚNG DẪN TRẢ LỜI CHI TIẾT:
   - Để tới được phần thanh toán,người dùng phải vào giỏ hàng và chọn các sản phẩm họ muốn mua
   - Thanh toán bằng VNPay người dùng sẽ trực tiếp chuyển hướng sang phía VNPay để thực hiện thanh toán do trang web không có chức năng thanh toán bằng thẻ ngân hàng. 
 7. Xử lý các trường hợp đặc biệt:
-   - Nếu không tìm thấy sản phẩm: "Rất tiếc, hiện tại WinMart chưa có sản phẩm này. Bạn có thể tham khảo các sản phẩm tương tự sau..."
-   - Nếu hỏi về đơn hàng: "Quý khách vui lòng kiểm tra tại mục 'Quản lí đơn hàng' hoặc liên hệ hotline 1900-8888 hoặc gửi tới Email support@winmart.vn để được hỗ trợ chi tiết về đơn hàng ạ."
+   - Nếu không tìm thấy sản phẩm: "Rất tiếc, hiện tại Base chưa có sản phẩm này. Bạn có thể tham khảo các sản phẩm tương tự sau..."
+   - Nếu hỏi về đơn hàng: "Quý khách vui lòng kiểm tra tại mục 'Quản lí đơn hàng' hoặc liên hệ hotline 1900-8888 hoặc gửi tới Email support@Base.vn để được hỗ trợ chi tiết về đơn hàng ạ."
    - Nếu hỏi giá cụ thể: Luôn hiển thị cả giá gốc và giá khuyến mãi (nếu có)
    - Nếu như hỏi các hình thức thanh toán khác : Rất xin lỗi nếu như người dùng muốn thanh toán bằng các phương thức thanh toán khác.
    - Không trả lời các câu hỏi không liên quan tới cửa hàng và từ chối một cách lịch sự
@@ -190,20 +190,20 @@ Hãy trả lời chi tiết, chính xác với thông tin sản phẩm thực t�
         }
 
         const fallbackResponses = {
-          giá: " Quý khách có thể xem giá chi tiết của từng sản phẩm trên website. WinMart cam kết giá tốt nhất thị trường! Bạn đang tìm sản phẩm nào ạ?",
+          giá: " Quý khách có thể xem giá chi tiết của từng sản phẩm trên website. Base cam kết giá tốt nhất thị trường! Bạn đang tìm sản phẩm nào ạ?",
 
-          "giao hàng": ` **Chính sách giao hàng WinMart:**
+          "giao hàng": ` **Chính sách giao hàng Base:**
 • Miễn phí vận chuyển cho đơn hàng từ 500.000đ
 • Giao trong ngày: Bán kính 20-30km
 • Giao ngày hôm sau: Khoảng cách xa hơn
 
  Hotline hỗ trợ: 1900-1234`,
 
-          "thanh toán ": `**WinMart hỗ trợ nhiều hình thức thanh toán:**
+          "thanh toán ": `**Base hỗ trợ nhiều hình thức thanh toán:**
 • Tiền mặt khi nhận hàng (COD)
 • Ví điện tử: VNPay`,
 
-          "khuyến mãi  ": ` **Khuyến mãi hot tại WinMart:**
+          "khuyến mãi  ": ` **Khuyến mãi hot tại Base:**
 • Mã **MILKSUMMER**: Giảm giá cho sản phẩm sữa
 • Miễn phí vận chuyển cho đơn từ 500.000đ
 `,
@@ -269,7 +269,7 @@ Hãy trả lời chi tiết, chính xác với thông tin sản phẩm thực t�
       <div className={`chat-window ${isOpen ? "open" : ""}`}>
         <div className="chat-widget">
           <div className="chat-header">
-            <h3> WinMart - Trợ lý mua sắm</h3>
+            <h3> Base - Trợ lý mua sắm</h3>
             <div className="header-actions">
               <button onClick={clearChat} className="clear-btn">
                 Xóa
@@ -283,7 +283,7 @@ Hãy trả lời chi tiết, chính xác với thông tin sản phẩm thực t�
           <div className="chat-messages">
             {messages.length === 0 && (
               <div className="welcome-message">
-                <h6>Xin chào! Tôi là trợ lý mua sắm của WinMart.</h6>
+                <h6>Xin chào! Tôi là trợ lý mua sắm của Base.</h6>
                 <br />
                 Tôi có thể giúp bạn:
                 <br />• Tìm kiếm sản phẩm

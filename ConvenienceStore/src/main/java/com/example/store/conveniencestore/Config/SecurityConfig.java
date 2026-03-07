@@ -91,6 +91,7 @@ public class SecurityConfig {
                         "/",
                         "user/**",
                         "order/**",
+                        "product/**",
                         "/api/**",
                         "api/check/signup",
                         "/product/view/**",

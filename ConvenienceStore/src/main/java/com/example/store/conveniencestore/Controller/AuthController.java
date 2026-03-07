@@ -123,7 +123,6 @@ public class AuthController {
             }
             Jwt refreshTokenJwt = securityToken.checkRefreshToken(refreshToken);
             if(refreshToken != null) {
-
                 String email = refreshTokenJwt.getSubject();
                 User user = userService.findByEmail(email);
                 if(refreshTokenJwt.getExpiresAt() != null && refreshTokenJwt.getExpiresAt().isAfter(Instant.now())) {
@@ -147,7 +146,7 @@ public class AuthController {
 
     @PostMapping("/forgot")
     public ResponseEntity<Object> forgotPassword(@RequestBody String email) {
-        User user = userService.findByEmail("test1@gmail.com");
+        User user = userService.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng");
         }

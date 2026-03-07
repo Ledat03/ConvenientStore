@@ -1,0 +1,181 @@
+.admin-table {
+  width: 100%;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #e8edf3;
+  box-shadow: 0 6px 18px rgba(20, 37, 63, 0.06);
+  position: relative;
+}
+
+.admin-table__bulk-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eef2f7;
+  background: #f8fbff;
+  color: #20324f;
+  font-weight: 500;
+}
+
+.admin-table__bulk-delete,
+.admin-table__confirm-btn,
+.admin-table__cancel-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.admin-table__bulk-delete,
+.admin-table__confirm-btn {
+  background: #e34c4c;
+  color: #fff;
+}
+
+.admin-table__cancel-btn {
+  background: #eef3f9;
+  color: #344053;
+}
+
+.admin-table__confirm-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-table__container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-table__table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 820px;
+}
+
+.admin-table__header-cell {
+  position: relative;
+  text-align: left;
+  background: #f9fbff;
+  color: #24344c;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: grab;
+  user-select: none;
+  transition:
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 160ms ease,
+    background-color 130ms ease,
+    opacity 130ms ease;
+}
+
+.admin-table__header-cell:active {
+  cursor: grabbing;
+}
+
+.admin-table__row {
+  transition: background-color 0.14s ease;
+}
+
+.admin-table__row--clickable {
+  cursor: pointer;
+}
+
+.admin-table__row:hover {
+  background: #fafcff;
+}
+
+.admin-table__cell {
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f4f8;
+  font-size: 13px;
+  color: #1d2b43;
+  vertical-align: middle;
+  transition:
+    transform 160ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 130ms ease,
+    opacity 130ms ease;
+}
+
+.admin-table__column--dragging {
+  opacity: 0.72;
+  z-index: 2;
+}
+
+.admin-table__header-cell.admin-table__column--dragging {
+  box-shadow: 0 8px 18px rgba(23, 43, 77, 0.2);
+  background: #eef5ff;
+}
+
+.admin-table__column--shift-left {
+  transform: translateX(-90px);
+}
+
+.admin-table__column--shift-right {
+  transform: translateX(150px);
+}
+
+.admin-table__header-cell--drop-target {
+  background: #eaf2ff;
+}
+
+.admin-table__header-cell--drop-target::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 4px;
+  width: 3px;
+  border-radius: 999px;
+  background: #3b82f6;
+}
+
+.admin-table__ghost-column {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: linear-gradient(180deg, #f7fbff 0%, #edf5ff 100%);
+  border: 1px solid #b8cff6;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #183153;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 12px 24px rgba(35, 66, 116, 0.2);
+  opacity: 0.96;
+  backdrop-filter: blur(1px);
+  transition: transform 70ms linear;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-table__select-col {
+  width: 44px;
+  text-align: center;
+}
+
+.admin-table__action-col {
+  width: 90px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .admin-table {
+    border-radius: 10px;
+  }
+
+  .admin-table__bulk-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

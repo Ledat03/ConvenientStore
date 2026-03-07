@@ -15,7 +15,7 @@ const DeleteVariant = (props) => {
   };
   return (
     <>
-      <Modal show={props.isShowVariant} onHide={props.closeVariant}>
+      <Modal className="admin-crud-modal" show={props.isShowVariant} onHide={props.closeVariant}>
         <Modal.Header closeButton>Xóa thông tin</Modal.Header>
         <Modal.Body>
           <h6>Bạn có chắc muốn xóa thông tin này hay không ?</h6>

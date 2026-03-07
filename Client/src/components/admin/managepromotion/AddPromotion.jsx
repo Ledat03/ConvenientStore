@@ -36,18 +36,19 @@ const AddPromotion = (props) => {
     value: item.brandId,
     label: item.brandName,
   }));
-  const selectCategories = props.categories.map((item) => ({
-    value: item.categoryId,
+  console.log(props.products)
+  const selectCategories = props.categories ? props.categories.map((item) => ({
+    value: item.category_id,
     label: item.categoryName,
-  }));
-  const selectProducts = () => {
-    if (props.products) {
-      props.products.map((item) => ({
-        value: item.productId,
-        label: item.productName,
-      }));
-    }
-  };
+  })) : []
+  const selectProducts = props.products ?
+    props.products.map((item) => ({
+      value: item.productId,
+      label: item.productName,
+    }))
+    :
+    [];
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -127,14 +128,18 @@ const AddPromotion = (props) => {
     setValidationErrors({});
     setShow(false);
   };
-
+  console.log(selectSubcategories)
   const renderScopeSelection = () => {
     if (formData.scope === "CATEGORY") {
       return (
         <Row className="mb-3">
           <Col md={6}>
             <Form.Label>Danh mục</Form.Label>
-            <Select className="Select_Input" options={selectCategories} isMulti onChange={(option) => setSelectedCategories(option.map((opt) => opt.value))} value={selectCategories.filter((item) => selectedCategories.includes(item.value))} />
+            <Select className="Select_Input"
+              options={selectCategories}
+              isMulti
+              onChange={(option) => setSelectedCategories(option.map((opt) => opt.value))}
+              value={selectCategories.filter((item) => selectedCategories.includes(item.value))} />
             {validationErrors.scope && <Form.Text className="text-danger">{validationErrors.scope}</Form.Text>}
           </Col>
         </Row>
@@ -157,8 +162,6 @@ const AddPromotion = (props) => {
               }
               value={selectSubcategories.filter((opt) => selectedSubCategories.includes(opt.value))}
             />
-            {console.log(selectedSubCategories)}
-            {console.log(selectSubcategories)}
             {validationErrors.scope && <Form.Text className="text-danger">{validationErrors.scope}</Form.Text>}
           </Col>
         </Row>
@@ -197,7 +200,7 @@ const AddPromotion = (props) => {
         Add Promotion
       </Button>
 
-      <Modal size="xl" show={isShow} onHide={handleClose}>
+      <Modal className="admin-crud-modal" size="xl" show={isShow} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Thêm Mã Giảm Giá</Modal.Title>
         </Modal.Header>

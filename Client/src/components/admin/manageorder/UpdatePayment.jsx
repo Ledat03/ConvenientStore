@@ -37,7 +37,7 @@ const UpdatePayment = (props) => {
   };
   return (
     <>
-      <Modal size="xl" show={props.isActive.UpdatePayment} onHide={props.close}>
+      <Modal className="admin-crud-modal" size="xl" show={props.isActive.UpdatePayment} onHide={props.close}>
         <Modal.Header closeButton>Trạng Thái Thanh Toán</Modal.Header>
         <Modal.Body>
           <Form>

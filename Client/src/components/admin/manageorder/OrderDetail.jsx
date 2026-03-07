@@ -1,6 +1,5 @@
 import "../../../assets/scss/manageorder.scss";
 import { Modal, Button } from "react-bootstrap";
-import logo from "../../../assets/Winmart.svg";
 const OrderDetail = (props) => {
   const summary = {
     subtotal: 1632.4,
@@ -15,13 +14,13 @@ const OrderDetail = (props) => {
     }, 100);
   };
   return (
-    <Modal show={props.isActive.Detail} onHide={props.close} size="xl">
+    <Modal className="admin-crud-modal" show={props.isActive.Detail} onHide={props.close} size="xl">
       <Modal.Header closeButton></Modal.Header>
       <Modal.Body>
         <div className="order-detail">
           <div className="order-detail_header">
             <div className="logo">
-              <img src={logo} alt="" />
+              <h1>base</h1>
             </div>
             <div className="document-type">Hóa đơn hàng hóa</div>
           </div>
@@ -133,7 +132,7 @@ const OrderDetail = (props) => {
           </div>
           <div className="footer">
             <p className="contact-info">
-              Nếu bạn có bất kì thắc mắc gì về hóa đơn xin liên hệ với nhân viên chăm sóc khách hàng với số điện thoại <strong>+0188 200 300</strong> hoặc gửi Email tới địa chỉ <strong>WinmartService@gmail.com</strong>
+              Nếu bạn có bất kì thắc mắc gì về hóa đơn xin liên hệ với nhân viên chăm sóc khách hàng với số điện thoại <strong>+0188 200 300</strong> hoặc gửi Email tới địa chỉ
             </p>
             <p className="thank-you">Cảm ơn bạn đã mua hàng</p>
           </div>

@@ -6,7 +6,9 @@ import UpdatePromotion from "./UpdatePromotion";
 import ViewPromotion from "./ViewPromotion";
 import "../css/productCustom.scss";
 import DeletePromotion from "./DeletePromotion";
-import Paginate from "../../common/Paginate";
+import AdminDataTable from "../common/AdminDataTable";
+import { deletePromotion } from "../../../services/GetAPI";
+import { toast } from "react-toastify";
 const TablePromotion = ({ InfoPromotion, handlePromotionList, categories, subCategories, brands, products }) => {
   const [HandlePromotion, setState] = useState({
     ProView: false,
@@ -31,6 +33,80 @@ const TablePromotion = ({ InfoPromotion, handlePromotionList, categories, subCat
     status: "Default",
     search: "",
   });
+
+  const promotionColumns = [
+    {
+      key: "name",
+      title: "Name",
+      render: (promotion) => <div className="product-info">{promotion.name}</div>,
+    },
+    {
+      key: "code",
+      title: "Code",
+      render: (promotion) => <span className="promotion-code">{promotion.code}</span>,
+    },
+    {
+      key: "endDate",
+      title: "Expire At",
+      render: (promotion) => <span className="promotion-date">{new Date(promotion.endDate).toLocaleDateString("vi-Vn")}</span>,
+    },
+    {
+      key: "active",
+      title: "Status",
+      render: (promotion) => <span className={`${promotion.active ? "active" : "disabled"}`}>{promotion.active ? "Valid" : "Expired"}</span>,
+    },
+    {
+      key: "scope",
+      title: "Type",
+      render: (promotion) => promotion.scope,
+    },
+  ];
+
+  const renderPromotionActions = (promotion) => (
+    <Dropdown drop="down">
+      <Dropdown.Toggle as={ButtonGroup} className="action-button">
+        <BsThreeDotsVertical />
+      </Dropdown.Toggle>
+      <Dropdown.Menu>
+        <Dropdown.Item
+          onClick={() => {
+            handlePromotion(promotion);
+            openModal("ProView");
+          }}
+        >
+          Information
+        </Dropdown.Item>
+
+        <Dropdown.Item
+          onClick={() => {
+            handlePromotion(promotion);
+            openModal("ProUpdate");
+          }}
+        >
+          Update
+        </Dropdown.Item>
+        <Dropdown.Item
+          onClick={() => {
+            handlePromotion(promotion);
+            openModal("ProDelete");
+          }}
+        >
+          Delete
+        </Dropdown.Item>
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+
+  const handleBulkDelete = async (promotionIds) => {
+    try {
+      await Promise.all(promotionIds.map((id) => deletePromotion(id)));
+      await handlePromotionList();
+      toast.success("Đã xóa các khuyến mãi đã chọn");
+    } catch (error) {
+      toast.error("Xóa khuyến mãi thất bại");
+      throw error;
+    }
+  };
   return (
     <div className="product-list-container">
       <nav className="breadcrumb">
@@ -84,78 +160,7 @@ const TablePromotion = ({ InfoPromotion, handlePromotionList, categories, subCat
         </div> : <button onClick={() => setState(prev => ({ ...prev, ProFilter: true }))}>Filter</button>}
       </div>
       <div className="product-table-container">
-        <table className="product-table">
-          <thead>
-            <tr>
-              <th className="table-header">
-                <input type="checkbox" className="checkbox" />
-              </th>
-              <th className="table-header">Name</th>
-              <th className="table-header name-header">Code</th>
-              <th className="table-header">Expire At</th>
-              <th className="table-header">Status</th>
-              <th className="table-header">Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {InfoPromotion.map((promotion) => (
-              <tr key={promotion.id} className="table-row">
-                <td className="table-cell">
-                  <input type="checkbox" className="checkbox" />
-                </td>
-                <td className="table-cell">
-                  <div className="product-info">{promotion.name}</div>
-                </td>
-                <td className="table-cell">
-                  <span className="promotion-code">{promotion.code}</span>
-                </td>
-                <td className="table-cell">
-                  <span className="promotion-date">{new Date(promotion.endDate).toLocaleDateString("vi-Vn")}</span>
-                </td>
-
-                <td className={`table-cell`}>
-                  <span className={`${promotion.active ? "active" : "disabled"}`}>{promotion.active ? "Valid" : "Expired"}</span>
-                </td>
-
-                <td className="table-cell">{promotion.scope}</td>
-                <td className="table-cell">
-                  <Dropdown drop="down">
-                    <Dropdown.Toggle as={ButtonGroup} className="action-button">
-                      <BsThreeDotsVertical />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item
-                        onClick={() => {
-                          handlePromotion(promotion);
-                          openModal("ProView");
-                        }}
-                      >
-                        Information
-                      </Dropdown.Item>
-
-                      <Dropdown.Item
-                        onClick={() => {
-                          handlePromotion(promotion);
-                          openModal("ProUpdate");
-                        }}
-                      >
-                        Update
-                      </Dropdown.Item>
-                      <Dropdown.Item
-                        onClick={() => {
-                          handlePromotion(promotion);
-                          openModal("ProDelete");
-                        }}
-                      >
-                        Delete
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <AdminDataTable columns={promotionColumns} data={InfoPromotion} rowKey="id" renderActions={renderPromotionActions} onBulkDelete={handleBulkDelete} emptyText="Không có khuyến mãi nào" />
         <div className="pagination-container">
 
         </div>

@@ -144,15 +144,30 @@ td {
     display: flex;
     align-items: center;
     gap: 12px;
+    .filter-cancel {
+      background-color: white;
+      border: none;
+      color: black;
+    }
+    .filter-open {
+      color: white;
+    }
+    &__Clear {
+      height: 35px;
+      width: 80px;
+      border-radius: 10px;
+      background-color: black;
+      color: white;
+    }
   }
-  .filter-cancel{
+  .filter-cancel {
     height: 40px;
     width: 40px;
     border: 1px solid black;
     border-radius: 10px;
     background-color: black;
   }
-  .filter-open{
+  .filter-open {
     height: 40px;
     width: 75px;
     border: 1px solid black;
@@ -160,19 +175,19 @@ td {
     background-color: black;
     font-size: 15px;
   }
-  .filter-submit{
+  .filter-submit {
     position: relative;
     height: 40px;
     width: 40px;
     border: 1px solid black;
     border-radius: 10px;
-    .search-icon{
+    .search-icon {
       position: absolute;
       top: 10px;
       left: 10px;
     }
   }
-  .filter-clear{
+  .filter-clear {
     text-align: center;
     width: 80px;
     height: 40px;
@@ -245,7 +260,7 @@ td {
   border: none;
   cursor: pointer;
 }
-.paginateButton{
+.paginateButton {
   width: 10px;
   height: 10px;
 }

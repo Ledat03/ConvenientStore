@@ -95,14 +95,16 @@
   }
 }
 
-.product-card {
+.product-card-main {
   background: white;
   border: solid 1px;
-  min-width: 270px;
-  min-height: 450px;
+  width: 350px;
+  height: 470px;
   border-radius: 8px;
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   position: relative;
   border-color: var.$red-accent;
   &__badge {
@@ -183,7 +185,7 @@
     margin: 10px 0;
     flex-wrap: wrap;
   }
-  .product-card__discount {
+  .product-card-main__discount {
     width: 70px;
     height: 20px;
     text-align: center;
@@ -196,7 +198,8 @@
   }
   .Card-ButtonGroup {
     position: absolute;
-    bottom: 20px;
+    width: 90%;
+    bottom: 10px;
     display: flex;
     flex-direction: column;
     gap: 10px;

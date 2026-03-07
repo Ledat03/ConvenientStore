@@ -12,7 +12,7 @@ const PromotionFilter = (props) => {
   const handleListPromotion = async () => {
     if (props.flatVariant) {
       const res = await fetchListPromotion();
-      const tempPromotion = res.data.data;
+      const tempPromotion = res.data;
       const currentProductIds = props.flatVariant.map((p) => p.id);
       const filterPromotion = tempPromotion.filter((promo) => {
         switch (promo.scope) {
@@ -21,7 +21,7 @@ const PromotionFilter = (props) => {
           case "CATEGORY":
             return promo.promotionCategories && promo.promotionCategories.some((cate) => cate.categoryName === props.category);
           case "BRAND":
-            return promo.promotionBrand && promo.promotionBrand.some((cate) => props.filterBrand.includes(cate.brand));
+            return promo.promotionBrand && promo.promotionBrand.some((cate) => filterBrand.includes(cate.brand));
           case "PRODUCT":
             return promo.promotionProducts && promo.promotionProducts.some((cate) => currentProductIds.includes(cate.productId));
         }
@@ -43,6 +43,8 @@ const PromotionFilter = (props) => {
       updateScrollButtons();
     }, 300);
   };
+  console.log(props.flatVariant)
+  const filterBrand = props.flatVariant ? [...new Set(props.flatVariant.map((product) => product.brand))] : [];
 
   const updateScrollButtons = () => {
     const container = scrollContainerRef.current;

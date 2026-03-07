@@ -5,7 +5,7 @@ import ProductInfo from "./ProductInfo";
 import ProductTabs from "./ProductTabs";
 import LoadingAnimation from "../../common/LoadingAnimation";
 import RelatedProducts from "./RelatedProducts";
-import { fetchProductById, fetchListProduct } from "../../../services/GetAPI";
+import { fetchProductById, getRelatedProducts } from "../../../services/GetAPI";
 import { useParams, useSearchParams, Link } from "react-router-dom";
 import { ToastContainer, Bounce } from "react-toastify";
 const ProductPage = () => {
@@ -24,8 +24,9 @@ const ProductPage = () => {
   const fetchProduct = async () => {
     try {
       const res = await fetchProductById(productId);
-      const data = await fetchListProduct();
-      setProducts(data.data);
+      const data = await getRelatedProducts(productId);
+      console.log(res)
+      setProducts(data.data.data);
       setProduct(res.data);
       setUnit(calUnit);
       setLoading(false);
@@ -34,20 +35,7 @@ const ProductPage = () => {
       throw error;
     }
   };
-  const flatVariant = Products?.flatMap((product) =>
-    product.productVariant.map((variant) => ({
-      ...variant,
-      productName: product.productName,
-      brand: product.brand,
-      subCategory: product.subCategory.subCategoryName,
-      productId: product.productId,
-      image: product.image,
-      status: product.status,
-      Active: product.isActive,
-      category: product.category,
-    }))
-  );
-  console.log(Products);
+
   const handleUnit = (unit) => {
     setUnit(unit);
     handleVariant(unit);
@@ -89,7 +77,7 @@ const ProductPage = () => {
                 </div>
                 {console.log(Unit)}
               </div>
-              <RelatedProducts product={flatVariant} productData={productData} />
+              <RelatedProducts product={Products} productData={productData} />
             </div>
           </div>
           <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />

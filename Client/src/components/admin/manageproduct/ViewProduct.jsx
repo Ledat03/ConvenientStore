@@ -35,7 +35,7 @@ const ViewProduct = (props) => {
   };
 
   return (
-    <Modal size="xl" show={props.isShowView} onHide={props.closeView} className="product-view-modal">
+    <Modal size="xl" show={props.isShowView} onHide={props.closeView} className="product-view-modal admin-crud-modal">
       <Modal.Header closeButton className="product-modal-header">
         <div className="product-header-content">
           <div className="product-header-icon">

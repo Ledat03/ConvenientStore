@@ -15,7 +15,7 @@ const DeleteImport = (props) => {
     }
   };
   return (
-    <Modal show={props.isActive.deleteImport} onHide={props.close} centered>
+    <Modal className="admin-crud-modal" show={props.isActive.deleteImport} onHide={props.close} centered>
       <Modal.Header closeButton>
         <Modal.Title>Xóa nhập hàng</Modal.Title>
       </Modal.Header>

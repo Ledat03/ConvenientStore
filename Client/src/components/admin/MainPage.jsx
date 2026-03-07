@@ -3,9 +3,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { Bar, Doughnut } from "react-chartjs-2";
 import { FaUserCircle } from "react-icons/fa";
 import { NumberOfUsers, NumberOfProducts } from "../../services/ManageAPI";
-import { fetchListOrder } from "../../services/GetAPI";
+import { getAllOrder, getAllImport } from "../../services/GetAPI";
 import { useEffect, useState, useMemo } from "react";
-import { viewImport } from "../../services/GetAPI";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const MainPage = () => {
@@ -51,7 +50,7 @@ const MainPage = () => {
     });
     return revenuePerMonth;
   }, [YearLists, statsData.orders]);
-  const calculatePuschaseCost = ImportData.reduce((sum, item) => {
+  const calculatePurchaseCost = ImportData.reduce((sum, item) => {
     const total = item.inventoryImportDetails?.reduce((sum, item) => {
       return sum + item.total_cost;
     }, 0);
@@ -67,8 +66,8 @@ const MainPage = () => {
   const handleData = async () => {
     const users = await NumberOfUsers();
     const products = await NumberOfProducts();
-    const orders = await fetchListOrder();
-    const imports = await viewImport();
+    const orders = await getAllOrder();
+    const imports = await getAllImport();
     setStatsData((prevData) => ({
       ...prevData,
       orders: orders.data,
@@ -95,8 +94,8 @@ const MainPage = () => {
     return new Intl.NumberFormat("vi-VN").format(num);
   };
 
-  const profitMargin = (((totalRevenue - calculatePuschaseCost) / totalRevenue) * 100).toFixed(1);
-  console.log(calculatePuschaseCost);
+  const profitMargin = (((totalRevenue - calculatePurchaseCost) / totalRevenue) * 100).toFixed(1);
+  console.log(calculatePurchaseCost);
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -250,7 +249,7 @@ const MainPage = () => {
               </div>
               <div className="revenue-content">
                 <h4>Tiền Nhập Hàng</h4>
-                <p className="revenue-amount">{formatCurrency(calculatePuschaseCost)}</p>
+                <p className="revenue-amount">{formatCurrency(calculatePurchaseCost)}</p>
               </div>
             </div>
 
@@ -262,7 +261,7 @@ const MainPage = () => {
               </div>
               <div className="revenue-content">
                 <h4>Lợi Nhuận</h4>
-                <p className="revenue-amount">{formatCurrency(totalRevenue - calculatePuschaseCost)}</p>
+                <p className="revenue-amount">{formatCurrency(totalRevenue - calculatePurchaseCost)}</p>
                 <span className="profit-margin">Tỷ suất: {profitMargin}%</span>
               </div>
             </div>
@@ -275,7 +274,7 @@ const MainPage = () => {
                   labels: ["Lợi Nhuận", "Chi Phí Nhập Hàng"],
                   datasets: [
                     {
-                      data: [totalRevenue, calculatePuschaseCost],
+                      data: [totalRevenue, calculatePurchaseCost],
                       backgroundColor: ["rgba(16, 185, 129, 0.8)", "rgba(245, 158, 11, 0.8)"],
                       borderColor: ["rgba(16, 185, 129, 1)", "rgba(245, 158, 11, 1)"],
                       borderWidth: 3,
@@ -329,7 +328,7 @@ const MainPage = () => {
               <div className="comparison-bar">
                 <div className="comparison-label">Doanh Thu</div>
                 <div className="comparison-bar-container">
-                  <div className="comparison-bar-fill revenue-bar" style={{ width: `${(totalRevenue / calculatePuschaseCost) * 100}%` }}></div>
+                  <div className="comparison-bar-fill revenue-bar" style={{ width: `${(totalRevenue / calculatePurchaseCost) * 100}%` }}></div>
                 </div>
                 {console.log(totalRevenue)}
                 <div className="comparison-value">{formatCurrency(totalRevenue)}</div>
@@ -339,7 +338,7 @@ const MainPage = () => {
                 <div className="comparison-bar-container">
                   <div className="comparison-bar-fill cost-bar" style={{ width: "100%" }}></div>
                 </div>
-                <div className="comparison-value">{formatCurrency(calculatePuschaseCost)}</div>
+                <div className="comparison-value">{formatCurrency(calculatePurchaseCost)}</div>
               </div>
             </div>
           </div>

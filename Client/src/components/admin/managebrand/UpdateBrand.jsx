@@ -28,7 +28,7 @@ const UpdateBrand = (props) => {
   };
   return (
     <>
-      <Modal size="xl" show={props.isShowUpdate} onHide={props.closeUpdate}>
+      <Modal className="admin-crud-modal" size="xl" show={props.isShowUpdate} onHide={props.closeUpdate}>
         <Modal.Header closeButton> Cập nhật Nhãn Hàng</Modal.Header>
         <Modal.Body>
           <Form>

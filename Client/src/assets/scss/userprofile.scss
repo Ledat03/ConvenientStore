@@ -24,10 +24,14 @@
   text-align: center;
 }
 
-.sidebar-header h2 {
+.sidebar-header {
   margin: 0 0 8px 0;
   font-size: 1.8rem;
   font-weight: 600;
+  h1 {
+    color: #fff;
+    font-weight: bolder;
+  }
 }
 
 .sidebar-header p {

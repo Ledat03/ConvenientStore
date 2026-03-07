@@ -1,5 +1,4 @@
 import "../../assets/scss/footer.scss";
-import Logo from "../../assets/Winmart.svg";
 const Footer = () => {
   return (
     <footer className="footer">
@@ -23,7 +22,7 @@ const Footer = () => {
               </svg>
             </div>
             <div className="footer__service-text">
-              <h4>Miễn phí ship 5KM</h4>
+              <h4>Miễn phí ship 5 km</h4>
             </div>
           </div>
 
@@ -50,12 +49,10 @@ const Footer = () => {
           </div>
         </div>
         <div className="footer__main">
-          <div className="footer__section">
-            <img className="footer__section-title" src={Logo} />
+          <div className="footer__section-title">
+            <h1>Base</h1>
             <ul className="footer__links">
-              <li>
-                <span>Công Ty Cổ Phần Dịch Vụ Thương Mại Tổng Hợp WinCommerce</span>
-              </li>
+
             </ul>
           </div>
 
@@ -65,9 +62,7 @@ const Footer = () => {
               <li>
                 <span>Số Hotline : 1900 8888</span>
               </li>
-              <li>
-                <span>Email: WinmartService@gmail.com</span>
-              </li>
+
             </ul>
           </div>
         </div>

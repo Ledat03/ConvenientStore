@@ -1,36 +1,69 @@
 import "../../../assets/scss/productdetail/productdetail.scss";
 import { useEffect, useState } from "react";
-import { FaArrowLeft } from "react-icons/fa";
-import { FaArrowRight } from "react-icons/fa";
-const ProductGallery = ({ productData, Variant, Unit }) => {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [fillVariant, setFillVariant] = useState({});
-  const v = productData.productVariant.find((variant) => variant.calUnit == Unit);
+import Carousel from "react-bootstrap/Carousel";
+
+const ProductGallery = ({ productData, Unit }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [currentImages, setCurrentImages] = useState([]);
+
   useEffect(() => {
-    setFillVariant(v);
-  }, [Unit]);
+    if (!productData) return;
+
+    const variant = productData.productVariant?.find(
+      (v) => v.calUnit === Unit
+    );
+
+    if (variant && variant.productImage?.length > 0) {
+      setCurrentImages(variant.productImage);
+    } else {
+
+      setCurrentImages([productData.image]);
+    }
+
+    setActiveIndex(0);
+  }, [Unit, productData]);
+
+  if (!currentImages || currentImages.length === 0) return null;
 
   return (
     <div className="product-gallery">
-      <div className="main-image">
-        <img alt="Product" className="main-img" src={selectedImage == null || selectedImage > fillVariant.productImage.length - 1 ? productData.image : fillVariant.productImage[selectedImage]} />
-        <div className="navigation-arrows">
-          <button className="nav-arrow-left">
-            <FaArrowLeft />
-          </button>
-          <button className="nav-arrow-right">
-            <FaArrowRight />
-          </button>
-        </div>
-      </div>
+      <Carousel
+        activeIndex={activeIndex}
+        onSelect={(selectedIndex) => setActiveIndex(selectedIndex)}
+        interval={null}
+      >
+        {currentImages.map((img, index) => (
+          <Carousel.Item key={index}>
+            <img
+              className="d-block w-100 main-img"
+              src={img}
+              alt={`Slide ${index}`}
+            />
+          </Carousel.Item>
+        ))}
+      </Carousel>
+
+
       <div className="thumbnail-list">
-        {fillVariant &&
-          fillVariant.productImage?.map((image, index) => (
-            <div key={index} className={index === selectedImage ? "thumbnail active" : "thumbnail"} onClick={() => setSelectedImage(index)}>
-              <img src={image} alt={`Product ${index + 1}`} className="thumbnail-img" />
-            </div>
-          ))}
+        {currentImages.map((image, index) => (
+          <div
+            key={index}
+            className={
+              index === activeIndex
+                ? "thumbnail active"
+                : "thumbnail"
+            }
+            onClick={() => setActiveIndex(index)}
+          >
+            <img
+              src={image}
+              alt={`Thumbnail ${index}`}
+              className="thumbnail-img"
+            />
+          </div>
+        ))}
       </div>
+
     </div>
   );
 };

@@ -20,6 +20,7 @@ export const ManageProduct = () => {
   }
   const handleProductsList = async (filter) => {
     try {
+      console.log(filter)
       let resProduct = await fetchListProduct(filter);
       console.log(resProduct, "product data")
       setInfoProduct({ totalItems: resProduct.data.totalItems, data: resProduct.data.data });

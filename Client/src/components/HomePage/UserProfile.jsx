@@ -7,7 +7,6 @@ import { useLocation } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import _ from "lodash";
 import { toast } from "react-toastify";
-import Logo from "../../assets/Winmart.svg";
 import { ToastContainer, Bounce } from "react-toastify";
 const UserProfile = () => {
   const [controlModal, setActive] = useState(false);
@@ -36,7 +35,7 @@ const UserProfile = () => {
   const getListOrder = async () => {
     const res = await fetchListOrderById(user.id);
     console.log(res);
-    setOrder(res.data.data);
+    setOrder(res.data);
   };
 
   const changePassword = async () => {
@@ -66,7 +65,8 @@ const UserProfile = () => {
   }, []);
   const fetchUserInfo = async () => {
     const res = await getUserProfile(user.id);
-    setUserInfo(res.data.data);
+
+    setUserInfo(res.data);
   };
   const handlePersonalInfoChange = (e) => {
     setUserInfo({
@@ -166,7 +166,7 @@ const UserProfile = () => {
       <div className="profile-sidebar">
         <div className="sidebar-header">
           <a href="/">
-            <img src={Logo} alt="" />
+            <h1>Base</h1>
           </a>
           <p>Xin chào, {userInfo.username}!</p>
         </div>

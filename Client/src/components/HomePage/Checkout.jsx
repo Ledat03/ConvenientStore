@@ -80,7 +80,7 @@ export default function Checkout() {
     setBrand([...new Set(checkoutInfo.map((cartdetail) => cartdetail.product.brand))]);
     setCategory([...new Set(checkoutInfo.map((cartdetail) => cartdetail.product.category))]);
     setProductName([...new Set(checkoutInfo.map((cartdetail) => cartdetail.product.productName))]);
-    setPromotion(res.data.data);
+    setPromotion(res.data);
   };
 
   const filterPromotion = Promotion.filter((promo) => {
