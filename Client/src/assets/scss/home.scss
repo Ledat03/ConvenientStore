@@ -1,0 +1,483 @@
+@use "./variables.scss" as var;
+.promotion-container {
+  width: 100%;
+  padding: 20px 0;
+  background-color: #f5f5f5;
+  .Header-text {
+    text-align: center;
+  }
+  .Notice {
+    text-align: center;
+  }
+}
+
+.promotion-layout {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .scroll-btn {
+    position: static;
+    transform: none;
+    flex-shrink: 0;
+  }
+
+  .promotion-wrapper {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+  }
+}
+
+.promotion-wrapper {
+  position: relative;
+  overflow: hidden;
+  margin: 0 50px;
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-btn:hover:not(.disabled) {
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.scroll-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
+.scroll-btn svg {
+  color: #666;
+}
+
+.scroll-btn-left {
+  left: 4px;
+}
+
+.scroll-btn-right {
+  right: 4px;
+}
+
+.promotion-scroll-container {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 16px 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.promotion-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+.dropdown-toggle::before {
+  content: none !important;
+}
+.promotion-card {
+  flex: 0 0 clamp(280px, 46vw, 500px);
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  border: #000 solid 1px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  .promotion-left {
+    color: #fff;
+    min-width: 150px;
+    background-color: var.$red-accent;
+    border-radius: 10px 0 0 10px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    font-size: medium;
+    &__text {
+      text-align: center;
+      p {
+        font-size: large;
+      }
+      span {
+        font-size: medium;
+      }
+    }
+  }
+  .promotion-right {
+    box-sizing: border-box;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    .promotion-header {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 5px;
+      .expiry-badge {
+        color: black;
+      }
+    }
+    .promotion-footer {
+      .promo-info {
+        .promo-code {
+          color: var.$red-accent;
+        }
+      }
+    }
+  }
+}
+
+.promotion-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.brand-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+.expiry-badge {
+  background-color: #ffc107;
+  color: #000;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.promotion-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.promotion-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+  margin: 0 0 16px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.promotion-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.promo-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.promo-text {
+  display: block;
+  font-size: 12px;
+  color: #007bff;
+  margin-bottom: 4px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.promo-text:hover {
+  color: #0056b3;
+}
+
+.promo-code {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.get-now-btn {
+  background-color: var.$red-accent;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.get-now-btn:hover {
+  opacity: 0.9;
+}
+
+.get-now-btn:active {
+  transform: translateY(1px);
+}
+
+.Thank-Component {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  .COD-text {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    h3 {
+      color: forestgreen;
+    }
+    .button {
+      height: 40px;
+      background-color: var.$red-accent;
+      width: 150px;
+      border-radius: 20px;
+      position: relative;
+      a {
+        color: white;
+        position: absolute;
+        right: 15px;
+        top: 10px;
+      }
+    }
+  }
+}
+@media (max-width: 768px) {
+  .promotion-wrapper {
+    margin: 0 24px;
+  }
+
+  .promotion-card {
+    flex: 0 0 clamp(260px, 72vw, 320px);
+  }
+
+  .scroll-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .scroll-btn-left {
+    left: 4px;
+  }
+
+  .scroll-btn-right {
+    right: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .promotion-wrapper {
+    margin: 0 12px;
+  }
+
+  .promotion-card {
+    flex: 0 0 clamp(240px, 82vw, 280px);
+  }
+
+  .promotion-title {
+    font-size: 15px;
+  }
+
+  .promotion-description {
+    font-size: 13px;
+  }
+}
+.product-card-sale {
+  background: white;
+  border: solid 1px;
+  flex: 0 0 clamp(180px, 45vw, 240px);
+  min-height: 390px;
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+  position: relative;
+  border-color: var.$red-accent;
+  &__badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 1;
+  }
+
+  &__badge--low-stock {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+
+  &__badge--out-stock {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  &__image-container {
+    width: 100%;
+    height: clamp(130px, 20vw, 200px);
+    overflow: hidden;
+  }
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__info {
+    padding: 10px;
+    max-height: 160px;
+  }
+
+  &__name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  &__tags {
+    display: flex;
+    gap: 8px;
+    min-height: 50px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  &__tag {
+    font-size: 12px;
+    padding: 2px 6px;
+    height: 20px;
+    border-radius: 3px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+  }
+
+  &__note {
+    font-size: 12px;
+    color: #dc3545;
+    margin-bottom: 8px;
+  }
+
+  &__reviews {
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  &__pricing {
+    display: flex;
+    gap: 5px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .product-card-sale__discount {
+    width: 70px;
+    height: 20px;
+    text-align: center;
+    border: 1px solid #28a745;
+    border-radius: 10%;
+    font-size: 12px;
+    background-color: #28a745;
+    color: #fff;
+    font-weight: 500;
+  }
+  .Card-ButtonGroup {
+    margin: 0 auto;
+    width: 90%;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    .Card-Button {
+      width: 100%;
+      background-color: var.$red-accent;
+      border: none;
+      &:hover {
+        background-color: #fff;
+        color: var.$red-accent;
+        transition: all 0.3s ease;
+        border: 1px solid var.$red-accent;
+      }
+    }
+  }
+
+  &__current-price {
+    font-size: 14px;
+    font-weight: 700;
+    margin-right: 8px;
+    color: #333;
+  }
+
+  &__original-price {
+    font-size: 12px;
+    color: #6c757d;
+    text-decoration: line-through;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-card-sale {
+    flex: 0 0 clamp(160px, 55vw, 220px);
+    min-height: 260px;
+
+    .Card-ButtonGroup {
+      position: static;
+      width: 100%;
+      margin-top: 8px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .product-card-sale {
+    min-height: auto;
+
+    &__info {
+      padding: 8px;
+    }
+
+    &__name {
+      font-size: 11px;
+    }
+  }
+}
