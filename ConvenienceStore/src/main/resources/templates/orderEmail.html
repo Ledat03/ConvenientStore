@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Xác Nhận Đơn Hàng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f6f6f6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            background: white;
+            margin: auto;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #16a34a;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        .total {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Xin chào <span th:text="${username}">Khách hàng</span>,</h2>
+    <p>Mã đơn hàng: <strong th:text="${orderId}">123</strong></p>
+    <p>Phương thức thanh toán: <strong th:text="${paymentMethod}">COD</strong></p>
+    <p>Trạng thái thanh toán: <strong th:text="${paymentStatus}">SUCCESS</strong></p>
+    <p>Địa chỉ giao hàng: <strong th:text="${deliveryAddress}">Địa chỉ 123</strong></p>
+
+    <h3>Chi tiết sản phẩm:</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Tên sản phẩm</th><th>Đơn vị</th><th>Số lượng</th><th>Giá</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item: ${items}">
+            <td th:text="${item.productName}"></td>
+            <td th:text="${item.calUnit}"></td>
+            <td th:text="${item.quantity}"></td>
+            <td th:text="${item.totalPrice} + ' VND'"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p class="total">Tổng cộng: <strong th:text="${totalAmount} + ' VND'"></strong></p>
+</div>
+</body>
+</html>
