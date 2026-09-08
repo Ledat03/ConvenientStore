@@ -33,7 +33,7 @@ const UserProfile = () => {
   };
   console.log(user.id);
   const getListOrder = async () => {
-    const res = await fetchListOrderById(user.id);
+    const res = await fetchListOrderById(Number(user.id));
     console.log(res);
     setOrder(res.data);
   };

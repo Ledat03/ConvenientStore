@@ -1,81 +1,33 @@
 package com.example.store.conveniencestore.Controller;
 
 import com.example.store.conveniencestore.DTO.*;
+import com.example.store.conveniencestore.DTO.Request.AdvFilter;
+import com.example.store.conveniencestore.DTO.Request.ProductRqDTO;
 import com.example.store.conveniencestore.Domain.*;
-import com.example.store.conveniencestore.EnumType.DiscountScope;
 import com.example.store.conveniencestore.Service.CloudinaryService;
 import com.example.store.conveniencestore.Service.ProductService;
-import com.example.store.conveniencestore.Service.PromotionService;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("product")
+@RequiredArgsConstructor
 public class ProductController {
-
     private final ProductService productService;
-    private final CloudinaryService cloudinaryService;
-    private final PromotionService promotionService;
-
-    public ProductController(ProductService productService, CloudinaryService cloudinaryService, PromotionService promotionService) {
-        this.productService = productService;
-        this.cloudinaryService = cloudinaryService;
-        this.promotionService = promotionService;
-    }
-
-    private SubCategory convertSubCategoryDTOToMain(String subCategoryDTO) {
-        return productService.findBySubCategoryName(subCategoryDTO);
-    }
-
-    private Category convertCategoryDTOtoMain(String subcategory) {
-        SubCategory subCategory = productService.findBySubCategoryName(subcategory);
-        Category category = productService.findCategoriesByCategory_id(subCategory.getCategory().getCategory_id());
-        return category;
-    }
-
-    private String getTime(LocalDateTime localDateTime) {
-        String formattedTime = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        return formattedTime;
-    }
-
-    private LocalDateTime getLocalDateTime() {
-        Instant instant = Instant.now();
-        LocalDateTime ldt = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-        return ldt;
-    }
-
-    private Product convertProductDTOToProduct(ProductDTO productDTO) {
-        Product product = productService.findProductById(productDTO.getProductId());
-        Brand brand = productService.findBrandbyBrandName(productDTO.getBrand());
-        product.setProductName(productDTO.getProductName());
-        product.setProductDescription(productDTO.getProductDescription());
-        product.setHowToUse(productDTO.getHowToUse());
-        product.setPreserve(productDTO.getPreserve());
-        product.setOrigin(productDTO.getOrigin());
-        product.setCategory(convertCategoryDTOtoMain(productDTO.getSubCategory()));
-        product.setSubCategory(convertSubCategoryDTOToMain(productDTO.getSubCategory()));
-        product.setIngredient(productDTO.getIngredient());
-        product.setBrand(brand);
-        product.setStatus(productDTO.getStatus());
-        product.setIsActive(Boolean.parseBoolean(productDTO.getIsActive()));
-        product.setSku(productDTO.getSku());
-        product.setImage(productDTO.getImage() == null ? product.getImage() : "");
-        product.setUpdatedAt(getLocalDateTime());
-        product.setCreatedAt(product.getCreatedAt());
-        return product;
-    }
 
     @GetMapping("/view/subCategories")
     public ResponseEntity<List<SubCategory>> getSubCategories() {
@@ -94,62 +46,9 @@ public class ProductController {
         return ResponseEntity.ok(totalProduct);
     }
     @PostMapping("/add")
-    public ResponseEntity<?> addNewProduct(
-            @RequestParam(value = "productName", required = false) String productName,
-            @RequestParam(value = "productDescription", required = false) String productDescription,
-            @RequestParam(value = "howToUse", required = false) String howToUse,
-            @RequestParam(value = "preserve", required = false) String preserve,
-            @RequestParam(value = "origin", required = false) String origin,
-            @RequestParam(value = "brand", required = false) String brand,
-            @RequestParam(value = "ingredient", required = false) String ingredient,
-            @RequestParam(value = "sku", required = false) String sku,
-            @RequestParam(value = "isActive", required = false) String isActive,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "image", required = false) MultipartFile image,
-            @RequestParam(value = "subCategory", required = false) String subCategory) {
-
-        try {
-            if (brand == null || brand.isBlank()) {
-                return ResponseEntity.badRequest().body("Brand field is required");
-            }
-            if (subCategory == null || subCategory.isBlank()) {
-                return ResponseEntity.badRequest().body("SubCategory field is required");
-            }
-
-            Brand brandEntity = productService.findBrandbyBrandName(brand.trim());
-            if (brandEntity == null) {
-                return ResponseEntity.badRequest().body("Brand isn't exist !: " + brand);
-            }
-            SubCategory subCate = productService.findBySubCategoryName(subCategory.trim());
-            if (subCate == null) {
-                return ResponseEntity.badRequest().body("Subcategory isn'r exist !: " + subCategory);
-            }
-            Product product = new Product();
-            product.setProductName(productName.trim());
-            product.setProductDescription(productDescription);
-            product.setHowToUse(howToUse);
-            product.setPreserve(preserve);
-            product.setOrigin(origin);
-            product.setIngredient(ingredient);
-            product.setSku(sku);
-            product.setIsActive(Boolean.parseBoolean(isActive));
-            product.setStatus(status);
-            product.setBrand(brandEntity);
-            product.setSubCategory(subCate);
-            product.setCategory(subCate.getCategory());
-            product.setCreatedAt(getLocalDateTime());
-            product.setUpdatedAt(getLocalDateTime());
-
-            if (image != null && !image.isEmpty()) {
-                CloudinaryService.UploadResult uploadResult = cloudinaryService.uploadImage(image, "previewproduct");
-                product.setImage(uploadResult.getUrl());
-            }
-            productService.save(product);
-            return ResponseEntity.ok("Data has already saved ! ");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
-        }
+    public ResponseEntity<?> addNewProduct(@ModelAttribute ProductRqDTO productRqDTO) throws IOException {
+            RestResponse<String> restResponse = productService.handleAddProduct(productRqDTO);
+            return new ResponseEntity<>(restResponse, HttpStatusCode.valueOf(restResponse.getStatusCode()));
     }
 
     @GetMapping("/all_products")
@@ -163,7 +62,7 @@ public class ProductController {
         Pageable pageable = PageRequest.of(advFilter.getPage(),8);
         Page<ProductVariant> data = productService.getProductByAdvFilter(advFilter,pageable);
         List<ProductFormat> dto = data.stream().map(ProductFormat::new).toList();
-        PageRestsponse<List<ProductFormat>> response = new PageRestsponse<>(dto, data.getTotalElements());
+        PageResponse<List<ProductFormat>> response = new PageResponse<>(dto, data.getTotalElements());
         return ResponseEntity.ok(response);
     }
     @PostMapping("/view/filter")
@@ -173,24 +72,7 @@ public class ProductController {
     }
     @GetMapping("/view")
     public ResponseEntity<?> ViewProduct(ManageProductDTO manageProductDTO){
-        PageRestsponse<List<ProductDTO>> response = new PageRestsponse<>();
-                if(manageProductDTO.getName() != null || manageProductDTO.getStatus() != null || manageProductDTO.getState() != null) {
-                    try {
-                        Pageable pageable = PageRequest.of(Integer.parseInt(manageProductDTO.getPage()), 8);
-                        Page<Product> prodData = productService.getProductWithNameAndStatusAndState(manageProductDTO, pageable);
-                        List<ProductDTO> resData = prodData.stream().map(ProductDTO::new).toList();
-                        response.setData(resData);
-                        response.setTotalItems(prodData.getTotalElements());
-                        return ResponseEntity.ok(response);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            Pageable pageable = PageRequest.of(Integer.parseInt(manageProductDTO.getPage()),8);
-            Page<Product> ListProducts = productService.findAllProducts(pageable);
-            List<ProductDTO> products = ListProducts.stream().map(ProductDTO::new).toList();
-            response.setData(products);
-            response.setTotalItems(ListProducts.getTotalElements());
+        PageResponse<List<ProductDTO>> response = productService.handleViewProduct(manageProductDTO);
             return ResponseEntity.ok(response);
         }
     @GetMapping("/view/spec_product")
@@ -198,7 +80,7 @@ public class ProductController {
             @RequestParam("type") String type,
             @RequestParam("page") int page) {
         Pageable pageable = PageRequest.of(page,8);
-        PageRestsponse<List<ProductFormat>> resData = new PageRestsponse<>();
+        PageResponse<List<ProductFormat>> resData = new PageResponse<>();
         List<ProductFormat> response;
         if(type != null){
             Page<ProductVariant> data = productService.getNewProducts(type,pageable);
@@ -215,7 +97,7 @@ public class ProductController {
         Product product = productService.findProductById(id);
         Page<ProductVariant> data = productService.getRelatedProducts(product);
         List<ProductFormat> formatData = data.stream().map(ProductFormat::new).toList();
-        PageRestsponse<List<ProductFormat>> res = new PageRestsponse<>(formatData, data.getTotalElements());
+        PageResponse<List<ProductFormat>> res = new PageResponse<>(formatData, data.getTotalElements());
         return ResponseEntity.ok(res);
     }
     @GetMapping("/view/product-info/{id}")
@@ -227,42 +109,13 @@ public class ProductController {
 
     @PutMapping("/update")
     public ResponseEntity<Object> UpdateProduct(@RequestBody ProductDTO productDTO) {
-        if (productDTO != null) {
-            Product product = convertProductDTOToProduct(productDTO);
-            productService.save(product);
-        }
-        return ResponseEntity.ok(productDTO);
+        RestResponse<Object> restResponse = productService.handleUpdateProduct(productDTO);
+        return new ResponseEntity<>( restResponse, HttpStatusCode.valueOf(restResponse.getStatusCode()));
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Object> deleteProduct(@PathVariable Long id) {
-        String Notice = "";
-        Product product = productService.findProductById(id);
-        try {
-            if (product != null) {
-                List<ProductVariant> productVariants = productService.findProductVariantsByProductId(id);
-                if (!productVariants.isEmpty()) {
-                    List<String> ImageURLs;
-                    for (ProductVariant productVariant : productVariants) {
-                        ImageURLs = productVariant.getProductImage();
-                        for (String imageURL : ImageURLs) {
-                            cloudinaryService.deleteImage(cloudinaryService.extractPublicIdFromCloudinaryUrl(imageURL));
-                            System.out.println("Deleted image url: " + imageURL);
-                        }
-                    }
-                    productService.deleteAllByProduct(product);
-                    Notice = "Product deleted successfully";
-                }
-            }
-            if ( product != null && product.getImage() != null) {
-                cloudinaryService.deleteImage(cloudinaryService.extractPublicIdFromCloudinaryUrl(product.getImage()));
-                System.out.println("Deleted image url: " + product.getImage());
-            }
-
-            productService.deleteProduct(id);
-        } catch (Exception e) {
-            throw new Error(e.getMessage());
-        }
-        return ResponseEntity.ok(Notice);
+    public ResponseEntity<Object> deleteProduct(@PathVariable long id) {
+       RestResponse<String> restResponse = productService.handleDeleteProduct(id);
+        return new ResponseEntity<>(restResponse, HttpStatusCode.valueOf(restResponse.getStatusCode()));
     }
 }

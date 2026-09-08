@@ -51,7 +51,7 @@ const AddProduct = (props) => {
   const getRequireInfo = async () => {
     const dataSubCate = await handleListSubCate();
     const dataBrands = await viewBrand();
-    setListBrand(dataBrands.data);
+    setListBrand(dataBrands.data.responseData);
     setSubCategory(dataSubCate.data);
   };
 

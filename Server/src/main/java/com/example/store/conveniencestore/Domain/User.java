@@ -79,4 +79,22 @@ public class User {
         user.setRefreshToken(user.getRefreshToken());
         return user;
     }
+    public static User convertUserDTOToUser(UserDTO userDTO, UserService userService, PasswordEncoder passwordEncoder) {
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        String Hash = passwordEncoder.encode(userDTO.getPasswordHash());
+        user.setPasswordHash(Hash);
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setAddress(userDTO.getAddress());
+        user.setPhone(userDTO.getPhone());
+        Role role = userService.findByName(userDTO.getRole());
+        user.setRole(role);
+        user.setCreatedBy("user");
+        user.setCreatedAt(Instant.now());
+        user.setUpdatedAt(Instant.now());
+        user.setUpdatedBy("user");
+        return user;
+    }
 }

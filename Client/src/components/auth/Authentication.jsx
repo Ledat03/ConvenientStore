@@ -31,12 +31,12 @@ const Authentication = () => {
       const response = await fetchLogin(user);
       if (response.status == 200) {
         console.log(response.data);
-        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("accessToken", response.data.responseData.accessToken);
         const user = {
-          id: response.data.id,
-          name: response.data.name,
-          role: response.data.role,
-          username: response.data.username,
+          id: response.data.responseData.id,
+          name: response.data.responseData.name,
+          role: response.data.responseData.role,
+          username: response.data.responseData.username,
         };
         localStorage.setItem("user", JSON.stringify(user));
         if (user.role === "admin") {

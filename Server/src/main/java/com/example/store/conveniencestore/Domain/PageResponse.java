@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageRestsponse<T> {
+public class PageResponse<T> {
     private T data;
     private long totalItems;
 }

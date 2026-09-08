@@ -2,7 +2,7 @@ package com.example.store.conveniencestore.Config;
 
 import java.io.IOException;
 
-import com.example.store.conveniencestore.Domain.RestRestponse;
+import com.example.store.conveniencestore.Domain.RestResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -29,7 +29,7 @@ public class EntryPointConfig implements AuthenticationEntryPoint {
             AuthenticationException authException) throws IOException, ServletException {
         this.delegate.commence(request, response, authException);
         response.setContentType("application/json;charset=UTF-8");
-        RestRestponse<Object> restRestponse = new RestRestponse<>();
+        RestResponse<Object> restRestponse = new RestResponse<>();
         restRestponse.setStatusCode(401);
         restRestponse.setError(
                 authException.getCause() != null ? authException.getCause().getMessage() : authException.getMessage());

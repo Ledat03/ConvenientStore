@@ -1,5 +1,7 @@
-package com.example.store.conveniencestore.DTO;
+package com.example.store.conveniencestore.DTO.Response;
 
+import com.example.store.conveniencestore.DTO.ProductDTO;
+import com.example.store.conveniencestore.DTO.ProductVariantDTO;
 import com.example.store.conveniencestore.Domain.OrderItem;
 import lombok.Data;
 

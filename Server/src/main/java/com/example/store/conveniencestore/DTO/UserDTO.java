@@ -15,7 +15,6 @@ public class UserDTO {
     @NotBlank(message = "Email mustn't blank")
     @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",message = "Wrong email format !")
     private String email;
-    @NotBlank
     private String passwordHash;
     @NotBlank
     private String firstName;

@@ -1,5 +1,7 @@
 package com.example.store.conveniencestore.Controller;
 import com.example.store.conveniencestore.DTO.*;
+import com.example.store.conveniencestore.DTO.Response.ResDeliveryDTO;
+import com.example.store.conveniencestore.DTO.Response.ResOrderDTO;
 import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.EnumType.DeliveryStatus;
 import com.example.store.conveniencestore.EnumType.PaymentMethod;
@@ -9,9 +11,11 @@ import com.example.store.conveniencestore.VNPay.Config;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,121 +29,17 @@ import java.util.*;
 
 @RestController
 @RequestMapping("order")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
-    private final UserService userService;
     private final ProductService productService;
     private final VNPayService vnPayService;
-    private final GmailService gmailService;
-    private final PromotionService promotionService;
-    public OrderController(PromotionService promotionService, VNPayService vnPayService, UserService userService, ProductService productService, GmailService gmailService,OrderService orderService) {
-        this.orderService = orderService;
-        this.userService = userService;
-        this.productService = productService;
-        this.vnPayService = vnPayService;
-        this.gmailService = gmailService;
-        this.promotionService = promotionService;
-    }
-   String getTime(LocalDateTime localDateTime) {
-        String formattedTime = localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        return formattedTime;
-    }
 
-    public Order createOrder(OrderDTO orderDTO) {
-        Order order = new Order();
-        order.setUser(userService.findById(orderDTO.getUserId()));
-        order.setTotal(Double.parseDouble(orderDTO.getPayTotal()));
-        return orderService.saveOrder(order);
-    }
-    public Delivery createDelivery(OrderDTO orderDTO, Order order) {
-        Delivery delivery = new Delivery();
-        delivery.setUser(order.getUser());
-        delivery.setOrder(order);
-        delivery.setDelivery_address(orderDTO.getReceiverAddress());
-        delivery.setReceiver_name(orderDTO.getReceiverName());
-        delivery.setReceiver_phone(orderDTO.getDeliveryPhone());
-        delivery.setDelivery_status(DeliveryStatus.PENDING);
-        delivery.setDelivery_method(orderDTO.getDeliveryMethod());
-        delivery.setCreated_at(Date.from(Instant.now()));
-        return orderService.saveDelivery(delivery);
-    }
-    public OrderItem createOrderItem(Order order,OrderItemDTO orderItemDTO) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setOrder(order);
-        orderItem.setProduct(productService.findProductById(orderItemDTO.getProductId()));
-        orderItem.setQuantity(orderItemDTO.getQuantity());
-        orderItem.setTotalPrice(Double.parseDouble(String.valueOf(orderItemDTO.getQuantity())) * orderItemDTO.getUnitPrice());
-        orderItem.setProductVariant(productService.findProductVariantById(orderItemDTO.getVariantId()));
-        return orderService.saveOrderItem(orderItem);
-    }
-    public Payment createPayment(Order order,OrderDTO orderDTO) {
-        Payment payment = new Payment();
-        payment.setOrder(order);
-        payment.setPaymentMethod(PaymentMethod.valueOf(orderDTO.getPaymentMethod()));
-        BigDecimal total = BigDecimal.valueOf(Long.parseLong(orderDTO.getPayTotal()));
-        payment.setAmount(total);
-        payment.setPaymentStatus(TransactionStatus.PENDING);
-        payment.setTransactionId(Config.getRandomNumber(8));
-        payment.setCreatedAt(LocalDateTime.now());
-        return orderService.savePayment(payment);
-    }
-    public PromotionUser createPromotionUser(User user,Promotion promotion) {
-        PromotionUser promotionUser = new PromotionUser();
-        promotionUser.setCreatedAt(LocalDateTime.now());
-        promotionUser.setPromotion(promotion);
-        promotionUser.setUser(user);
-        return promotionService.savePromotionUserUsage(promotionUser);
-    }
     @PostMapping("/add")
-    public ResponseEntity<Object> addOrder(@RequestBody OrderDTO orderDTO, HttpServletRequest request) throws UnsupportedEncodingException, MessagingException {
-        if (orderDTO.getPaymentMethod().equals("COD")) {
-            Order order = createOrder(orderDTO);
-            User user = userService.findById(orderDTO.getUserId());
-            Delivery delivery = createDelivery(orderDTO, order);
-            if(orderDTO.getPromotionId() != 0){
-                Promotion promotion = promotionService.findPromotionById(orderDTO.getPromotionId());
-                promotion.setUsageLimit(promotion.getUsageLimit() - 1);
-                promotionService.savePromo(promotion);
-                PromotionUser promotionUser = createPromotionUser(user,promotion);
-            }
-            List<OrderItem> orderItems = new ArrayList<>();
-            for (OrderItemDTO orderItemDTO : orderDTO.getItems()) {
-                OrderItem item = createOrderItem(order, orderItemDTO);
-                ProductVariant variant = productService.findProductVariantById(orderItemDTO.getVariantId());
-                variant.setStock(variant.getStock() - orderItemDTO.getQuantity());
-                productService.saveVariant(variant);
-                orderItems.add(item);
-            }
-            Payment payment = createPayment(order, orderDTO);
-            order.setDelivery(delivery);
-            order.setPayment(payment);
-            orderService.saveOrder(order);
-            userService.deleteAllCartDetail(user.getCart());
-            gmailService.sendEmail(user,order, delivery.getReceiver_name(),orderItems);
-            return ResponseEntity.accepted().body("Order is on progress");
-        } else if (orderDTO.getPaymentMethod().equals("E_WALLET")) {
-            Order order = createOrder(orderDTO);
-            User user = userService.findById(orderDTO.getUserId());
-            Delivery delivery = createDelivery(orderDTO, order);
-            List<OrderItem> orderItems = new ArrayList<>();
-            for (OrderItemDTO orderItemDTO : orderDTO.getItems()) {
-                OrderItem item = createOrderItem(order, orderItemDTO);
-                ProductVariant variant = productService.findProductVariantById(orderItemDTO.getVariantId());
-                variant.setStock(variant.getStock() - orderItemDTO.getQuantity());
-                productService.saveVariant(variant);
-                orderItems.add(item);
-            }
-            Payment payment = createPayment(order, orderDTO);
-            order.setDelivery(delivery);
-            order.setPayment(payment);
-            orderService.saveOrder(order);
-            userService.deleteAllCartDetail(user.getCart());
-            String PaymentURL = vnPayService.createPaymentURL(request, payment,delivery,user);
-            gmailService.sendEmail(user,order, delivery.getReceiver_name(),orderItems);
-            return ResponseEntity.ok(PaymentURL);
-        }
-        return ResponseEntity.accepted().build();
+    public ResponseEntity<Object> addOrder(@RequestBody Optional<OrderDTO> orderDTO, HttpServletRequest request) throws UnsupportedEncodingException, MessagingException {
+        RestResponse<String> restResponse =  orderService.handleAddOrder(orderDTO,request);
+        return new ResponseEntity<>(restResponse, HttpStatus.valueOf(restResponse.getStatusCode()));
         }
     @PostMapping("/Re_Pay")
     public ResponseEntity<Object> RePayOrder(@RequestParam("id") long id, HttpServletRequest request) throws UnsupportedEncodingException, MessagingException {
@@ -166,65 +66,29 @@ public class OrderController {
         return ResponseEntity.ok(resOrderDTOs);
     }
     @GetMapping("/view/{id}")
-    public ResponseEntity<Object> viewOrderById(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> viewOrderById(@PathVariable("id") long id) {
         List<Order> orders = orderService.findAllByUserId(id);
         List<ResOrderDTO> resOrderDTOs = orders.stream().map(ResOrderDTO::new).toList();
         return ResponseEntity.ok(resOrderDTOs);
     }
     @PutMapping("/update/delivery")
     public ResponseEntity<Object> updateDelivery(@RequestBody ResDeliveryDTO resDeliveryDTO) {
-        Delivery delivery = orderService.getDeliveryById(resDeliveryDTO.getDeliveryId());
-        if (delivery !=null) {
-            delivery.setReceiver_name(resDeliveryDTO.getReceiverName());
-            delivery.setReceiver_phone(resDeliveryDTO.getReceiverPhone());
-            delivery.setDelivery_method(resDeliveryDTO.getDeliveryMethod());
-            if (resDeliveryDTO.getDeliveryStatus().equals(DeliveryStatus.CANCELLED)) {
-                Order order = delivery.getOrder();
-                for(OrderItem item : order.getOrderDetails()) {
-                    ProductVariant productVariant = item.getProductVariant();
-                    productVariant.setStock(productVariant.getStock() + item.getQuantity());
-                    productService.saveVariant(productVariant);
-                }
-            }
-            delivery.setDelivery_status(resDeliveryDTO.getDeliveryStatus());
-            delivery.setDelivery_date(resDeliveryDTO.getDeliveryDate());
-            delivery.setDelivered_at(resDeliveryDTO.getDeliveredTime());
-            delivery.setTracking_number(resDeliveryDTO.getTrackingNumber());
-            delivery.setDelivery_fee(resDeliveryDTO.getDeliveryFee());
-            delivery.setDelivery_address(resDeliveryDTO.getDeliveryAddress());
-            delivery.setUpdated_at(Date.from(Instant.now()));
-            orderService.saveDelivery(delivery);
-            return ResponseEntity.ok(resDeliveryDTO);
-        }
-        return ResponseEntity.notFound().build();
+     RestResponse<Object> restResponse = orderService.handleUpdateDelivery(resDeliveryDTO);
+        return new ResponseEntity<>(restResponse, HttpStatus.valueOf(restResponse.getStatusCode()));
     }
     @PutMapping("/update/payment")
     public ResponseEntity<Object> updatePayment(@RequestBody PaymentDTO paymentDTO) {
-        Payment payment = orderService.findbyPaymentId(paymentDTO.getPaymentId());
-        if (payment !=null) {
-           payment.setPaymentMethod(paymentDTO.getPaymentMethod());
-           payment.setAmount(paymentDTO.getPaymentAmount());
-           payment.setPaymentDate(paymentDTO.getPaymentDate());
-           payment.setTransactionId(paymentDTO.getTransactionId());
-           payment.setPaymentStatus(paymentDTO.getPaymentStatus());
-           payment.setCreatedAt(payment.getCreatedAt());
-           orderService.savePayment(payment);
-            return ResponseEntity.ok(paymentDTO);
-        }
-        return ResponseEntity.notFound().build();
+        RestResponse<Object> restResponse = orderService.handleUpdatePayment(paymentDTO);
+        return new ResponseEntity<>( restResponse, HttpStatus.valueOf(restResponse.getStatusCode()));
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Object> deleteOrder(@RequestParam(name = "id") long id) {
-        Order order = orderService.findbyOrderId(id);
-        if (order != null) {
-            orderService.deleteOrder(order);
-            return ResponseEntity.ok().body("Delete order successfully ");
-        }
-        return ResponseEntity.notFound().build();
+        RestResponse<String> restResponse = orderService.handleDeleteOrder(id);
+        return new ResponseEntity<>(restResponse, HttpStatus.valueOf(restResponse.getStatusCode()));
     }
     @GetMapping("/filter")
-    public ResponseEntity<PageRestsponse<List<ResOrderDTO>>> getOrderByFilter(@RequestParam(value = "search" ,required = false) String username,
+    public ResponseEntity<PageResponse<List<ResOrderDTO>>> getOrderByFilter(@RequestParam(value = "search" ,required = false) String username,
                                                            @RequestParam(value = "time"  ,required = false,defaultValue = "0") int days,
                                                            @RequestParam(value = "deliveryStatus" ,required = false) String deliveryStatus,
                                                            @RequestParam(value = "paymentStatus"  ,required = false) String paymentStatus,
@@ -243,7 +107,7 @@ public class OrderController {
         Pageable pageable = PageRequest.of(page,8);
         Page<Order> data = orderService.getOrdersByFilter(name,now,past,ds,ts,pageable);
         List<ResOrderDTO> response = data.stream().map(ResOrderDTO::new).toList();
-        PageRestsponse res = new PageRestsponse(response,data.getTotalElements());
+        PageResponse<List<ResOrderDTO>> res = new PageResponse<>(response,data.getTotalElements());
         return ResponseEntity.ok(res);
     }
     @GetMapping("/vnpay_jsp/vnpay_return")

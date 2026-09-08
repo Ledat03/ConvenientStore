@@ -4,6 +4,7 @@ import com.example.store.conveniencestore.DTO.*;
 import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.EnumType.DiscountScope;
 import com.example.store.conveniencestore.Service.PromotionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -11,14 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("promotion")
+@RequiredArgsConstructor
 public class PromotionController {
     private final PromotionService promotionService;
-
-    public PromotionController( PromotionService promotionService) {
-        this.promotionService = promotionService;
-    }
 
     @PostMapping("/add")
     public ResponseEntity<Object> addNewPromotion(@RequestBody PromotionDTO promotion) {

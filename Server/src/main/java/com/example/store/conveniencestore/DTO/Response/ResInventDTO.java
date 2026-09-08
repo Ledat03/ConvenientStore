@@ -1,4 +1,4 @@
-package com.example.store.conveniencestore.DTO;
+package com.example.store.conveniencestore.DTO.Response;
 
 import com.example.store.conveniencestore.Domain.InventoryImport;
 import lombok.Data;

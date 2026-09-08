@@ -2,8 +2,11 @@ package com.example.store.conveniencestore.Controller;
 
 import com.example.store.conveniencestore.DTO.BrandDTO;
 import com.example.store.conveniencestore.Domain.Brand;
+import com.example.store.conveniencestore.Domain.RestResponse;
 import com.example.store.conveniencestore.Domain.SubCategory;
 import com.example.store.conveniencestore.Service.ProductService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -12,48 +15,29 @@ import java.util.List;
 
 @RestController
 @RequestMapping("brand")
+@RequiredArgsConstructor
 public class BrandController {
     private final ProductService productService;
-    public BrandController(ProductService productService) {
-        this.productService = productService;
-    }
-    public BrandDTO convertBrandToBrandDTO(Brand brand) {
-        BrandDTO brandDTO = new BrandDTO();
-        brandDTO.setBrandId(brand.getBrandId());
-        brandDTO.setBrandName(brand.getBrandName());
-        return brandDTO;
-    }
+
     @GetMapping("view")
     public ResponseEntity<Object> viewBrand() {
-        List<Brand> brandList = productService.findAllBrands();
-        List<BrandDTO> brandDTOs =  brandList.stream().map(this::convertBrandToBrandDTO).toList();
-        return ResponseEntity.ok(brandDTOs);
+        return new ResponseEntity<>(productService.viewBrand(), HttpStatus.OK);
     }
 
     @PostMapping("/add")
     public ResponseEntity<Object> addBrand(@RequestBody BrandDTO brandDTO) {
-        Brand checkBrand  = productService.findBrandbyBrandName(brandDTO.getBrandName());
-        if(checkBrand != null) {
-            return ResponseEntity.status(400).body("Brand is already exists! !");
-        }
-        Brand brand = new Brand();
-        String brandName = brandDTO.getBrandName().toUpperCase().trim();
-        brand.setBrandName(brandName);
-        productService.addBrand(brand);
-        return ResponseEntity.ok("Success" + brand.getBrandName());
+        RestResponse<String> restResponse = productService.handleAddBrand(brandDTO);
+        return new ResponseEntity<>(restResponse, HttpStatus.valueOf(restResponse.getStatusCode()));
     }
 
     @PutMapping("update")
     public ResponseEntity<Object> updateBrand(@RequestBody BrandDTO brandDTO) {
-        Brand brand = productService.findBrandById(brandDTO.getBrandId());
-        brand.setBrandName(brandDTO.getBrandName());
-        productService.addBrand(brand);
-        return ResponseEntity.ok("Success");
+        RestResponse<String> restResponse = productService.handleUpdateBrand(brandDTO);
+        return new  ResponseEntity<>(restResponse, HttpStatus.valueOf(restResponse.getStatusCode()));
     }
     @DeleteMapping("delete")
     public ResponseEntity<Object> deleteBrand(@RequestParam("brand") long brandId) {
-        Brand brand = productService.findBrandById(brandId);
-        productService.deleteBrand(brandId);
-        return ResponseEntity.ok("Success");
+       RestResponse<String> restResponse = productService.handleDeleteBrand(brandId);
+        return new ResponseEntity<>(restResponse, HttpStatus.valueOf(restResponse.getStatusCode()));
     }
 }

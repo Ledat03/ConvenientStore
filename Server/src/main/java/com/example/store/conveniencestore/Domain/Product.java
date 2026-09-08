@@ -1,5 +1,6 @@
 package com.example.store.conveniencestore.Domain;
 
+import com.example.store.conveniencestore.DTO.ProductDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -44,4 +45,23 @@ public class Product {
     private List<ProductVariant> productVariant;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public static Product convertProductDTOToProduct(ProductDTO productDTO,Product  product,Brand brand,Category category,SubCategory subCategory,LocalDateTime localDateTime) {
+        product.setProductName(productDTO.getProductName());
+        product.setProductDescription(productDTO.getProductDescription());
+        product.setHowToUse(productDTO.getHowToUse());
+        product.setPreserve(productDTO.getPreserve());
+        product.setOrigin(productDTO.getOrigin());
+        product.setCategory(category);
+        product.setSubCategory(subCategory);
+        product.setIngredient(productDTO.getIngredient());
+        product.setBrand(brand);
+        product.setStatus(productDTO.getStatus());
+        product.setIsActive(Boolean.parseBoolean(productDTO.getIsActive()));
+        product.setSku(productDTO.getSku());
+        product.setImage(productDTO.getImage() == null ? product.getImage() : "");
+        product.setUpdatedAt(localDateTime);
+        product.setCreatedAt(product.getCreatedAt());
+        return product;
+    }
 }

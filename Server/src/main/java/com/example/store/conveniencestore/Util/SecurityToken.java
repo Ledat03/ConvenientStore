@@ -8,10 +8,8 @@ import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import com.example.store.conveniencestore.DTO.ResLoginDTO;
-import com.example.store.conveniencestore.DTO.UserDTO;
+import com.example.store.conveniencestore.DTO.Response.ResLoginDTO;
 import com.nimbusds.jose.util.Base64;
-import com.nimbusds.jwt.JWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,15 +41,13 @@ public class SecurityToken {
     public String createAccessToken(ResLoginDTO userLogin) {
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
-        List<String> authorities = new ArrayList<>();
-        authorities.add("ROLE_USER_CREATE");
-        authorities.add("ROLE_USER_UPDATE");
+
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(userLogin.getUsername())
-                .claim("user", userLogin)
-                .claim("permissions", authorities)
+                .claim("user", userLogin.getUsername())
+                .claim("role", userLogin.getRole())
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).type("JWT").build();
@@ -65,10 +61,10 @@ public class SecurityToken {
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(Email)
-                .claim("id",userDTO.getId() )
-                .claim("username",userDTO.getUsername() )
-                .claim("name",userDTO.getName() )
-                .claim("role",userDTO.getRole() )
+                .claim("id",userDTO.getId())
+                .claim("username",userDTO.getUsername())
+                .claim("name",userDTO.getName())
+                .claim("role",userDTO.getRole())
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).type("JWT").build();

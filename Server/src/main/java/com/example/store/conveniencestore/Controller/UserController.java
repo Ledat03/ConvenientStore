@@ -2,7 +2,7 @@ package com.example.store.conveniencestore.Controller;
 
 import com.example.store.conveniencestore.DTO.ChangePassword;
 import com.example.store.conveniencestore.DTO.UserDTO;
-import com.example.store.conveniencestore.Domain.RestRestponse;
+import com.example.store.conveniencestore.Domain.RestResponse;
 import com.example.store.conveniencestore.Domain.Role;
 import com.example.store.conveniencestore.Domain.User;
 import jakarta.validation.Valid;
@@ -20,19 +20,16 @@ import com.example.store.conveniencestore.Service.UserService;
 import java.time.Instant;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+
     @GetMapping("/view")
     public ResponseEntity<Object> getUsers() {
-        List<User> users = userService.findAll();
-        RestRestponse<List<UserDTO>> usersResponse = new RestRestponse<>();
-            List<UserDTO> userDTOs = users.stream().map(UserDTO::new).toList();
-            usersResponse.setData(userDTOs);
-            return ResponseEntity.ok().body(userDTOs);
+        return ResponseEntity.ok().body(userService.handleListUser());
     }
     @GetMapping("/view-user")
     public ResponseEntity<Object> getUser(@RequestParam("id") Long id) {
@@ -41,7 +38,7 @@ public class UserController {
         return ResponseEntity.ok().body(userDTO);
     }
     @PutMapping("/update-user")
-    public ResponseEntity<Object> updateUserProfile(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Object> updateUserProfile(@Valid @RequestBody UserDTO userDTO) {
         User user = userService.findById(userDTO.getId());
         Role role =  userService.findByName(userDTO.getRole());
         if(user != null) {
@@ -60,7 +57,7 @@ public class UserController {
         return ResponseEntity.ok().body(userDTO);
     }
     @PutMapping("/update")
-    public ResponseEntity<Object> updateUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Object> updateUser(@Valid @RequestBody UserDTO userDTO) {
         Role role =  userService.findByName(userDTO.getRole());
         if(role != null) {
             User user = userService.findById(userDTO.getId());
@@ -99,8 +96,8 @@ public class UserController {
         return ResponseEntity.ok().body("Password has been changed !");
     }
     @PostMapping("/create")
-    public ResponseEntity<RestRestponse<Object>> createUser(@Valid @RequestBody UserDTO user) {
-        RestRestponse<Object> restRestponse = new RestRestponse<>();
+    public ResponseEntity<RestResponse<Object>> createUser(@Valid @RequestBody UserDTO user) {
+        RestResponse<Object> restResponse = new RestResponse<>();
         if (user != null) {
                 Role getRole = userService.findByName(user.getRole());
                 userService.save(User.builder()
@@ -115,15 +112,15 @@ public class UserController {
                         .role(getRole)
                         .email(user.getEmail().toLowerCase().trim())
                         .build());
-                restRestponse.setData(user);
-                return ResponseEntity.ok().body(restRestponse);
+                restResponse.setResponseData(user);
+                return ResponseEntity.ok().body(restResponse);
         }
-        restRestponse.setData("Something went wrong !");
-        return ResponseEntity.badRequest().body(restRestponse);
+        restResponse.setResponseData("Something went wrong !");
+        return ResponseEntity.badRequest().body(restResponse);
     }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable Long id) {
-        RestRestponse<Object> restRestponse = new RestRestponse<>();
+        RestResponse<Object> restRestponse = new RestResponse<>();
         if(userService.findById(id) != null) {
             userService.deleteUserById(id);
             restRestponse.setMessage("Delete User Successfully !");

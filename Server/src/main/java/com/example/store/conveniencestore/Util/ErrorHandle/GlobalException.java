@@ -1,6 +1,6 @@
 package com.example.store.conveniencestore.Util.ErrorHandle;
 
-import com.example.store.conveniencestore.Domain.RestRestponse;
+import com.example.store.conveniencestore.Domain.RestResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -19,8 +19,8 @@ import java.util.Map;
 public class GlobalException extends Exception {
 
     @ExceptionHandler(value = { UsernameNotFoundException.class, BadCredentialsException.class })
-    public ResponseEntity<RestRestponse<Object>> handleLoginError(Exception ex) {
-        RestRestponse<Object> restRestponse = new RestRestponse<>();
+    public ResponseEntity<RestResponse<Object>> handleLoginError(Exception ex) {
+        RestResponse<Object> restRestponse = new RestResponse<>();
         restRestponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
         restRestponse.setMessage("Tài khoản hoặc mật khẩu không đúng !");
         restRestponse.setError(ex.getMessage());

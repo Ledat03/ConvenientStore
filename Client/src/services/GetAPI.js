@@ -130,7 +130,7 @@ const fetchListOrder = async (data) => {
 const getRelatedProducts = async (params) => await APIsCustomize.get("/product/view/related_product", { params: { id: params }, headers: { "Content-Type": "application/json" } });
 const getAllOrder = async () => await APIsCustomize.get("/order/view", { headers: { "Content-Type": "application/json" } });
 const getAllImport = async () => await APIsCustomize.get("/import/view", { headers: { "Content-Type": "application/json" } });
-const fetchListOrderById = async (id) => await APIsCustomize.get(`/order/view/id`, { params: { id }, headers: { "Content-Type": "application/json" } });
+const fetchListOrderById = async (id) => await APIsCustomize.get(`/order/view/${id}`, { headers: { "Content-Type": "application/json" } });
 const updateDelivery = async (delivery) => await APIsCustomize.put("/order/update/delivery", delivery, { headers: { "Content-Type": "application/json" } });
 const updatePayment = async (payment) => await APIsCustomize.put("/order/update/payment", payment, { headers: { "Content-Type": "application/json" } });
 const deleteOrder = async (id) => await APIsCustomize.delete(`/order/delete?id=${id}`);

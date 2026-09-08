@@ -63,7 +63,7 @@ const ManagePromotion = () => {
   const getListBrands = async () => {
     try {
       const response = await viewBrand();
-      setBrands(response.data);
+      setBrands(response.data.responseData);
       console.log(response)
     } catch (error) {
       console.error("Error fetch brand:", error);

@@ -32,4 +32,29 @@ public class ProductVariantDTO {
         this.productId = productVariant.getProduct().getProductId();
         this.productImage = productVariant.getProductImage();
     }
+
+    public static ProductVariantDTO convertPVToDTO(ProductVariant productVariant) {
+        ProductVariantDTO productVariantDTO = new ProductVariantDTO();
+        productVariantDTO.setId(productVariant.getVariantId());
+        productVariantDTO.setProductId(productVariant.getVariantId());
+        productVariantDTO.setPrice(productVariant.getPrice());
+        productVariantDTO.setSalePrice(productVariant.getSalePrice());
+        productVariantDTO.setCalUnit(productVariant.getCalUnit());
+        productVariantDTO.setSkuCode(productVariant.getSkuCode());
+        productVariantDTO.setProductImage(productVariant.getProductImage());
+        return productVariantDTO;
+    }
+    public static ProductVariantDTO convertPVToResDTO(ProductVariant product) {
+        ProductVariantDTO productVariantDTO = new ProductVariantDTO();
+        productVariantDTO.setId(product.getVariantId());
+        productVariantDTO.setProductId(product.getProduct().getProductId());
+        productVariantDTO.setProductImage(product.getProductImage());
+        productVariantDTO.setStock(product.getStock());
+        productVariantDTO.setPrice(product.getPrice());
+        productVariantDTO.setSalePrice(product.getSalePrice());
+        productVariantDTO.setCalUnit(product.getCalUnit());
+        productVariantDTO.setSkuCode(product.getSkuCode());
+        productVariantDTO.setIsActive(product.getIsActive());
+        return productVariantDTO;
+    }
 }

@@ -1,14 +1,10 @@
 package com.example.store.conveniencestore.Util.Specification;
 
-import com.example.store.conveniencestore.DTO.AdvFilter;
 import com.example.store.conveniencestore.Domain.*;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.repository.query.Param;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -165,7 +161,7 @@ public class ProductSpec {
     public static Specification<ProductVariant> newProduct(){
         return (root,query,cb) -> {
             LocalDateTime now = LocalDateTime.now();
-            LocalDateTime past = now.minusDays(7);
+            LocalDateTime past = now.minusDays(15);
             return cb.between(root.get("product").get(Product_.CREATED_AT),past,now);
         };
     }

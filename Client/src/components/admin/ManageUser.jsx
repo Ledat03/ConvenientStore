@@ -14,7 +14,7 @@ export const AdminManageUser = () => {
   const handleUsers = async () => {
     try {
       const listUsers = await handleListUser();
-      setUsers(listUsers.data);
+      setUsers(listUsers.data.responseData);
       setLoading(false);
       setError(null);
     } catch (e) {

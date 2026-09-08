@@ -1,8 +1,8 @@
-package com.example.store.conveniencestore.DTO;
+package com.example.store.conveniencestore.DTO.Response;
 
+import com.example.store.conveniencestore.DTO.ProductDTO;
+import com.example.store.conveniencestore.DTO.ProductVariantDTO;
 import com.example.store.conveniencestore.Domain.InventoryImportDetail;
-import com.example.store.conveniencestore.Domain.Product;
-import com.example.store.conveniencestore.Domain.ProductVariant;
 import lombok.Data;
 
 @Data

@@ -6,6 +6,7 @@ import com.example.store.conveniencestore.Domain.Product;
 import com.example.store.conveniencestore.Domain.ProductVariant;
 import com.example.store.conveniencestore.Service.CloudinaryService;
 import com.example.store.conveniencestore.Service.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,30 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Controller
+@RestController
 @RequestMapping("variant")
+@RequiredArgsConstructor
 public class VariantController {
     private final CloudinaryService CloudinaryService;
     private final ProductService productService;
-
-    public VariantController( CloudinaryService CloudinaryService , ProductService productService) {
-        this.CloudinaryService = CloudinaryService;
-        this.productService = productService;
-    }
-
-    public ProductVariantDTO convertToDTO(ProductVariant product) {
-        ProductVariantDTO productVariantDTO = new ProductVariantDTO();
-        productVariantDTO.setId(product.getVariantId());
-        productVariantDTO.setProductId(product.getProduct().getProductId());
-        productVariantDTO.setProductImage(product.getProductImage());
-        productVariantDTO.setStock(product.getStock());
-        productVariantDTO.setPrice(product.getPrice());
-        productVariantDTO.setSalePrice(product.getSalePrice());
-        productVariantDTO.setCalUnit(product.getCalUnit());
-        productVariantDTO.setSkuCode(product.getSkuCode());
-        productVariantDTO.setIsActive(product.getIsActive());
-        return productVariantDTO;
-    }
 
     @PostMapping("/add")
     public ResponseEntity<Object> addVariant(@RequestParam(value = "price") String price ,
@@ -67,7 +50,7 @@ public class VariantController {
          productVariant.setSkuCode(sku);
          productVariant.setProductImage(ImageURL);
          productService.saveVariant(productVariant);
-         ProductVariantDTO productVariantDTO = convertToDTO(productVariant);
+         ProductVariantDTO productVariantDTO = ProductVariantDTO.convertPVToResDTO(productVariant);
         return ResponseEntity.ok(productVariantDTO);
     }
 
@@ -75,7 +58,7 @@ public class VariantController {
     public ResponseEntity<Object> getVariant(@PathVariable long id) {
         Product product = productService.findProductById(id);
         List<ProductVariant> productVariant = product.getProductVariant();
-        List<ProductVariantDTO> variantDTOList = productVariant.stream().map(this::convertToDTO).toList();
+        List<ProductVariantDTO> variantDTOList = productVariant.stream().map(ProductVariantDTO::convertPVToResDTO).toList();
         return ResponseEntity.ok(variantDTOList);
     }
 
@@ -109,7 +92,7 @@ public class VariantController {
             productVariant.setIsActive(!isActive.isEmpty() ? isActive : productVariant.getIsActive());
             productVariant.setProductImage(ImageURL);
             productService.saveVariant(productVariant);
-            productVariantDTO = convertToDTO(productVariant);
+            productVariantDTO = ProductVariantDTO.convertPVToResDTO(productVariant);
         }else {
             return ResponseEntity.ofNullable("Variant not found");
         }

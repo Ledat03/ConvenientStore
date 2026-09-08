@@ -1,14 +1,12 @@
 package com.example.store.conveniencestore.Service;
 
-import com.example.store.conveniencestore.DTO.AdvFilter;
-import com.example.store.conveniencestore.DTO.FilterData;
-import com.example.store.conveniencestore.DTO.ManageProductDTO;
-import com.example.store.conveniencestore.DTO.ProductDTO;
+import com.example.store.conveniencestore.DTO.*;
+import com.example.store.conveniencestore.DTO.Request.AdvFilter;
+import com.example.store.conveniencestore.DTO.Request.ProductRqDTO;
 import com.example.store.conveniencestore.Domain.*;
 import com.example.store.conveniencestore.EnumType.DiscountScope;
 import com.example.store.conveniencestore.Repository.*;
 import com.example.store.conveniencestore.Util.Specification.ProductSpec;
-import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.transaction.Transactional;
 
@@ -17,12 +15,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
-
-import com.example.store.conveniencestore.View.ViewsConfig;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +35,12 @@ public class ProductService {
     private final VariantRepository variantRepository;
     private final BrandRepository brandRepository;
     private final ImportRepository importRepository;
-    private final ImportDetailRepository importDetailRepository;
     private final PromotionRepository promotionRepository;
-
+    private final CloudinaryService cloudinaryService;
+    private LocalDateTime getLocalDateTime() {
+        Instant instant = Instant.now();
+        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+    }
 
     public Category findCategoriesByCategory_id(long id) {
         return categoryRepository.findById(id);
@@ -116,33 +120,135 @@ public class ProductService {
         return brandRepository.findById(id);
     }
 
+
     public Brand addBrand(Brand brand) {
         return brandRepository.save(brand);
     }
 
+    @Transactional
+    public RestResponse<String> handleAddProduct(ProductRqDTO productRqDTO) throws IOException {
+        if (productRqDTO.getBrand() == null || productRqDTO.getBrand().isBlank()) {
+            return RestResponse.error(400,"Brand field is required");
+        }
+        if (productRqDTO.getSubCategory() == null || productRqDTO.getSubCategory().isBlank()) {
+            return RestResponse.error(400,"SubCategory field is required");
+        }
+        Brand brandEntity = findBrandbyBrandName(productRqDTO.getBrand().trim());
+        if (brandEntity == null) {
+            return RestResponse.error(400,"Brand isn't exist !: " + productRqDTO.getBrand());
+        }
+        SubCategory subCate = findBySubCategoryName(productRqDTO.getSubCategory().trim());
+        if (subCate == null) {
+            return RestResponse.error(400,"Subcategory isn't exist !: " + productRqDTO.getSubCategory());
+        }
+        Product product = new Product();
+        product.setProductName(productRqDTO.getProductName().trim());
+        product.setProductDescription(productRqDTO.getProductDescription().trim());
+        product.setHowToUse(productRqDTO.getHowToUse().trim());
+        product.setPreserve(productRqDTO.getPreserve().trim());
+        product.setOrigin(productRqDTO.getOrigin().trim());
+        product.setIngredient(productRqDTO.getIngredient().trim());
+        product.setSku(productRqDTO.getSku().trim());
+        product.setIsActive(Boolean.parseBoolean(productRqDTO.getIsActive().trim()));
+        product.setStatus(productRqDTO.getStatus().trim());
+        product.setBrand(brandEntity);
+        product.setSubCategory(subCate);
+        product.setCategory(subCate.getCategory());
+        product.setCreatedAt(getLocalDateTime());
+        product.setUpdatedAt(getLocalDateTime());
+
+        if (productRqDTO.getImage() != null && !productRqDTO.getImage().isEmpty()) {
+            CloudinaryService.UploadResult uploadResult = cloudinaryService.uploadImage(productRqDTO.getImage(), "previewproduct");
+            product.setImage(uploadResult.getUrl());
+        }
+        save(product);
+        return RestResponse.ok(201,"Data has already saved ! ");
+    }
+    @Transactional
+    public RestResponse<String> handleDeleteProduct(long id) {
+        Product product = findProductById(id);
+        if (product != null) {
+            List<ProductVariant> productVariants = findProductVariantsByProductId(id);
+            if (!productVariants.isEmpty()) {
+                List<String> ImageURLs;
+                for (ProductVariant productVariant : productVariants) {
+                    ImageURLs = productVariant.getProductImage();
+                    for (String imageURL : ImageURLs) {
+                        cloudinaryService.deleteImage(cloudinaryService.extractPublicIdFromCloudinaryUrl(imageURL));
+                        System.out.println("Deleted image url: " + imageURL);
+                    }
+                }
+                deleteAllByProduct(product);
+            }
+        }
+        if ( product != null && product.getImage() != null) {
+            cloudinaryService.deleteImage(cloudinaryService.extractPublicIdFromCloudinaryUrl(product.getImage()));
+            System.out.println("Deleted image url: " + product.getImage());
+        }
+        deleteProduct(id);
+        return  RestResponse.ok(204, "Product deleted successfully");
+    }
+    public PageResponse<List<ProductDTO>> handleViewProduct(ManageProductDTO manageProductDTO) {
+        PageResponse<List<ProductDTO>> response = new PageResponse<>();
+        if(manageProductDTO.getName() != null || manageProductDTO.getStatus() != null || manageProductDTO.getState() != null) {
+                Pageable pageable = PageRequest.of(Integer.parseInt(manageProductDTO.getPage()), 8);
+                Page<Product> prodData = getProductWithNameAndStatusAndState(manageProductDTO, pageable);
+                List<ProductDTO> resData = prodData.stream().map(ProductDTO::new).toList();
+                response.setData(resData);
+                response.setTotalItems(prodData.getTotalElements());
+                return response;
+        }
+        Pageable pageable = PageRequest.of(Integer.parseInt(manageProductDTO.getPage()),8);
+        Page<Product> ListProducts = findAllProducts(pageable);
+        List<ProductDTO> products = ListProducts.stream().map(ProductDTO::new).toList();
+        response.setData(products);
+        response.setTotalItems(ListProducts.getTotalElements());
+        return response;
+    }
+    @Transactional
+    public RestResponse<Object> handleUpdateProduct(ProductDTO productDTO) {
+        if (productDTO != null) {
+            Product product = findProductById(productDTO.getProductId());
+            Brand brand = findBrandbyBrandName(productDTO.getBrand());
+            SubCategory subCategory = findBySubCategoryName(productDTO.getSubCategory());
+            Category category = findCategoriesByCategory_id(subCategory.getCategory().getCategory_id());
+            LocalDateTime ldt = getLocalDateTime();
+            Product updatedProduct = Product.convertProductDTOToProduct(productDTO,product,brand,category,subCategory,ldt);
+            save(updatedProduct);
+            return RestResponse.ok(200,productDTO);
+        }
+        return RestResponse.error(400, "Product not found !");
+    }
+    public RestResponse<String> handleAddBrand(BrandDTO brandDTO) {
+        Brand checkBrand  = findBrandbyBrandName(brandDTO.getBrandName());
+        if(checkBrand != null) {
+            return RestResponse.error(400,"Brand already exists !");
+        }
+        Brand brand = new Brand();
+        String brandName = brandDTO.getBrandName().toUpperCase().trim();
+        brand.setBrandName(brandName);
+        addBrand(brand);
+        return RestResponse.ok(200,"Brand has been successfully added !");
+    }
+
+    public RestResponse<String> handleUpdateBrand(BrandDTO brandDTO) {
+        Brand brand = findBrandById(brandDTO.getBrandId());
+        brand.setBrandName(brandDTO.getBrandName());
+        addBrand(brand);
+        return RestResponse.ok(200,"Brand has been successfully updated !");
+    }
+
+    public RestResponse<String> handleDeleteBrand(long id) {
+        Brand brand = findBrandById(id);
+        if(brand == null) {
+            return RestResponse.error(400,"Brand doesn't exists !");
+        }
+        deleteBrand(brand.getBrandId());
+        return RestResponse.ok(200,"Brand has been successfully deleted !");
+    }
+
     public void deleteBrand(long id) {
         brandRepository.deleteById(id);
-    }
-
-    @Transactional
-    public InventoryImport saveInventoryImport(InventoryImport inventoryImport) {
-        return importRepository.save(inventoryImport);
-    }
-
-    public InventoryImportDetail saveImportDetail(InventoryImportDetail inventoryImportDetail) {
-        return importDetailRepository.save(inventoryImportDetail);
-    }
-
-    public void deleteInventoryImport(InventoryImport inventoryImport) {
-        importRepository.delete(inventoryImport);
-    }
-
-    public List<InventoryImport> findAllInventoryImports() {
-        return importRepository.findAll();
-    }
-
-    public InventoryImport findInventoryImportById(long id) {
-        return importRepository.findById(id);
     }
 
     public Page<Product> getProductWithNameAndStatusAndState(ManageProductDTO  manageProductDTO,Pageable pageable){
@@ -232,5 +338,10 @@ public class ProductService {
         Specification<ProductVariant> spec = Specification.where(ProductSpec.hasCategory(product.getCategory().getCategoryName()));
         spec = spec.and(ProductSpec.outOfStock());
         return variantRepository.findAll(spec, pageable);
+    }
+    public RestResponse<List<BrandDTO>> viewBrand(){
+        List<Brand> brandList = findAllBrands();
+        List<BrandDTO> brandDTOs =  brandList.stream().map(BrandDTO::convertBrandToBrandDTO).toList();
+        return RestResponse.ok(200,brandDTOs);
     }
 }

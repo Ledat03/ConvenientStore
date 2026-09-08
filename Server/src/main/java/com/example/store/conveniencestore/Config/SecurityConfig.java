@@ -50,10 +50,6 @@ public class SecurityConfig {
     @Value("${store.jwt.access-token-validity-in-seconds}")
     private long jwtExpiredTime;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -89,20 +85,18 @@ public class SecurityConfig {
         http
                 .securityMatcher(
                         "/",
-                        "user/view-user",
-                        "user/update-user",
-                        "user/change-password",
-                        "order/view/**",
-                        "order/cancel",
-                        "api/check/**",
+                        "/user/view-user",
+                        "/api/check/**",
                         "/product/view/**",
-                        "variant/view/**",
+                        "/variant/view/**",
                         "/main/",
                         "/brand/view",
                         "/promotion/view",
                         "/order/vnpay_jsp/vnpay_return",
                         "/user/re-password",
-                        "/user/create"
+                        "/api/check/login",
+                        "/api/check/signup",
+                        "/product/all_products"
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())

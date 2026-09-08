@@ -1,7 +1,8 @@
-package com.example.store.conveniencestore.DTO;
+package com.example.store.conveniencestore.DTO.Response;
 
+import com.example.store.conveniencestore.DTO.PaymentDTO;
+import com.example.store.conveniencestore.DTO.UserDTO;
 import com.example.store.conveniencestore.Domain.Order;
-import com.example.store.conveniencestore.Domain.User;
 import lombok.Data;
 
 import java.util.List;

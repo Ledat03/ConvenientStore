@@ -26,4 +26,6 @@ public class InventoryImportDetail {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "variant_id")
     private ProductVariant variant;
+
+
 }

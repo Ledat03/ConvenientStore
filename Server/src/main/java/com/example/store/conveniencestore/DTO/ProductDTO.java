@@ -54,4 +54,15 @@ public class ProductDTO {
         this.productVariant = product.getProductVariant().stream().map(ProductVariantDTO::new).toList();
 
     }
+    public static ProductDTO convertProductToDTO(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setProductId(product.getProductId());
+        productDTO.setProductName(product.getProductName());
+        productDTO.setCategory(product.getCategory().getCategoryName());
+        productDTO.setSubCategory(product.getSubCategory().getSubCategoryName());
+        productDTO.setImage(product.getImage());
+        productDTO.setSku(product.getSku());
+        productDTO.setBrand(product.getBrand().getBrandName());
+        return productDTO;
+    }
 }

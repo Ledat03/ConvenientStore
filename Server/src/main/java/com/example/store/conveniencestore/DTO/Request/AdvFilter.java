@@ -1,4 +1,4 @@
-package com.example.store.conveniencestore.DTO;
+package com.example.store.conveniencestore.DTO.Request;
 
 import lombok.Data;
 

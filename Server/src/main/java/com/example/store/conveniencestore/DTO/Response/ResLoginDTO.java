@@ -1,6 +1,5 @@
-package com.example.store.conveniencestore.DTO;
+package com.example.store.conveniencestore.DTO.Response;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
