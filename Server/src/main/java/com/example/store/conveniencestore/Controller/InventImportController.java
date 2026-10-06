@@ -63,7 +63,7 @@ public class InventImportController {
     public  ResponseEntity<PageResponse<List<ResInventDTO>>> getIIByFilter(@RequestParam(value = "code",required = false) String code,
                                                        @RequestParam(value = "days",required = false,defaultValue = "0") int days,
                                                        @RequestParam(value = "page",defaultValue = "0") int page){
-        Pageable  pageable = PageRequest.of(page,5);
+        Pageable  pageable = PageRequest.of(page,8);
         Page<InventoryImport> data = productService.getIIByFilter(code,days,pageable);
         List<ResInventDTO> resInventDTOS = data.stream().map(ResInventDTO::new).toList();
         PageResponse<List<ResInventDTO>> pageResponse = new PageResponse<>(resInventDTOS,data.getTotalElements());

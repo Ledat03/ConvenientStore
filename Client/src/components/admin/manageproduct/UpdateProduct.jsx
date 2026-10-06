@@ -56,7 +56,7 @@ const UpdateProduct = (props) => {
       };
       await updateProduct(Product);
       toast.success("Cập nhật sản phẩm thành công");
-      props.handleProductsList(props.filters);
+      props.handleProductsList();
       props.closeUpdate();
     } catch (error) {
       toast.error("Cập nhật sản phẩm thất bại");

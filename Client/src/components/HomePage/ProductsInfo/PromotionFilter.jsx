@@ -8,7 +8,7 @@ const PromotionFilter = (props) => {
   const [PromotionList, setPromotions] = useState([]);
   useEffect(() => {
     handleListPromotion();
-  }, []);
+  }, [props.flatVariant]);
   const handleListPromotion = async () => {
     if (props.flatVariant) {
       const res = await fetchListPromotion();

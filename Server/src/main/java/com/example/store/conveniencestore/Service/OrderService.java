@@ -149,25 +149,21 @@ public class OrderService {
     @Transactional
     public RestResponse<String> handleAddOrder(Optional<OrderDTO> orderDTO , HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         if (orderDTO.isPresent()) {
+            Order order = createOrder(orderDTO.get());
+            User user = userService.findById(orderDTO.get().getUserId());
+            Delivery delivery = createDelivery(orderDTO.get(), order);
+            Payment payment = handleAddOrderItems(orderDTO.get(), order, delivery, user);
+            if(orderDTO.get().getPromotionId() != 0){
+                Promotion promotion = promotionService.findPromotionById(orderDTO.get().getPromotionId());
+                promotion.setUsageLimit(promotion.getUsageLimit() - 1);
+                promotionService.savePromo(promotion);
+                createPromotionUser(user,promotion);
+            }
             if (orderDTO.get().getPaymentMethod().equals("COD")) {
-                Order order = createOrder(orderDTO.get());
-                User user = userService.findById(orderDTO.get().getUserId());
-                Delivery delivery = createDelivery(orderDTO.get(), order);
-                if(orderDTO.get().getPromotionId() != 0){
-                    Promotion promotion = promotionService.findPromotionById(orderDTO.get().getPromotionId());
-                    promotion.setUsageLimit(promotion.getUsageLimit() - 1);
-                    promotionService.savePromo(promotion);
-                    createPromotionUser(user,promotion);
-                }
-                handleAddOrderItems(orderDTO.get(), order, delivery, user);
                 return RestResponse.ok(202,"Order is on progress");
             } else if (orderDTO.get().getPaymentMethod().equals("E_WALLET")) {
-                Order order = createOrder(orderDTO.get());
-                User user = userService.findById(orderDTO.get().getUserId());
-                Delivery delivery = createDelivery(orderDTO.get(), order);
-                Payment payment = handleAddOrderItems(orderDTO.get(), order, delivery, user);
-                String PaymentURL = vNPayService.createPaymentURL(request, payment,delivery,user);
-                return RestResponse.ok(201,PaymentURL);
+                String paymentURL = vNPayService.createPaymentURL(request, payment, delivery, user);
+                return RestResponse.ok(201, paymentURL);
             }
         }
         return RestResponse.error(400,"Something went wrong!");

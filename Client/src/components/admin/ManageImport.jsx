@@ -18,6 +18,7 @@ const ManageImport = () => {
     updateImport: false,
     deleteImport: false,
   });
+  console.log(ListImport)
   const [selectedImport, setSelectedImport] = useState();
   const [filters, setFilters] = useState({
     days: 0,

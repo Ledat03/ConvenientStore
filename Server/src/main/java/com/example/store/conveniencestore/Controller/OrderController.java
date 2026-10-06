@@ -50,14 +50,21 @@ public class OrderController {
     @PostMapping("/cancel")
     public ResponseEntity<Object> CancelOrder(@RequestParam("id") long id) {
         Order order = orderService.findbyOrderId(id);
-        order.getDelivery().setDelivery_status(DeliveryStatus.CANCELLED);
-        orderService.saveOrder(order);
-        for(OrderItem item : order.getOrderDetails()) {
-            ProductVariant productVariant = item.getProductVariant();
-            productVariant.setStock(productVariant.getStock() + item.getQuantity());
-            productService.saveVariant(productVariant);
+        if (order != null) {
+            if( order.getDelivery().getDelivery_status().equals(DeliveryStatus.CANCELLED)){
+                return ResponseEntity.ok("Order cancelled");
+            }else {
+                order.getDelivery().setDelivery_status(DeliveryStatus.CANCELLED);
+                orderService.saveOrder(order);
+                for(OrderItem item : order.getOrderDetails()) {
+                    ProductVariant productVariant = item.getProductVariant();
+                    productVariant.setStock(productVariant.getStock() + item.getQuantity());
+                    productService.saveVariant(productVariant);
+                }
+                return ResponseEntity.ok("Successfully cancel order");
+            }
         }
-        return ResponseEntity.ok("Successfully cancel order");
+       return ResponseEntity.ok("The order doesn't exist");
     }
     @GetMapping("/view")
     public ResponseEntity<Object> viewOrder() {

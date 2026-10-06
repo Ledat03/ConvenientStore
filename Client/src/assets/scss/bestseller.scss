@@ -285,7 +285,7 @@
     .Card-Button {
       width: 100%;
       background-color: var.$red-accent;
-      border: none;
+      border: 1px solid var.$red-accent;
       font-size: 13px;
       padding: 8px 0;
       border-radius: 6px;

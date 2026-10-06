@@ -70,7 +70,7 @@ export default function Checkout() {
       if (formData.paymentMethod === "COD") {
         navigate("/ordercheck");
       } else {
-        window.location.href = res.data;
+        window.location.href = res.data.responseData;
       }
       setLoading(false);
     } catch (error) {

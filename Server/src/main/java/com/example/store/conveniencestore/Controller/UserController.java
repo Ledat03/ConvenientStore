@@ -39,8 +39,8 @@ public class UserController {
     }
     @PutMapping("/update-user")
     public ResponseEntity<Object> updateUserProfile(@Valid @RequestBody UserDTO userDTO) {
-        User user = userService.findById(userDTO.getId());
-        Role role =  userService.findByName(userDTO.getRole());
+        User user = userService.findById(userDTO.getId());  
+        Role role =  userService.findByName("user");
         if(user != null) {
             user.setFirstName(userDTO.getFirstName());
             user.setLastName(userDTO.getLastName());

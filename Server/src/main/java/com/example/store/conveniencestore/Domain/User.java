@@ -76,7 +76,6 @@ public class User {
         user.setCreatedBy(TempUser.getCreatedBy());
         user.setUpdatedAt(Instant.now());
         user.setUpdatedBy("admin");
-        user.setRefreshToken(user.getRefreshToken());
         return user;
     }
     public static User convertUserDTOToUser(UserDTO userDTO, UserService userService, PasswordEncoder passwordEncoder) {

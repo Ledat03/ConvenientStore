@@ -18,11 +18,14 @@ export const ManageProduct = () => {
     let num = await NumberOfProducts();
     setCount(num.data);
   }
-  const handleProductsList = async (filter) => {
+  const handleProductsList = async (filters) => {
     try {
-      console.log(filter)
-      let resProduct = await fetchListProduct(filter);
-      console.log(resProduct, "product data")
+      let resProduct = null;
+      if(filters != undefined){
+        resProduct = await fetchListProduct(filters);
+      }else{
+        resProduct = await fetchListProduct(filter);
+      }
       setInfoProduct({ totalItems: resProduct.data.totalItems, data: resProduct.data.data });
       setLoading(false);
     } catch (error) {

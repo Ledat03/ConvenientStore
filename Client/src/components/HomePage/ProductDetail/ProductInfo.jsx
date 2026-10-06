@@ -9,7 +9,13 @@ const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
   useEffect(() => {
     IsLogIn();
   }, []);
-  const Discount = (product.productVariant[SelectedItem]?.salePrice / product.productVariant[SelectedItem]?.price).toFixed(1) * 10;
+  console.log(product);
+  const Discount = Math.round(
+    ((product.productVariant[SelectedItem]?.price -
+      product.productVariant[SelectedItem]?.salePrice) /
+      product.productVariant[SelectedItem]?.price) *
+      100,
+  );
   const IsLogIn = () => {
     const checkUser = localStorage?.getItem("user");
     if (checkUser != null) {
@@ -43,10 +49,20 @@ const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
       </h1>
 
       <div className="price-section">
-        <span className="current-price">{product.productVariant[SelectedItem]?.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+        <span className="current-price">
+          {product.productVariant[SelectedItem]?.price.toLocaleString("vn-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </span>
         {product.productVariant[SelectedItem].salePrice != 0 && (
           <div>
-            <span className="original-price">{product.productVariant[SelectedItem].salePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+            <span className="original-price">
+              {product.productVariant[SelectedItem].salePrice.toLocaleString(
+                "vn-VN",
+                { style: "currency", currency: "VND" },
+              )}
+            </span>
             <span className="discount-badge">SAVE {Discount}%</span>
           </div>
         )}
@@ -55,7 +71,10 @@ const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
       <div className="quantity-section">
         <label className="label">Số Lượng</label>
         <div className="quantity-controls">
-          <button className="quantity-btn" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+          <button
+            className="quantity-btn"
+            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+          >
             -
           </button>
           <span className="quantity-value">{quantity}</span>
@@ -97,7 +116,10 @@ const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
           <button
             className="add-to-cart"
             onClick={() => {
-              handleAddToCart(product.productVariant[SelectedItem].id, product.productId);
+              handleAddToCart(
+                product.productVariant[SelectedItem].id,
+                product.productId,
+              );
             }}
           >
             Thêm Vào Giỏ Hàng
@@ -114,7 +136,13 @@ const ProductInfo = ({ product, quantity, setQuantity, Unit, setUnit }) => {
         <div className="info-text"> GIAO TẬN NHÀ , NHẬN TẬN TAY</div>
         <div className="info-text">GIAO NHẬN TRONG NGÀY</div>
       </div>
-      {console.log(quantity + " VariantId " + product.productVariant[SelectedItem].id + "productId " + product.productId)}
+      {console.log(
+        quantity +
+          " VariantId " +
+          product.productVariant[SelectedItem].id +
+          "productId " +
+          product.productId,
+      )}
     </div>
   );
 };

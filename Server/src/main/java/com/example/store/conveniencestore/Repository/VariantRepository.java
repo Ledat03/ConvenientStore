@@ -27,6 +27,6 @@ public interface VariantRepository extends JpaRepository<ProductVariant,Long>, J
             @Param("subCategory") String subCategory,
             @Param("productName") String productName
     );
-    @Query("SELECT pv FROM ProductVariant pv INNER JOIN pv.orderItems oi GROUP BY pv.variantId ORDER BY SUM(oi.quantity) DESC ")
+    @Query("SELECT pv FROM ProductVariant pv INNER JOIN pv.orderItems oi JOIN Delivery d ON d.order.id = oi.order.id WHERE d.delivery_status = DeliveryStatus.DELIVERED GROUP BY pv.variantId ORDER BY SUM(oi.quantity) DESC ")
     Page<ProductVariant> findBestSeller(Pageable pageable);
 }

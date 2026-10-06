@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
 import "../../assets/scss/userprofile.scss";
-import { getUserProfile, updateInfo, handleChangePassword, cancelOrder } from "../../services/UserSevice";
+import {
+  getUserProfile,
+  updateInfo,
+  handleChangePassword,
+  cancelOrder,
+} from "../../services/UserSevice";
 import { re_Pay } from "../../services/AuthAPI";
 import { fetchListOrderById } from "../../services/GetAPI";
 import { useLocation } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
-import _ from "lodash";
+import _, { set } from "lodash";
 import { toast } from "react-toastify";
 import { ToastContainer, Bounce } from "react-toastify";
 const UserProfile = () => {
@@ -24,13 +29,6 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
-  const updateProfile = async () => {
-    try {
-      await updateInfo(userInfo);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   console.log(user.id);
   const getListOrder = async () => {
     const res = await fetchListOrderById(Number(user.id));
@@ -38,23 +36,6 @@ const UserProfile = () => {
     setOrder(res.data);
   };
 
-  const changePassword = async () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      return alert("Mật khẩu nhập lại không chính xác");
-    } else {
-      try {
-        let changePassword = {
-          id: userInfo.id,
-          password: passwordData.newPassword,
-          currentPassword: passwordData.currentPassword,
-        };
-        console.log(changePassword);
-        await handleChangePassword(changePassword);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
   useEffect(() => {
     fetchUserInfo(user.id);
     getListOrder();
@@ -82,33 +63,47 @@ const UserProfile = () => {
     });
   };
 
-  const handlePersonalInfoSubmit = (e) => {
+  const handlePersonalInfoSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
-    setTimeout(() => {
-      alert("Thông tin cá nhân đã được cập nhật!");
+    try {
+      setLoading(true);
+      const res = await updateInfo(userInfo);
+      if (res) toast.success("Cập nhật thông tin thành công !");
+    } catch (error) {
+      toast.error("Cập nhật thông tin thất bại !");
+      console.log(error);
+      throw error;
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
-  const handlePasswordSubmit = (e) => {
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("Mật khẩu xác nhận không khớp!");
-      return;
-    }
-    setLoading(true);
-
-    setTimeout(() => {
-      alert("Mật khẩu đã được thay đổi!");
-      setPasswordData({
+     if (passwordData.newPassword !== passwordData.confirmPassword) {
+      return alert("Mật khẩu nhập lại không chính xác");
+    } else {
+      setLoading(true);
+      try {
+        let changePassword = {
+          id: userInfo.id,
+          password: passwordData.newPassword,
+          currentPassword: passwordData.currentPassword,
+        };
+        console.log(changePassword);
+        await handleChangePassword(changePassword);
+      } catch (error) {
+        console.log(error);
+      }finally{
+         setPasswordData({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
-      setLoading(false);
-    }, 1000);
+      setLoading(false)
+      }
+    }
+    
   };
 
   const handleViewOrderDetails = (order) => {
@@ -140,8 +135,15 @@ const UserProfile = () => {
       COMPLETED: { text: "Hoàn thành", class: "status-completed" },
       FAILED: { text: "Thất bại", class: "status-failed" },
     };
-    const statusInfo = statusMap[status] || { text: status, class: "status-default" };
-    return <span className={`status-badge ${statusInfo.class}`}>{statusInfo.text}</span>;
+    const statusInfo = statusMap[status] || {
+      text: status,
+      class: "status-default",
+    };
+    return (
+      <span className={`status-badge ${statusInfo.class}`}>
+        {statusInfo.text}
+      </span>
+    );
   };
 
   const formatCurrency = (amount) => {
@@ -171,15 +173,24 @@ const UserProfile = () => {
           <p>Xin chào, {userInfo.username}!</p>
         </div>
         <nav className="sidebar-nav">
-          <button className={`nav-item ${activeTab === "personal" ? "active" : ""}`} onClick={() => setActiveTab("personal")}>
+          <button
+            className={`nav-item ${activeTab === "personal" ? "active" : ""}`}
+            onClick={() => setActiveTab("personal")}
+          >
             <i className="icon-user"></i>
             <span>Thông tin cá nhân</span>
           </button>
-          <button className={`nav-item ${activeTab === "password" ? "active" : ""}`} onClick={() => setActiveTab("password")}>
+          <button
+            className={`nav-item ${activeTab === "password" ? "active" : ""}`}
+            onClick={() => setActiveTab("password")}
+          >
             <i className="icon-lock"></i>
             <span>Thay đổi mật khẩu</span>
           </button>
-          <button className={`nav-item ${activeTab === "orders" ? "active" : ""}`} onClick={() => setActiveTab("orders")}>
+          <button
+            className={`nav-item ${activeTab === "orders" ? "active" : ""}`}
+            onClick={() => setActiveTab("orders")}
+          >
             <i className="icon-shopping"></i>
             <span>Quản lý đơn hàng</span>
           </button>
@@ -194,7 +205,8 @@ const UserProfile = () => {
           </h1>
           <p>
             {activeTab === "personal" && "Cập nhật thông tin cá nhân của bạn"}
-            {activeTab === "password" && "Đảm bảo tài khoản của bạn được bảo mật"}
+            {activeTab === "password" &&
+              "Đảm bảo tài khoản của bạn được bảo mật"}
             {activeTab === "orders" && "Theo dõi trạng thái đơn hàng của bạn"}
           </p>
         </div>
@@ -202,36 +214,79 @@ const UserProfile = () => {
         <div className="profile-content">
           {activeTab === "personal" && (
             <div className="tab-content">
-              <form onSubmit={handlePersonalInfoSubmit} className="personal-info-form">
+              <form
+                onSubmit={handlePersonalInfoSubmit}
+                className="personal-info-form"
+              >
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="username">Tên đăng nhập</label>
-                    <input type="text" id="username" name="username" value={userInfo.username || ""} onChange={handlePersonalInfoChange} />
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={userInfo.username || ""}
+                      onChange={handlePersonalInfoChange}
+                    />
                   </div>
                   <div className="form-group">
                     <label htmlFor="email">Email</label>
-                    <input type="email" id="email" name="email" value={userInfo.email || ""} disabled />
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={userInfo.email || ""}
+                      disabled
+                    />
                   </div>
                 </div>
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="firstName">Họ</label>
-                    <input type="text" id="firstName" name="firstName" value={userInfo.firstName || ""} onChange={handlePersonalInfoChange} required />
+                    <input
+                      type="text"
+                      id="firstName"
+                      name="firstName"
+                      value={userInfo.firstName || ""}
+                      onChange={handlePersonalInfoChange}
+                      required
+                    />
                   </div>
                   <div className="form-group">
                     <label htmlFor="lastName">Tên</label>
-                    <input type="text" id="lastName" name="lastName" value={userInfo.lastName || ""} onChange={handlePersonalInfoChange} required />
+                    <input
+                      type="text"
+                      id="lastName"
+                      name="lastName"
+                      value={userInfo.lastName || ""}
+                      onChange={handlePersonalInfoChange}
+                      required
+                    />
                   </div>
                 </div>
                 <div className="form-group">
                   <label htmlFor="phone">Số điện thoại</label>
-                  <input type="tel" id="phone" name="phone" value={userInfo.phone || ""} onChange={handlePersonalInfoChange} required />
+                  <input
+                    type="number"
+                    id="phone"
+                    name="phone"
+                    value={userInfo.phone || ""}
+                    onChange={handlePersonalInfoChange}
+                    required
+                  />
                 </div>
                 <div className="form-group">
                   <label htmlFor="address">Địa chỉ</label>
-                  <textarea id="address" name="address" value={userInfo.address || ""} onChange={handlePersonalInfoChange} rows="3" required />
+                  <textarea
+                    id="address"
+                    name="address"
+                    value={userInfo.address || ""}
+                    onChange={handlePersonalInfoChange}
+                    rows="3"
+                    required
+                  />
                 </div>
-                <button type="submit" className="submit-btn" disabled={loading} onClick={updateProfile}>
+                <button type="submit" className="submit-btn" disabled={loading}>
                   {loading ? "Đang cập nhật..." : "Cập nhật thông tin"}
                 </button>
               </form>
@@ -243,17 +298,44 @@ const UserProfile = () => {
               <form onSubmit={handlePasswordSubmit} className="password-form">
                 <div className="form-group">
                   <label htmlFor="currentPassword">Mật khẩu hiện tại</label>
-                  <input type="password" id="currentPassword" name="currentPassword" value={passwordData.currentPassword} onChange={handlePasswordChange} required />
+                  <input
+                    type="password"
+                    id="currentPassword"
+                    name="currentPassword"
+                    value={passwordData.currentPassword}
+                    onChange={handlePasswordChange}
+                    required
+                  />
                 </div>
                 <div className="form-group">
                   <label htmlFor="newPassword">Mật khẩu mới</label>
-                  <input type="password" id="newPassword" name="newPassword" value={passwordData.newPassword} onChange={handlePasswordChange} required minLength="6" />
+                  <input
+                    type="password"
+                    id="newPassword"
+                    name="newPassword"
+                    value={passwordData.newPassword}
+                    onChange={handlePasswordChange}
+                    required
+                    minLength="6"
+                  />
                 </div>
                 <div className="form-group">
                   <label htmlFor="confirmPassword">Xác nhận mật khẩu mới</label>
-                  <input type="password" id="confirmPassword" name="confirmPassword" value={passwordData.confirmPassword} onChange={handlePasswordChange} required minLength="6" />
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={passwordData.confirmPassword}
+                    onChange={handlePasswordChange}
+                    required
+                    minLength="6"
+                  />
                 </div>
-                <button type="submit" className="submit-btn" disabled={loading} onClick={changePassword}>
+                <button
+                  type="submit"
+                  className="submit-btn"
+                  disabled={loading}
+                >
                   {loading ? "Đang thay đổi..." : "Thay đổi mật khẩu"}
                 </button>
               </form>
@@ -261,7 +343,11 @@ const UserProfile = () => {
           )}
           <>
             {" "}
-            <Modal size="md" show={controlModal} onHide={() => setActive(false)}>
+            <Modal
+              size="md"
+              show={controlModal}
+              onHide={() => setActive(false)}
+            >
               <Modal.Header closeButton>Hủy Đặt Hàng</Modal.Header>
               <Modal.Body>
                 <span>Bạn có chắc chắn muốn hủy đơn hàng này không ?</span>
@@ -292,22 +378,34 @@ const UserProfile = () => {
                       <div className="order-header">
                         <div className="order-info">
                           <h3>Đơn hàng {order.orderId}</h3>
-                          <p className="order-total">{formatCurrency(order.totalPrice)}</p>
+                          <p className="order-total">
+                            {formatCurrency(order.totalPrice)}
+                          </p>
                         </div>
                         {console.log(order)}
-                        {order.delivery.deliveryStatus === "CANCELLED" && order.payment.paymentStatus === "SUCCESS" && (
-                          <div className="warning-notice">
-                            <span>
-                              Bạn hãy liên hệ với số điện thoại chăm sóc khách hàng hoặc chatbot <br /> để được hướng dẫn hoàn lại tiền đã thanh toán
-                            </span>
-                          </div>
-                        )}
+                        {order.delivery.deliveryStatus === "CANCELLED" &&
+                          order.payment.paymentStatus === "SUCCESS" && (
+                            <div className="warning-notice">
+                              <span>
+                                Bạn hãy liên hệ với số điện thoại chăm sóc khách
+                                hàng hoặc chatbot <br /> để được hướng dẫn hoàn
+                                lại tiền đã thanh toán
+                              </span>
+                            </div>
+                          )}
                         <div className="order-actions">
-                          <button className="detail-btn" onClick={() => handleViewOrderDetails(order)}>
+                          <button
+                            className="detail-btn"
+                            onClick={() => handleViewOrderDetails(order)}
+                          >
                             Xem chi tiết
                           </button>
                           {order.payment.paymentStatus === "FAILED" && (
-                            <button className="retry-payment-btn" onClick={() => handleRetryPayment(order.orderId)} disabled={loading}>
+                            <button
+                              className="retry-payment-btn"
+                              onClick={() => handleRetryPayment(order.orderId)}
+                              disabled={loading}
+                            >
                               Thanh toán lại
                             </button>
                           )}
@@ -342,7 +440,9 @@ const UserProfile = () => {
                           </div>
                           <div className="summary-item">
                             <span>Mã vận chuyển:</span>
-                            <span>{order.delivery.trackingNumber || "Đang cập nhật"}</span>
+                            <span>
+                              {order.delivery.trackingNumber || "Đang cập nhật"}
+                            </span>
                           </div>
                         </div>
 
@@ -354,15 +454,25 @@ const UserProfile = () => {
                           </div>
                           <div className="summary-item">
                             <span>Phương thức:</span>
-                            <span>{order.payment.paymentMethod === "E_WALLET" ? "Thanh toán trực tuyến" : "Thanh toán khi nhận hàng"}</span>
+                            <span>
+                              {order.payment.paymentMethod === "E_WALLET"
+                                ? "Thanh toán trực tuyến"
+                                : "Thanh toán khi nhận hàng"}
+                            </span>
                           </div>
                           <div className="summary-item">
                             <span>Số tiền:</span>
-                            <span>{formatCurrency(order.payment.paymentAmount)}</span>
+                            <span>
+                              {formatCurrency(order.payment.paymentAmount)}
+                            </span>
                           </div>
                           <div className="summary-item">
                             <span>Ngày thanh toán:</span>
-                            <span>{order.payment.paymentDate ? formatDate(order.payment.paymentDate) : "Chưa thanh toán"}</span>
+                            <span>
+                              {order.payment.paymentDate
+                                ? formatDate(order.payment.paymentDate)
+                                : "Chưa thanh toán"}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -376,7 +486,10 @@ const UserProfile = () => {
       </div>
       {showOrderDetails && selectedOrder && (
         <div className="modal-overlay" onClick={closeOrderDetails}>
-          <div className="modal-content-profile" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-content-profile"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
               <h3>Chi tiết đơn hàng {selectedOrder.orderId}</h3>
               <button className="close-btn" onClick={closeOrderDetails}>
@@ -389,26 +502,46 @@ const UserProfile = () => {
                 <div className="products-list">
                   {selectedOrder.orderItemDTOs.map((item) => (
                     <div key={item.orderId} className="product-item">
-                      <img src={item.product.image || "/placeholder.svg"} alt={item.product.productName} className="product-image" />
+                      <img
+                        src={item.product.image || "/placeholder.svg"}
+                        alt={item.product.productName}
+                        className="product-image"
+                      />
                       <div className="product-info">
                         <h5>{item.product.productName}</h5>
                         <div className="product-details">
                           <span>Số lượng: {item.quantity}</span>
-                          <span className="product-price">{formatCurrency(item.totalPrice)}</span>
+                          <span className="product-price">
+                            {formatCurrency(item.totalPrice)}
+                          </span>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
                 <div className="order-total-detail">
-                  <strong>Tổng cộng: {formatCurrency(selectedOrder.totalPrice)}</strong>
+                  <strong>
+                    Tổng cộng: {formatCurrency(selectedOrder.totalPrice)}
+                  </strong>
                 </div>
               </div>
             </div>
           </div>
         </div>
       )}
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
     </div>
   );
 };

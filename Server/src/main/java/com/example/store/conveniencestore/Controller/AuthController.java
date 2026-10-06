@@ -86,6 +86,7 @@ public class AuthController {
             Jwt refreshTokenJwt = securityToken.checkRefreshToken(refreshToken);
             String email = refreshTokenJwt.getSubject();
             User user = userService.findByEmail(email);
+            if(refreshToken.equals(user.getRefreshToken())) {
                 if(refreshTokenJwt.getExpiresAt() != null && refreshTokenJwt.getExpiresAt().isAfter(Instant.now())) {
                     ResLoginDTO res = new ResLoginDTO("",user.getId(), user.getUsername(), user.getEmail(), user.getRole().getName());
                     String accessToken = securityToken.createAccessToken(res);
@@ -95,9 +96,9 @@ public class AuthController {
                     userService.save(user);
                     ResponseCookie responseCookie = ResponseCookie.from("refreshToken",newRefreshToken).maxAge(refreshTokenExpiration).httpOnly(true).path("/").build();
                     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,responseCookie.toString()).body(res);
-                    }
                 }
-
+            }
+            }
         return ResponseEntity.status(403).body("Unauthenticated");
     }
 
