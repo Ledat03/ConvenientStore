@@ -1,5 +1,5 @@
 import React from "react";
-import "../../assets/scss/QuickCategory.scss";
+import "../../assets/scss/quickCategory.scss";
 import { Link } from "react-router-dom";
 
 const QuickCategory = () => {
@@ -41,13 +41,19 @@ const QuickCategory = () => {
       <div className="container">
         <div className="product-categories__grid">
           {categories.map((category) => (
-            <Link to={`/products?category=${category.name}`} key={category.id} className="product-categories__item">
+            <Link
+              to={`/products?category=${category.name}`}
+              key={category.id}
+              className="product-categories__item"
+            >
               <div className="product-categories__icon">
                 <img src={category.icon} alt={category.name} />
               </div>
               <div className="product-categories__info">
                 <h3 className="product-categories__name">{category.name}</h3>
-                <span className="product-categories__count">{category.count}</span>
+                <span className="product-categories__count">
+                  {category.count}
+                </span>
               </div>
             </Link>
           ))}
