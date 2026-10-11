@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../../assets/scss/bestSeller.scss";
+import "../../assets/scss/bestseller.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { getNewProduct } from "../../services/GetAPI";

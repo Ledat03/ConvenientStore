@@ -1,5 +1,5 @@
 import React from "react";
-import "../../assets/scss/quickCategory.scss";
+import "../../assets/scss/quickcategory.scss";
 import { Link } from "react-router-dom";
 
 const QuickCategory = () => {

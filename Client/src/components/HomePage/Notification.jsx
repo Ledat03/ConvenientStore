@@ -1,6 +1,6 @@
 import React from "react";
 import "../../assets/scss/Notification.scss";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 const Notification = () => {
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
