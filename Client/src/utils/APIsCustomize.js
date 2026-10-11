@@ -1,7 +1,7 @@
 import axios from "axios";
 import { fetchLogOut } from "../services/AuthAPI";
 const APIsCustomize = axios.create({
-  baseURL: "http://localhost:8080/",
+  baseURL: import.meta.env.VITE_BACKEND_API,
   withCredentials: true,
 });
 APIsCustomize.interceptors.request.use(
