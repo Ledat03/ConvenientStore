@@ -102,7 +102,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3000","base-store-vn.vercel.app"));
+                    config.setAllowedOrigins(List.of("http://localhost:3000","https://base-store-vn.vercel.app"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
                     config.setAllowCredentials(true);
                     config.addAllowedHeader("*");
@@ -127,7 +127,7 @@ public class SecurityConfig {
                 )
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3000","base-store-vn.vercel.app"));
+                    config.setAllowedOrigins(List.of("http://localhost:3000","https://base-store-vn.vercel.app"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
                     config.setAllowCredentials(true);
                     config.addAllowedHeader("*");
