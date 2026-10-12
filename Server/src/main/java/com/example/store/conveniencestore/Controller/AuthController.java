@@ -55,12 +55,12 @@ public class AuthController {
         userLogin.setAccessToken(AuthToken);
         String refreshToken = securityToken.createRefreshToken(user.getEmail(), userLogin);
         userService.updateUserToken(refreshToken, user.getEmail());
-        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken).maxAge(refreshTokenExpiration).path("/").build();
+        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken).maxAge(refreshTokenExpiration).sameSite("None").secure(true).build();
         RestResponse<ResLoginDTO> restResponse = new RestResponse<>();
         restResponse.setStatusCode(200);
         restResponse.setError("");
         restResponse.setResponseData(userLogin);
-        restResponse.setMessage("Log in successful");
+        restResponse.setMessage("Log in successfully");
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(restResponse);
     }
 
