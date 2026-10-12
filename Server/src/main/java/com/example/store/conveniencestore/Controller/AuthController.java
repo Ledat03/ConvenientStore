@@ -37,7 +37,7 @@ public class AuthController {
     private final GmailService gmailService;
     @Value("${store.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
-    
+
     @PostMapping("/signup")
     public ResponseEntity<Object> signUp(@Valid @RequestBody UserDTO user){
        RestResponse<User> restResponse=  userService.handleSignUp(user);
