@@ -13,6 +13,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,25 +28,16 @@ import java.util.Random;
 
 @RestController
 @RequestMapping("api/check")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityToken securityToken;
     private final UserService userService;
     private final GmailService gmailService;
-    private final PasswordEncoder passwordEncoder;
     @Value("${store.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
-
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityToken securityToken,
-            UserService userService, PasswordEncoder passwordEncoder, GmailService gmailService) {
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.securityToken = securityToken;
-        this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
-        this.gmailService = gmailService;
-    }
-
+    
     @PostMapping("/signup")
     public ResponseEntity<Object> signUp(@Valid @RequestBody UserDTO user){
        RestResponse<User> restResponse=  userService.handleSignUp(user);
@@ -75,30 +67,33 @@ public class AuthController {
     @PostMapping("/auth/refresh")
     public ResponseEntity<Object> refreshToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
-        String refreshToken = "";
-            for (Cookie cookie : cookies) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    refreshToken = cookie.getValue();
-                    break;
+            if(cookies != null) {
+                String refreshToken = "";
+                for (Cookie cookie : cookies) {
+                    if ("refreshToken".equals(cookie.getName())) {
+                        refreshToken = cookie.getValue();
+                        break;
+                    }
+                }
+                if(!refreshToken.isBlank()) {
+                    Jwt refreshTokenJwt = securityToken.checkRefreshToken(refreshToken);
+                    String email = refreshTokenJwt.getSubject();
+                    User user = userService.findByEmail(email);
+                    if(refreshToken.equals(user.getRefreshToken())) {
+                        if(refreshTokenJwt.getExpiresAt() != null && refreshTokenJwt.getExpiresAt().isAfter(Instant.now())) {
+                            ResLoginDTO res = new ResLoginDTO("",user.getId(), user.getUsername(), user.getEmail(), user.getRole().getName());
+                            String accessToken = securityToken.createAccessToken(res);
+                            String newRefreshToken = securityToken.createRefreshToken(email,res);
+                            res.setAccessToken(accessToken);
+                            user.setRefreshToken(newRefreshToken);
+                            userService.save(user);
+                            ResponseCookie responseCookie = ResponseCookie.from("refreshToken",newRefreshToken).maxAge(refreshTokenExpiration).httpOnly(true).path("/").build();
+                            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,responseCookie.toString()).body(res);
+                        }
+                    }
                 }
             }
-            if(!refreshToken.isBlank()) {
-            Jwt refreshTokenJwt = securityToken.checkRefreshToken(refreshToken);
-            String email = refreshTokenJwt.getSubject();
-            User user = userService.findByEmail(email);
-            if(refreshToken.equals(user.getRefreshToken())) {
-                if(refreshTokenJwt.getExpiresAt() != null && refreshTokenJwt.getExpiresAt().isAfter(Instant.now())) {
-                    ResLoginDTO res = new ResLoginDTO("",user.getId(), user.getUsername(), user.getEmail(), user.getRole().getName());
-                    String accessToken = securityToken.createAccessToken(res);
-                    String newRefreshToken = securityToken.createRefreshToken(email,res);
-                    res.setAccessToken(accessToken);
-                    user.setRefreshToken(newRefreshToken);
-                    userService.save(user);
-                    ResponseCookie responseCookie = ResponseCookie.from("refreshToken",newRefreshToken).maxAge(refreshTokenExpiration).httpOnly(true).path("/").build();
-                    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,responseCookie.toString()).body(res);
-                }
-            }
-            }
+
         return ResponseEntity.status(403).body("Unauthenticated");
     }
 
