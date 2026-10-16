@@ -42,7 +42,7 @@ public class OrderController {
         return new ResponseEntity<>(restResponse, HttpStatus.valueOf(restResponse.getStatusCode()));
         }
     @PostMapping("/Re_Pay")
-    public ResponseEntity<Object> RePayOrder(@RequestParam("id") long id, HttpServletRequest request) throws UnsupportedEncodingException, MessagingException {
+    public ResponseEntity<Object> RePayOrder(@RequestParam("id") long id, HttpServletRequest request) throws UnsupportedEncodingException {
             Order rePayOrder = orderService.findbyOrderId(id);
             String PaymentURL = vnPayService.createPaymentURL(request, rePayOrder.getPayment(),rePayOrder.getDelivery(),rePayOrder.getUser());
             return ResponseEntity.ok(PaymentURL);

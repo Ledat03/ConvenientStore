@@ -147,7 +147,7 @@ public class OrderService {
         return payment;
     }
     @Transactional
-    public RestResponse<String> handleAddOrder(Optional<OrderDTO> orderDTO , HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public RestResponse<String> handleAddOrder(Optional<OrderDTO> orderDTO , HttpServletRequest request) throws UnsupportedEncodingException, MessagingException {
         if (orderDTO.isPresent()) {
             Order order = createOrder(orderDTO.get());
             User user = userService.findById(orderDTO.get().getUserId());
