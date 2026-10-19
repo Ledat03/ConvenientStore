@@ -138,7 +138,7 @@ public class OrderController {
         transactionDTO.setVnp_TransactionStatus(request.getParameter("vnp_TransactionStatus"));
         transactionDTO.setVnp_TxnRef(request.getParameter("vnp_TxnRef"));
         transactionDTO.setVnp_SecureHash(request.getParameter("vnp_SecureHash"));
-        String redirectUrl = "http://localhost:3000/ordercheck";
+        String redirectUrl = "https://base-store-vn.vercel.app/ordercheck";
 
         boolean isValidSignature = VNPayService.checkSignature(fields);
         if (!isValidSignature) {
