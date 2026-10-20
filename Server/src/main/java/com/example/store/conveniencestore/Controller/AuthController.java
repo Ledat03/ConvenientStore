@@ -81,13 +81,13 @@ public class AuthController {
                     User user = userService.findByEmail(email);
                     if(refreshToken.equals(user.getRefreshToken())) {
                         if(refreshTokenJwt.getExpiresAt() != null && refreshTokenJwt.getExpiresAt().isAfter(Instant.now())) {
-                            ResLoginDTO res = new ResLoginDTO("",user.getId(), user.getUsername(), user.getEmail(), user.getRole().getName());
+                            ResLoginDTO res = new ResLoginDTO("",user.getId(), user.getEmail(), user.getUsername(), user.getRole().getName());
                             String accessToken = securityToken.createAccessToken(res);
                             String newRefreshToken = securityToken.createRefreshToken(email,res);
                             res.setAccessToken(accessToken);
                             user.setRefreshToken(newRefreshToken);
                             userService.save(user);
-                            ResponseCookie responseCookie = ResponseCookie.from("refreshToken",newRefreshToken).maxAge(refreshTokenExpiration).httpOnly(true).path("/").build();
+                            ResponseCookie responseCookie = ResponseCookie.from("refreshToken",newRefreshToken).maxAge(refreshTokenExpiration).sameSite("None").secure(true).httpOnly(true).path("/").build();
                             return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,responseCookie.toString()).body(res);
                         }
                     }
@@ -111,14 +111,10 @@ public class AuthController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
-        try {
-            Random random = new Random();
-            long number = random.nextLong(90000) + 10000;
-            String code = String.valueOf(number);
-            gmailService.sendCodeResetPassword(email, code);
-            return ResponseEntity.ok().body(code);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+        Random random = new Random();
+        long number = random.nextLong(90000) + 10000;
+        String code = String.valueOf(number);
+        gmailService.sendCodeResetPassword(email, code);
+        return ResponseEntity.ok().body(code);
     }
 }

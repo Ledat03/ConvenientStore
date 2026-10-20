@@ -10,7 +10,6 @@ import { re_Pay } from "../../services/AuthAPI";
 import { fetchListOrderById } from "../../services/GetAPI";
 import { useLocation } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
-import _, { set } from "lodash";
 import { toast } from "react-toastify";
 import { ToastContainer, Bounce } from "react-toastify";
 const UserProfile = () => {
@@ -21,6 +20,8 @@ const UserProfile = () => {
   const location = useLocation();
   const user = location.state.User;
   const orderActive = location.state.ActiveTab;
+  const paymentStatus = location.state.Status;
+  const cacheOrder = location.state.catchOrder;
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -29,19 +30,22 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
-  console.log(user.id);
   const getListOrder = async () => {
     const res = await fetchListOrderById(Number(user.id));
-    console.log(res);
     setOrder(res.data);
   };
-
   useEffect(() => {
     fetchUserInfo(user.id);
     getListOrder();
     if (orderActive) {
       setActiveTab(orderActive);
-      toast.error("Thanh toán không thành công !");
+      if (paymentStatus === "FAILED")
+        toast.error("Thanh toán không thành công !");
+      if (cacheOrder == true)
+        localStorage.setItem(
+          "cacheOrder",
+          JSON.stringify({ cacheOrder: false }),
+        );
     }
   }, []);
   const fetchUserInfo = async () => {
@@ -80,7 +84,7 @@ const UserProfile = () => {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-     if (passwordData.newPassword !== passwordData.confirmPassword) {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
       return alert("Mật khẩu nhập lại không chính xác");
     } else {
       setLoading(true);
@@ -90,27 +94,25 @@ const UserProfile = () => {
           password: passwordData.newPassword,
           currentPassword: passwordData.currentPassword,
         };
-        console.log(changePassword);
+
         await handleChangePassword(changePassword);
       } catch (error) {
         console.log(error);
-      }finally{
-         setPasswordData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-      setLoading(false)
+      } finally {
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        setLoading(false);
       }
     }
-    
   };
 
   const handleViewOrderDetails = (order) => {
     setSelectedOrder(order);
     setShowOrderDetails(true);
   };
-  console.log(controlModal);
   const handleRetryPayment = async (orderId) => {
     setLoading(true);
     const res = await re_Pay(orderId);
@@ -331,11 +333,7 @@ const UserProfile = () => {
                     minLength="6"
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="submit-btn"
-                  disabled={loading}
-                >
+                <button type="submit" className="submit-btn" disabled={loading}>
                   {loading ? "Đang thay đổi..." : "Thay đổi mật khẩu"}
                 </button>
               </form>
@@ -382,7 +380,6 @@ const UserProfile = () => {
                             {formatCurrency(order.totalPrice)}
                           </p>
                         </div>
-                        {console.log(order)}
                         {order.delivery.deliveryStatus === "CANCELLED" &&
                           order.payment.paymentStatus === "SUCCESS" && (
                             <div className="warning-notice">
@@ -400,7 +397,8 @@ const UserProfile = () => {
                           >
                             Xem chi tiết
                           </button>
-                          {order.payment.paymentStatus === "FAILED" && (
+                          {(order.payment.paymentStatus === "FAILED" ||
+                            order.payment.paymentStatus === "PENDING") && (
                             <button
                               className="retry-payment-btn"
                               onClick={() => handleRetryPayment(order.orderId)}

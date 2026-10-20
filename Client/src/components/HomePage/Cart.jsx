@@ -13,16 +13,22 @@ const Cart = () => {
   const [CartState, setState] = useState(null);
   const [Loading, setLoading] = useState(true);
   const handleCheckout = () => {
-    const selectedItems = CartInfo?.cartDetailList.filter((item) => item.selected);
+    const selectedItems = CartInfo?.cartDetailList.filter(
+      (item) => item.selected,
+    );
     if (selectedItems.length === 0) {
-      toast.warn("Bạn cần chọn ít nhất 1 sản phẩm để thanh toán !")
+      toast.warn("Bạn cần chọn ít nhất 1 sản phẩm để thanh toán !");
       return;
     } else {
-      navigate("/checkout", { state: { checkoutItems: selectedItems, userInfo: UserInfo } });
+      sessionStorage.removeItem("convenient-store:checkout-submitted");
+      navigate("/checkout", {
+        state: { checkoutItems: selectedItems, userInfo: UserInfo },
+      });
     }
-
   };
-  const selectedItemsCount = CartInfo?.cartDetailList.filter((item) => item.selected).length;
+  const selectedItemsCount = CartInfo?.cartDetailList.filter(
+    (item) => item.selected,
+  ).length;
   const calSavePrice = (salePrice, price) => {
     let sale = ((salePrice - price) / price) * 100;
     return Math.round(sale);
@@ -39,7 +45,10 @@ const Cart = () => {
     const res = await ViewCart(info);
     console.log(res);
     if (res.data.responseData.cartDetailList != undefined) {
-      const selectItems = res.data.responseData.cartDetailList.map((item) => ({ ...item, selected: false }));
+      const selectItems = res.data.responseData.cartDetailList.map((item) => ({
+        ...item,
+        selected: false,
+      }));
       const temp = res.data;
       setCart({ ...temp, cartDetailList: selectItems });
     }
@@ -66,7 +75,11 @@ const Cart = () => {
       return item;
     });
     const total = changeQuantity.reduce((sum, item) => sum + item.quantity, 0);
-    setCart({ ...CartInfo, sumQuantity: total, cartDetailList: changeQuantity });
+    setCart({
+      ...CartInfo,
+      sumQuantity: total,
+      cartDetailList: changeQuantity,
+    });
   };
   const handleQuantityDown = (id, newQuantity) => {
     if (newQuantity <= 1) return;
@@ -77,10 +90,16 @@ const Cart = () => {
       return item;
     });
     const total = changeQuantity.reduce((sum, item) => sum + item.quantity, 0);
-    setCart({ ...CartInfo, sumQuantity: total, cartDetailList: changeQuantity });
+    setCart({
+      ...CartInfo,
+      sumQuantity: total,
+      cartDetailList: changeQuantity,
+    });
   };
   const handleToggleSelect = (id) => {
-    const setSelected = CartInfo?.cartDetailList?.map((item) => (item.cartDetailId === id ? { ...item, selected: !item.selected } : item));
+    const setSelected = CartInfo?.cartDetailList?.map((item) =>
+      item.cartDetailId === id ? { ...item, selected: !item.selected } : item,
+    );
     setCart({ ...CartInfo, cartDetailList: setSelected });
   };
 
@@ -88,7 +107,10 @@ const Cart = () => {
     CartInfo?.cartDetailList
       ?.filter((item) => item.selected)
       .reduce((total, item) => {
-        const calPrice = item.productVariant.salePrice != 0 ? item.productVariant.salePrice : item.productVariant.price;
+        const calPrice =
+          item.productVariant.salePrice != 0
+            ? item.productVariant.salePrice
+            : item.productVariant.price;
         return total + calPrice * item.quantity;
       }, 0);
   const subtotal = calculateSubtotal();
@@ -103,7 +125,6 @@ const Cart = () => {
   if (Loading) {
     return <LoadingAnimation />;
   }
-  console.log(CartInfo)
   return (
     <div className="cart-container">
       {CartInfo && CartInfo?.cartDetailList?.length != 0 ? (
@@ -121,38 +142,103 @@ const Cart = () => {
                   {CartInfo?.cartDetailList?.map((item, index) => (
                     <div key={index} className="cart-item">
                       <div className="cart-item-left">
-                        <input type="checkbox" checked={item.selected} onChange={() => handleToggleSelect(item.cartDetailId)} />
-                        <img src={item.productVariant.productImage[0]} alt={item.name} className="item-img" />
+                        <input
+                          type="checkbox"
+                          checked={item.selected}
+                          onChange={() => handleToggleSelect(item.cartDetailId)}
+                        />
+                        <img
+                          src={item.productVariant.productImage[0]}
+                          alt={item.name}
+                          className="item-img"
+                        />
                       </div>
 
                       <div className="cart-item-content">
-                        <h3 className="item-name">{item.product.productName}</h3>
+                        <h3 className="item-name">
+                          {item.product.productName}
+                        </h3>
                         <div className="item-meta">
                           <span>Hãng : {item.product.brand}</span>
-                          <span>Đơn vị tính: {item.productVariant.calUnit}</span>
+                          <span>
+                            Đơn vị tính: {item.productVariant.calUnit}
+                          </span>
                         </div>
                       </div>
                       <div className="cart-item-right">
                         <div className="price-area">
-                          {item.productVariant.salePrice == 0 ? <span>{item.productVariant.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span> : <s>{item.productVariant.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</s>}
+                          {item.productVariant.salePrice == 0 ? (
+                            <span>
+                              {item.productVariant.price.toLocaleString(
+                                "vn-VN",
+                                { style: "currency", currency: "VND" },
+                              )}
+                            </span>
+                          ) : (
+                            <s>
+                              {item.productVariant.price.toLocaleString(
+                                "vn-VN",
+                                { style: "currency", currency: "VND" },
+                              )}
+                            </s>
+                          )}
 
-                          <span>{item.productVariant.salePrice != 0 && item.productVariant.salePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
-                          {item.productVariant.salePrice != 0 ? <div className="save-text">Save {calSavePrice(item.productVariant.price, item.productVariant.salePrice)}%</div> : <div></div>}
+                          <span>
+                            {item.productVariant.salePrice != 0 &&
+                              item.productVariant.salePrice.toLocaleString(
+                                "vn-VN",
+                                { style: "currency", currency: "VND" },
+                              )}
+                          </span>
+                          {item.productVariant.salePrice != 0 ? (
+                            <div className="save-text">
+                              Save{" "}
+                              {calSavePrice(
+                                item.productVariant.price,
+                                item.productVariant.salePrice,
+                              )}
+                              %
+                            </div>
+                          ) : (
+                            <div></div>
+                          )}
                         </div>
 
                         <div className="quantity-area">
                           <span>Quantity:</span>
                           <div className="qty-control">
-                            <button onClick={() => handleQuantityDown(item.cartDetailId, item.quantity)}>-</button>
+                            <button
+                              onClick={() =>
+                                handleQuantityDown(
+                                  item.cartDetailId,
+                                  item.quantity,
+                                )
+                              }
+                            >
+                              -
+                            </button>
                             <span>{item.quantity}</span>
-                            <button onClick={() => handleQuantityUp(item.cartDetailId, item.quantity)}>+</button>
+                            <button
+                              onClick={() =>
+                                handleQuantityUp(
+                                  item.cartDetailId,
+                                  item.quantity,
+                                )
+                              }
+                            >
+                              +
+                            </button>
                           </div>
                         </div>
 
                         <button
                           className="remove-btn"
                           onClick={() => {
-                            if (confirm("Bạn chắc chắn xóa sản phẩm này không ?\nMọi thao tác trước đó với giỏ hàng của bạn sẽ bị hoàn tác")) {
+                            if (
+                              confirm(
+                                "Bạn chắc chắn xóa sản phẩm này không ?\nMọi thao tác trước đó với giỏ hàng của bạn sẽ bị hoàn tác",
+                              )
+                            ) {
                               handleDelete(item.cartDetailId);
                             }
                           }}
@@ -178,15 +264,31 @@ const Cart = () => {
                   </div>
                   <div className="summary-row">
                     <span>Tạm tính</span>
-                    <span>{totalPrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                    <span>
+                      {totalPrice.toLocaleString("vn-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
                   </div>
                   <div className="summary-row summary-row--discount">
                     <span>Giảm giá</span>
-                    <span>- {reducePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                    <span>
+                      -{" "}
+                      {reducePrice.toLocaleString("vn-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
                   </div>
                   <div className="summary-row summary-row--highlight">
                     <span>Tổng cộng</span>
-                    <span>{subtotal.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+                    <span>
+                      {subtotal.toLocaleString("vn-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
                   </div>
                   <div className="checkout-btn" onClick={handleCheckout}>
                     Thanh Toán Đơn Hàng →
@@ -206,7 +308,19 @@ const Cart = () => {
           </div>
         </div>
       )}
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick={false} rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" transition={Bounce} />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+      />
     </div>
   );
 };

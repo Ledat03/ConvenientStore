@@ -69,7 +69,7 @@ public class VNPayService {
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
-        List fieldNames = new ArrayList(vnp_Params.keySet());
+        List<String>fieldNames = new ArrayList<>(vnp_Params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
@@ -77,15 +77,15 @@ public class VNPayService {
         while (itr.hasNext()) {
             String fieldName = (String) itr.next();
             String fieldValue = (String) vnp_Params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+            if ((fieldValue != null) && (!fieldValue.isEmpty())) {
                 //Build hash data
                 hashData.append(fieldName);
                 hashData.append('=');
-                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
                 //Build query
-                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+                query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
                 query.append('=');
-                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
                 if (itr.hasNext()) {
                     query.append('&');
                     hashData.append('&');
@@ -111,7 +111,13 @@ public class VNPayService {
         for (Map.Entry<String, String> entry : fieldsToSign.entrySet()) {
             if (entry.getValue() != null && !entry.getValue().isEmpty()) {
                 if (!first) sb.append("&");
-                sb.append(entry.getKey()).append("=").append(entry.getValue());
+                sb.append(
+                        URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8)
+                );
+                sb.append('=');
+                sb.append(
+                        URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8)
+                );
                 first = false;
             }
         }

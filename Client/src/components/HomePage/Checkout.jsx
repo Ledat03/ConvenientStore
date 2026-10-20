@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Modal, Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../../assets/scss/checkout.scss";
@@ -8,7 +8,7 @@ import { addCheckout } from "../../services/UserSevice";
 export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const user = location.state.userInfo;
+  const user = JSON.parse(localStorage.user);
   const checkoutInfo = location.state?.checkoutItems;
   const [isShow, setShow] = useState(false);
   const open = () => setShow(true);
@@ -19,6 +19,7 @@ export default function Checkout() {
   const [ProductName, setProductName] = useState([]);
   const [selectedPromotion, setSelected] = useState(null);
   const [Loading, setLoading] = useState(false);
+  const CHECKOUT_SUBMITTED_KEY = "convenient-store:checkout-submitted";
   // const [Validate, setValidate] = useState();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -31,11 +32,37 @@ export default function Checkout() {
     deliveryMethod: "ship",
     paymentMethod: "COD",
   });
+  const submitLock = useRef(false);
   useEffect(() => {
     fetchRelativePromo();
   }, [checkoutInfo]);
-  console.log(formData)
+  useEffect(() => {
+    const redirectIfSubmitted = () => {
+      const submitted =
+        sessionStorage.getItem(CHECKOUT_SUBMITTED_KEY) === "true";
+      if (submitted) {
+        navigate("/userprofile", {
+          replace: true,
+          state: {
+            User: user,
+            ActiveTab: "orders",
+          },
+        });
+      }
+    };
+    redirectIfSubmitted();
+    window.addEventListener("pageshow", redirectIfSubmitted);
+
+    return () => {
+      window.removeEventListener("pageshow", redirectIfSubmitted);
+    };
+  }, [navigate, user]);
   const saveCheckout = async () => {
+    if (submitLock.current) {
+      return;
+    }
+    submitLock.current = true;
+    sessionStorage.setItem(CHECKOUT_SUBMITTED_KEY, "true");
     let order = {
       userId: user.id,
       receiverName: formData.firstName + " " + formData.lastName,
@@ -49,7 +76,10 @@ export default function Checkout() {
         productId: item.product.productId,
         variantId: item.productVariant.id,
         quantity: item.quantity,
-        unitPrice: item.productVariant.salePrice != 0 ? item.productVariant.salePrice : item.productVariant.price,
+        unitPrice:
+          item.productVariant.salePrice != 0
+            ? item.productVariant.salePrice
+            : item.productVariant.price,
       })),
     };
     // const error = {};
@@ -63,14 +93,20 @@ export default function Checkout() {
     //   console.log(Validate);
     //   return;
     // }
-
+    setLoading(true);
     try {
-      setLoading(true);
       const res = await addCheckout(order);
       if (formData.paymentMethod === "COD") {
-        navigate("/ordercheck");
+        navigate("/ordercheck", { replace: true });
       } else {
-        window.location.href = res.data.responseData;
+        window.location.replace(res.data.responseData);
+        navigate("/userprofile", {
+          replace: true,
+          state: {
+            User: user,
+            ActiveTab: "orders",
+          },
+        });
       }
       setLoading(false);
     } catch (error) {
@@ -79,9 +115,17 @@ export default function Checkout() {
   };
   const fetchRelativePromo = async () => {
     const res = await fetchListPromotion();
-    setBrand([...new Set(checkoutInfo.map((cartdetail) => cartdetail.product.brand))]);
-    setCategory([...new Set(checkoutInfo.map((cartdetail) => cartdetail.product.category))]);
-    setProductName([...new Set(checkoutInfo.map((cartdetail) => cartdetail.product.productName))]);
+    setBrand([
+      ...new Set(checkoutInfo.map((cartdetail) => cartdetail.product.brand)),
+    ]);
+    setCategory([
+      ...new Set(checkoutInfo.map((cartdetail) => cartdetail.product.category)),
+    ]);
+    setProductName([
+      ...new Set(
+        checkoutInfo.map((cartdetail) => cartdetail.product.productName),
+      ),
+    ]);
     setPromotion(res.data);
   };
 
@@ -90,12 +134,25 @@ export default function Checkout() {
       case "ALL":
         return true;
       case "CATEGORY":
-        return promo.promotionCategories && promo.promotionCategories.some((cate) => Category.includes(cate.categoryName));
+        return (
+          promo.promotionCategories &&
+          promo.promotionCategories.some((cate) =>
+            Category.includes(cate.categoryName),
+          )
+        );
       case "BRAND": {
-        return promo.promotionBrand && promo.promotionBrand.some((cate) => Brand.includes(cate.brand));
+        return (
+          promo.promotionBrand &&
+          promo.promotionBrand.some((cate) => Brand.includes(cate.brand))
+        );
       }
       case "PRODUCT":
-        return promo.promotionProducts && promo.promotionProducts.some((cate) => ProductName.includes(cate.productName));
+        return (
+          promo.promotionProducts &&
+          promo.promotionProducts.some((cate) =>
+            ProductName.includes(cate.productName),
+          )
+        );
     }
   });
   const handleInputChange = (e) => {
@@ -109,11 +166,14 @@ export default function Checkout() {
     setFormData((prev) => ({ ...prev, discountCode: code }));
   };
   const [PromotionReduce, setReduce] = useState(0);
-  const truePrice = checkoutInfo.reduce((sum, item) => {
+  const truePrice = checkoutInfo?.reduce((sum, item) => {
     return sum + item.productVariant.price * item.quantity;
   }, 0);
-  const salePrices = checkoutInfo.reduce((sum, item) => {
-    const temp = item.productVariant.salePrice == 0 ? item.productVariant.price : item.productVariant.salePrice;
+  const salePrices = checkoutInfo?.reduce((sum, item) => {
+    const temp =
+      item.productVariant.salePrice == 0
+        ? item.productVariant.price
+        : item.productVariant.salePrice;
     return sum + temp * item.quantity;
   }, -PromotionReduce);
   const reducePrice = truePrice - salePrices;
@@ -125,14 +185,30 @@ export default function Checkout() {
             <h2>Phương thức giao hàng </h2>
 
             <div className="delivery-options">
-              <label className={`delivery-option ${formData.deliveryMethod === "ship" ? "selected" : ""}`}>
-                <input type="radio" name="deliveryMethod" value="ship" checked={formData.deliveryMethod === "ship"} onChange={handleInputChange} />
+              <label
+                className={`delivery-option ${formData.deliveryMethod === "ship" ? "selected" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="deliveryMethod"
+                  value="ship"
+                  checked={formData.deliveryMethod === "ship"}
+                  onChange={handleInputChange}
+                />
                 <span className="option-text">Giao Hàng Tận Nhà</span>
                 <span className="option-icon">🚚</span>
               </label>
 
-              <label className={`delivery-option ${formData.deliveryMethod === "pickup" ? "selected" : ""}`}>
-                <input type="radio" name="deliveryMethod" value="pickup" checked={formData.deliveryMethod === "pickup"} onChange={handleInputChange} />
+              <label
+                className={`delivery-option ${formData.deliveryMethod === "pickup" ? "selected" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="deliveryMethod"
+                  value="pickup"
+                  checked={formData.deliveryMethod === "pickup"}
+                  onChange={handleInputChange}
+                />
                 <span className="option-text">Lấy Tại Cửa Hàng</span>
                 <span className="option-icon">🏪</span>
               </label>
@@ -198,27 +274,52 @@ export default function Checkout() {
           <section className="payment-section">
             <h2>Phương thức thanh toán</h2>
             <div className="payment-options">
-              <label className={`payment-option ${formData.paymentMethod === "COD" ? "selected" : ""}`}>
-                <input type="radio" name="paymentMethod" value="COD" checked={formData.paymentMethod === "COD"} onChange={handleInputChange} />
+              <label
+                className={`payment-option ${formData.paymentMethod === "COD" ? "selected" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="COD"
+                  checked={formData.paymentMethod === "COD"}
+                  onChange={handleInputChange}
+                />
                 <span className="option-text">Trả Tiền Khi Nhận Hàng</span>
                 <span className="option-icon">(COD)</span>
               </label>
 
-              <label className={`payment-option ${formData.paymentMethod === "E_WALLET" ? "selected" : ""}`}>
-                <input type="radio" name="paymentMethod" value="E_WALLET" checked={formData.paymentMethod === "E_WALLET"} onChange={handleInputChange} />
+              <label
+                className={`payment-option ${formData.paymentMethod === "E_WALLET" ? "selected" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="E_WALLET"
+                  checked={formData.paymentMethod === "E_WALLET"}
+                  onChange={handleInputChange}
+                />
                 <span className="option-text">Thanh toán trực tuyến </span>
-                <img src={Logo} width={35} height={35} className="option-icon" />
+                <img
+                  src={Logo}
+                  width={35}
+                  height={35}
+                  className="option-icon"
+                />
                 <span>VNPAY</span>
               </label>
             </div>
-            <button className="pay-button" onClick={saveCheckout} disabled={Loading}>
+            <button
+              className="pay-button"
+              onClick={saveCheckout}
+              disabled={Loading}
+            >
               {Loading ? "Đang thực hiện..." : "Xác Nhận"}
             </button>
           </section>
         </div>
       </div>
       <div className="order-summary-checkout">
-        {checkoutInfo.map((item) => {
+        {checkoutInfo?.map((item) => {
           return (
             <div>
               <div className="product-item" key={item.cartDetailId}>
@@ -232,9 +333,26 @@ export default function Checkout() {
                   </div>
                   <div className="product-price">
                     <div className="product-previousPrice">
-                      <p>{item.productVariant.salePrice != 0 ? item.productVariant.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" }) : ""}</p>
+                      <p>
+                        {item.productVariant.salePrice != 0
+                          ? item.productVariant.price.toLocaleString("vn-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })
+                          : ""}
+                      </p>
                     </div>
-                    <div className="product-currentPrice">{item.productVariant.salePrice != 0 ? item.productVariant.salePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" }) : item.productVariant.price.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</div>
+                    <div className="product-currentPrice">
+                      {item.productVariant.salePrice != 0
+                        ? item.productVariant.salePrice.toLocaleString(
+                            "vn-VN",
+                            { style: "currency", currency: "VND" },
+                          )
+                        : item.productVariant.price.toLocaleString("vn-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -245,86 +363,157 @@ export default function Checkout() {
         <Modal show={isShow} onHide={close}>
           <Modal.Header>Mã Khả Dụng Với Sản Phẩm Của Bạn</Modal.Header>
           <Modal.Body>
-            {filterPromotion.length > 0 ? filterPromotion
-              .filter((promotion) => {
-                if (!promotion.active) return false;
-                if (!promotion.promotionUser || promotion.promotionUser.length === 0) {
-                  return true;
-                }
-                const isUserUsed = promotion.promotionUser.some((item) => item.userId === user?.id);
-                return !isUserUsed;
-              })
-              .map((promo) => {
-                const handleTotalPrice = () => {
-                  const calSum = (item) => (item.productVariant.salePrice === 0 ? item.productVariant.price : item.productVariant.salePrice);
-                  switch (promo.scope) {
-                    case "ALL":
-                      return checkoutInfo.reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
-                    case "BRAND":
-                      return checkoutInfo.filter((item) => promo.promotionBrand?.some((brand) => brand.brand === item.product.brand)).reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
-                    case "CATEGORY":
-                      return checkoutInfo.filter((item) => promo.promotionCategories.some((itm) => itm.categoryName === item.product.category)).reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
-                    case "PRODUCT":
-                      return checkoutInfo.filter((item) => promo.promotionProducts.some((itm) => itm.productName === item.product.productName)).reduce((sum, item) => sum + calSum(item) * item.quantity, 0);
+            {filterPromotion.length > 0 ? (
+              filterPromotion
+                .filter((promotion) => {
+                  if (!promotion.active) return false;
+                  if (
+                    !promotion.promotionUser ||
+                    promotion.promotionUser.length === 0
+                  ) {
+                    return true;
                   }
-                };
-                const totalCart = handleTotalPrice();
-                if (totalCart >= promo.minOrderValue) {
-                  return (
-                    <div
-                      key={promo.id}
-                      className="promotion-checkout"
-                      onClick={(e) => {
-                        if (promo.type == "PERCENTAGE") {
-                          const checkReduce = totalCart * (promo.discountValue / 100);
-                          console.log(checkReduce);
-                          if (checkReduce > promo.maxDiscount) {
-                            setReduce(promo.maxDiscount);
-                          } else {
-                            setReduce(checkReduce);
-                          }
-                        } else if (promo.type == "FIXED_AMOUNT") {
-                          setReduce(promo.maxDiscount);
-                        }
-                        fillCode(promo.code);
-                        setSelected(promo);
-                        close();
-                      }}
-                    >
-                      <div className="promotion-left">
-                        {promo.type != "PERCENTAGE" ? (
-                          <span>
-                            Giảm
-                            <p>{promo.maxDiscount.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</p>
-                          </span>
-                        ) : (
-                          <div className="promotion-left__text">
-                            <p>Giảm {promo.discountValue} %</p> <span>Tối đa {promo.maxDiscount.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="promotion-right">
-                        <div className="promotion-header">
-                          <div className="expiry-badge">HSD: {new Date(promo.endDate).toLocaleDateString("vi-Vn")}</div>
-                        </div>
-
-                        <h3 className="promotion-title">{promo.name}</h3>
-                        <p className="promotion-description">{promo.description}</p>
-
-                        <div className="promotion-footer">
-                          <div className="promo-info">
-                            <span>Cho đơn tối thiểu {promo.minOrderValue.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
-                            <span className="promo-code">{promo.code}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  const isUserUsed = promotion.promotionUser.some(
+                    (item) => item.userId === user?.id,
                   );
-                }
-              }) : <div>
-              <p className="promotion-warn">Hiện không có phiếu giảm giá khả dụng</p>
-            </div>
-            }
+                  return !isUserUsed;
+                })
+                .map((promo) => {
+                  const handleTotalPrice = () => {
+                    const calSum = (item) =>
+                      item.productVariant.salePrice === 0
+                        ? item.productVariant.price
+                        : item.productVariant.salePrice;
+                    switch (promo.scope) {
+                      case "ALL":
+                        return checkoutInfo.reduce(
+                          (sum, item) => sum + calSum(item) * item.quantity,
+                          0,
+                        );
+                      case "BRAND":
+                        return checkoutInfo
+                          .filter((item) =>
+                            promo.promotionBrand?.some(
+                              (brand) => brand.brand === item.product.brand,
+                            ),
+                          )
+                          .reduce(
+                            (sum, item) => sum + calSum(item) * item.quantity,
+                            0,
+                          );
+                      case "CATEGORY":
+                        return checkoutInfo
+                          .filter((item) =>
+                            promo.promotionCategories.some(
+                              (itm) =>
+                                itm.categoryName === item.product.category,
+                            ),
+                          )
+                          .reduce(
+                            (sum, item) => sum + calSum(item) * item.quantity,
+                            0,
+                          );
+                      case "PRODUCT":
+                        return checkoutInfo
+                          .filter((item) =>
+                            promo.promotionProducts.some(
+                              (itm) =>
+                                itm.productName === item.product.productName,
+                            ),
+                          )
+                          .reduce(
+                            (sum, item) => sum + calSum(item) * item.quantity,
+                            0,
+                          );
+                    }
+                  };
+                  const totalCart = handleTotalPrice();
+                  if (totalCart >= promo.minOrderValue) {
+                    return (
+                      <div
+                        key={promo.id}
+                        className="promotion-checkout"
+                        onClick={(e) => {
+                          if (promo.type == "PERCENTAGE") {
+                            const checkReduce =
+                              totalCart * (promo.discountValue / 100);
+                            console.log(checkReduce);
+                            if (checkReduce > promo.maxDiscount) {
+                              setReduce(promo.maxDiscount);
+                            } else {
+                              setReduce(checkReduce);
+                            }
+                          } else if (promo.type == "FIXED_AMOUNT") {
+                            setReduce(promo.maxDiscount);
+                          }
+                          fillCode(promo.code);
+                          setSelected(promo);
+                          close();
+                        }}
+                      >
+                        <div className="promotion-left">
+                          {promo.type != "PERCENTAGE" ? (
+                            <span>
+                              Giảm
+                              <p>
+                                {promo.maxDiscount.toLocaleString("vn-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })}
+                              </p>
+                            </span>
+                          ) : (
+                            <div className="promotion-left__text">
+                              <p>Giảm {promo.discountValue} %</p>{" "}
+                              <span>
+                                Tối đa{" "}
+                                {promo.maxDiscount.toLocaleString("vn-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="promotion-right">
+                          <div className="promotion-header">
+                            <div className="expiry-badge">
+                              HSD:{" "}
+                              {new Date(promo.endDate).toLocaleDateString(
+                                "vi-Vn",
+                              )}
+                            </div>
+                          </div>
+
+                          <h3 className="promotion-title">{promo.name}</h3>
+                          <p className="promotion-description">
+                            {promo.description}
+                          </p>
+
+                          <div className="promotion-footer">
+                            <div className="promo-info">
+                              <span>
+                                Cho đơn tối thiểu{" "}
+                                {promo.minOrderValue.toLocaleString("vn-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })}
+                              </span>
+                              <span className="promo-code">{promo.code}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                })
+            ) : (
+              <div>
+                <p className="promotion-warn">
+                  Hiện không có phiếu giảm giá khả dụng
+                </p>
+              </div>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={close} className="promotion-close-btn">
@@ -338,26 +527,52 @@ export default function Checkout() {
         <div className="order-totals">
           <div className="total-row">
             <span>Tạm Tính</span>
-            <span>{truePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+            <span>
+              {truePrice?.toLocaleString("vn-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </span>
           </div>
           <div className="total-row">
             <span>Voucher</span>
-            <span className="shipping-note">{selectedPromotion == null ? "Chưa áp Voucher nào" : selectedPromotion.code}</span>
+            <span className="shipping-note">
+              {selectedPromotion == null
+                ? "Chưa áp Voucher nào"
+                : selectedPromotion.code}
+            </span>
           </div>
           {selectedPromotion != null && (
             <div className="total-row">
               <span>Giảm từ Voucher </span>
-              <span>-{PromotionReduce.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+              <span>
+                -
+                {PromotionReduce.toLocaleString("vn-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </span>
             </div>
           )}
           <div className="total-row">
             <span>Số tiền được giảm </span>
-            <span>-{reducePrice.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+            <span>
+              -
+              {reducePrice.toLocaleString("vn-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </span>
           </div>
           <div className="total-row final-total">
             <span>Tổng Tiền</span>
             <div className="total-amount">
-              <span className="amount">{salePrices.toLocaleString("vn-VN", { style: "currency", currency: "VND" })}</span>
+              <span className="amount">
+                {salePrices?.toLocaleString("vn-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </span>
             </div>
           </div>
         </div>

@@ -16,7 +16,8 @@ import java.util.List;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    List<Order> findByUser_Id(long userId);
+    @Query("SELECT o FROM Order o WHERE  o.user.id = :userId order by o.id desc")
+    List<Order> findByUser_Id(@Param("userId") long userId);
     List<Order> findAll();
     Order findById(long orderId);
     void deleteById(long id);

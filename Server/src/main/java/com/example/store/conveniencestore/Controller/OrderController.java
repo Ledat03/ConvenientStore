@@ -141,12 +141,15 @@ public class OrderController {
         String redirectUrl = "https://base-store-vn.vercel.app/ordercheck";
 
         boolean isValidSignature = VNPayService.checkSignature(fields);
+        Payment payment = orderService.findbyTransactionId(transactionDTO.getVnp_TxnRef());
         if (!isValidSignature) {
             redirectUrl += "?status=invalid&txnCode=97";
+            payment.setPaymentStatus(TransactionStatus.FAILED);
+            orderService.savePayment(payment);
             response.sendRedirect(redirectUrl);
             return;
         }
-        Payment payment = orderService.findbyTransactionId(transactionDTO.getVnp_TxnRef());
+
         if (payment != null && transactionDTO.getVnp_TransactionStatus().equals("00") && transactionDTO.getVnp_ResponseCode().equals("00") ) {
                     payment.setPaymentStatus(TransactionStatus.SUCCESS);
                     payment.setPaymentDate(LocalDateTime.now());

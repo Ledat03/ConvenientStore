@@ -9,7 +9,7 @@ const Thankyou = () => {
   useEffect(() => {
     const User = JSON.parse(localStorage.getItem("user"));
     if (status && status != "success") {
-      navigate("/userprofile", { state: { User: User, ActiveTab: "orders" } });
+      navigate("/userprofile", { state: { User: User, ActiveTab: "orders" , Status:"FAILED"} });
     }
   });
 
