@@ -164,6 +164,45 @@ public class GmailService {
         }
     }
 
+    public void sendCodeRegister(
+            String gmail,
+            String number
+    ) {
+        String subject = "Xác nhận địa chỉ gmail : " + gmail;
+
+        String textContent = "Mã xác nhận của bạn là: " + number;
+
+        String htmlContent =
+                "<html><body>" +
+                        "<p>Mã xác nhận của bạn là:</p>" +
+                        "<h2>" + number + "</h2>" +
+                         "<h2> Không được phép gửi mã này cho bất kì ai ! </h2>"+
+                        "</body></html>";
+
+        try {
+            sendViaBrevo(
+                    gmail,
+                    subject,
+                    htmlContent,
+                    textContent
+            );
+
+            log.info("Đã gửi yêu cầu xác nhận email tới Brevo");
+
+        } catch (Exception e) {
+            log.error(
+                    "Gửi mail xác nhận thất bại: {}",
+                    e.getMessage(),
+                    e
+            );
+
+            throw new IllegalStateException(
+                    "Không thể gửi email xác nhận ",
+                    e
+            );
+        }
+    }
+
     private void sendViaBrevo(
             String to,
             String subject,

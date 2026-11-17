@@ -11,8 +11,11 @@ a {
   z-index: 1000;
   &__dropdown-Submenu {
     position: absolute !important;
+    inset: 0 auto auto 100% !important;
+    z-index: 1001;
+    display: block !important;
     min-width: 240px;
-    margin-left: 4px;
+    margin: 0 0 0 4px !important;
     padding: 6px;
     border: 1px solid #ebebeb;
     border-radius: 10px;
@@ -20,13 +23,30 @@ a {
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
     opacity: 0;
     visibility: hidden;
-    transform: translateX(8px);
+    pointer-events: none;
+    transform: translate3d(8px, 0, 0) !important;
+    transform-origin: left top;
+    transition:
+      opacity 0.14s ease,
+      transform 0.14s ease,
+      visibility 0s linear 0.14s;
+    will-change: opacity, transform;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 100%;
+      width: 6px;
+      height: 100%;
+    }
 
     &.show {
       opacity: 1;
       visibility: visible;
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0) !important;
       pointer-events: auto;
+      transition-delay: 0s;
     }
 
     &__item {

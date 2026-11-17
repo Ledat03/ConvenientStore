@@ -3,12 +3,14 @@ package com.example.store.conveniencestore.Controller;
 import com.example.store.conveniencestore.DTO.Request.LoginDTO;
 import com.example.store.conveniencestore.DTO.Response.ResLoginDTO;
 import com.example.store.conveniencestore.DTO.UserDTO;
+import com.example.store.conveniencestore.Domain.RePassword;
 import com.example.store.conveniencestore.Domain.RestResponse;
 import com.example.store.conveniencestore.Domain.User;
+import com.example.store.conveniencestore.EnumType.VerifyType;
 import com.example.store.conveniencestore.Service.GmailService;
+import com.example.store.conveniencestore.Service.OtpService;
 import com.example.store.conveniencestore.Service.UserService;
 import com.example.store.conveniencestore.Util.SecurityToken;
-import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -20,10 +22,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
 
 @RestController
@@ -34,7 +37,7 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityToken securityToken;
     private final UserService userService;
-    private final GmailService gmailService;
+    private final OtpService otpService;
     @Value("${store.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
 
@@ -55,7 +58,7 @@ public class AuthController {
         userLogin.setAccessToken(AuthToken);
         String refreshToken = securityToken.createRefreshToken(user.getEmail(), userLogin);
         userService.updateUserToken(refreshToken, user.getEmail());
-        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken).maxAge(refreshTokenExpiration).sameSite("None").secure(true).build();
+        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken).maxAge(refreshTokenExpiration).sameSite("None").secure(true).httpOnly(true).path("/").build();
         RestResponse<ResLoginDTO> restResponse = new RestResponse<>();
         restResponse.setStatusCode(200);
         restResponse.setError("");
@@ -64,57 +67,76 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(restResponse);
     }
 
+
+
     @PostMapping("/auth/refresh")
     public ResponseEntity<Object> refreshToken(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
             if(cookies != null) {
-                String refreshToken = "";
-                for (Cookie cookie : cookies) {
-                    if ("refreshToken".equals(cookie.getName())) {
-                        refreshToken = cookie.getValue();
-                        break;
-                    }
-                }
-                if(!refreshToken.isBlank()) {
-                    Jwt refreshTokenJwt = securityToken.checkRefreshToken(refreshToken);
+                Optional<String> refreshToken = Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("refreshToken")).findFirst().map(Cookie::getValue);
+                if (refreshToken.isPresent()) {
+                    Jwt refreshTokenJwt = securityToken.checkRefreshToken(refreshToken.get());
                     String email = refreshTokenJwt.getSubject();
                     User user = userService.findByEmail(email);
-                    if(refreshToken.equals(user.getRefreshToken())) {
-                        if(refreshTokenJwt.getExpiresAt() != null && refreshTokenJwt.getExpiresAt().isAfter(Instant.now())) {
-                            ResLoginDTO res = new ResLoginDTO("",user.getId(), user.getEmail(), user.getUsername(), user.getRole().getName());
+                    if (refreshToken.get().equals(user.getRefreshToken())) {
+                        if (refreshTokenJwt.getExpiresAt() != null && refreshTokenJwt.getExpiresAt().isAfter(Instant.now())) {
+                            ResLoginDTO res = new ResLoginDTO("", user.getId(), user.getEmail(), user.getUsername(), user.getRole().getName());
                             String accessToken = securityToken.createAccessToken(res);
-                            String newRefreshToken = securityToken.createRefreshToken(email,res);
+                            String newRefreshToken = securityToken.createRefreshToken(email, res);
                             res.setAccessToken(accessToken);
                             user.setRefreshToken(newRefreshToken);
                             userService.save(user);
-                            ResponseCookie responseCookie = ResponseCookie.from("refreshToken",newRefreshToken).maxAge(refreshTokenExpiration).sameSite("None").secure(true).httpOnly(true).path("/").build();
-                            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,responseCookie.toString()).body(res);
+                            ResponseCookie responseCookie = ResponseCookie.from("refreshToken", newRefreshToken).maxAge(refreshTokenExpiration).sameSite("None").secure(true).httpOnly(true).path("/").build();
+                            return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(res);
                         }
                     }
                 }
             }
-
         return ResponseEntity.status(403).body("Unauthenticated");
     }
 
-    @GetMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        String email = SecurityToken.getCurrentUserLogin().isPresent() ? SecurityToken.getCurrentUserLogin().get() : "";
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@RequestParam("id") long id) {
+        String email = userService.findById(id).getEmail();
+        System.out.println(email);
         userService.updateUserToken(null, email);
-        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", null).secure(true).maxAge(0).path("/").build();
+        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", "").secure(true).maxAge(0).path("/").build();
         return ResponseEntity.status(201).header(HttpHeaders.SET_COOKIE, responseCookie.toString()).build();
     }
 
     @PostMapping("/forgot")
-    public ResponseEntity<Object> forgotPassword(@RequestParam String email) {
-        User user = userService.findByEmail(email);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+    public ResponseEntity<Object> forgotPassword(@RequestParam String gmail) {
+        RestResponse<Object> restResponse = otpService.sendOtpPassword(gmail);
+        return new ResponseEntity<>(restResponse, HttpStatusCode.valueOf(restResponse.getStatusCode()));
+    }
+    @PostMapping("/verify/forgot")
+    public ResponseEntity<Object> verifyPasswordOtp(@RequestParam String gmail, @RequestParam String code) {
+        RestResponse<Object> restResponse = otpService.verifyPasswordToken(gmail, code);
+        return new ResponseEntity<>(restResponse,HttpStatusCode.valueOf(restResponse.getStatusCode()));
+    }
+    @PostMapping("/register-number")
+    public ResponseEntity<Object> sendRegisterOtp(@RequestParam String gmail) {
+        RestResponse<Object> restResponse = otpService.sendOtpRegister(gmail);
+        return new ResponseEntity<>(restResponse, HttpStatusCode.valueOf(restResponse.getStatusCode()));
+    }
+    @PostMapping("/verify/register")
+    public ResponseEntity<Object> verifyRegisterOtp(@RequestParam String gmail, @RequestParam String code) {
+        RestResponse<Object> restResponse = otpService.verifyRegisterToken(gmail, code);
+        return new ResponseEntity<>(restResponse,HttpStatusCode.valueOf(restResponse.getStatusCode()));
+    }
+    @PutMapping("/update-password")
+    public ResponseEntity<Object> updateNewPassword(@RequestBody RePassword rePassword) {
+        RestResponse<Object> restResponse = userService.updatePassword(rePassword.email(), rePassword.password());
+        return new ResponseEntity<>(restResponse,HttpStatusCode.valueOf(restResponse.getStatusCode()));
+    }
+    @PostMapping("/renew-otp")
+    public ResponseEntity<Object> renewOtp(@RequestParam String gmail,@RequestParam String type) {
+        RestResponse<Object> restResponse ;
+        if(VerifyType.EMAIL_VERIFICATION.toString().equals(type)){
+            restResponse = otpService.sendOtpRegister(gmail);
+        }else {
+            restResponse = otpService.sendOtpPassword(gmail);
         }
-        Random random = new Random();
-        long number = random.nextLong(90000) + 10000;
-        String code = String.valueOf(number);
-        gmailService.sendCodeResetPassword(email, code);
-        return ResponseEntity.ok().body(code);
+        return new ResponseEntity<>(restResponse, HttpStatusCode.valueOf(restResponse.getStatusCode()));
     }
 }

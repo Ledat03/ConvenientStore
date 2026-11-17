@@ -1,4 +1,3 @@
-import { Await } from "react-router-dom";
 import APIsCustomize from "../utils/APIsCustomize";
 
 const createNewUser = async (user) => {

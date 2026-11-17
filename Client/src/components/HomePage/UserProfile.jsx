@@ -159,6 +159,11 @@ const UserProfile = () => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("vi-VN");
   };
+  const getTotalItems = (order) =>
+    order?.orderItemDTOs?.reduce(
+      (total, item) => total + (item.quantity || 0),
+      0,
+    ) || 0;
   const confirmCancel = async (id) => {
     const res = await cancelOrder(id);
     toast.success("Hủy đơn hàng thành công !");
@@ -213,9 +218,9 @@ const UserProfile = () => {
           </p>
         </div>
 
-        <div className="profile-content">
+        <div className={`profile-content profile-content-${activeTab}`}>
           {activeTab === "personal" && (
-            <div className="tab-content">
+            <div className="tab-content personal-tab-content">
               <form
                 onSubmit={handlePersonalInfoSubmit}
                 className="personal-info-form"
@@ -296,7 +301,7 @@ const UserProfile = () => {
           )}
 
           {activeTab === "password" && (
-            <div className="tab-content">
+            <div className="tab-content password-tab-content">
               <form onSubmit={handlePasswordSubmit} className="password-form">
                 <div className="form-group">
                   <label htmlFor="currentPassword">Mật khẩu hiện tại</label>
@@ -365,6 +370,17 @@ const UserProfile = () => {
           </>
           {activeTab === "orders" && (
             <div className="tab-content">
+              <div className="orders-toolbar">
+                <div>
+                  <span className="orders-eyebrow">Lịch sử mua sắm</span>
+                  <h2>Đơn hàng của bạn</h2>
+                  <p>Kiểm tra trạng thái và quản lý các đơn hàng gần đây.</p>
+                </div>
+                <div className="orders-count">
+                  <strong>{Order?.length || 0}</strong>
+                  <span>đơn hàng</span>
+                </div>
+              </div>
               <div className="orders-list">
                 {Order?.length === 0 ? (
                   <div className="empty-orders">
@@ -496,10 +512,23 @@ const UserProfile = () => {
             </div>
             <div className="modal-body">
               <div className="order-products">
+                <div className="detail-summary">
+                  <div>
+                    <span className="detail-summary-label">Đơn hàng</span>
+                    <strong>#{selectedOrder.orderId}</strong>
+                  </div>
+                  <div className="detail-item-count">
+                    <span className="detail-summary-label">Tổng sản phẩm</span>
+                    <strong>{getTotalItems(selectedOrder)} sản phẩm</strong>
+                  </div>
+                </div>
                 <h4>Sản phẩm đã mua</h4>
                 <div className="products-list">
                   {selectedOrder.orderItemDTOs.map((item) => (
-                    <div key={item.orderId} className="product-item">
+                    <div
+                      key={`${item.orderId}-${item.product.productId}`}
+                      className="product-item"
+                    >
                       <img
                         src={item.product.image || "/placeholder.svg"}
                         alt={item.product.productName}

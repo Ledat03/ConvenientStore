@@ -8,7 +8,7 @@ import { getMainPage } from "../../services/UserSevice";
 import { AddToCart } from "../../services/UserSevice";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import { useState, useEffect } from "react";
-export const Home = (props) => {
+export const Home = () => {
   const [Product, setProduct] = useState([]);
   const fetchListProduct = async () => {
     const res = await getMainPage();
@@ -40,7 +40,7 @@ export const Home = (props) => {
         productId: productId,
         quantity: 1,
       };
-      const res = await AddToCart(info);
+      await AddToCart(info);
       toast.success("Thêm Vào Giỏ Hàng Thành Công");
     } catch (e) {
       toast.error("Tạm thời đã tới giới hạn số lượng sản phẩm");

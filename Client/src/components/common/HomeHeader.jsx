@@ -72,19 +72,26 @@ const HomeHeader = () => {
 
                             <FaCaretRight style={{ marginLeft: "auto" }} />
                           </Dropdown.Toggle>
-                          <Dropdown.Menu
-                            renderOnMount
-                            popperConfig={{ strategy: "fixed" }}
-                            className="header__dropdown-Submenu">
+                          <div
+                            role="menu"
+                            aria-hidden={openIdx !== idx}
+                            className={`header__dropdown-Submenu ${openIdx === idx ? "show" : ""}`}
+                          >
                             {cate.subCategories.map((item) => (
-                              <Dropdown
+                              <div
                                 key={item.id}
                                 className="header__dropdown-Submenu__item"
                               >
-                                <a className="header__subcategory-link" href={`/products?sub-category=${item.subCategoryName}`}>{item.subCategoryName}</a>
-                              </Dropdown>
+                                <a
+                                  role="menuitem"
+                                  className="header__subcategory-link"
+                                  href={`/products?sub-category=${item.subCategoryName}`}
+                                >
+                                  {item.subCategoryName}
+                                </a>
+                              </div>
                             ))}
-                          </Dropdown.Menu>
+                          </div>
                         </Dropdown>
                       ))}
                     </Dropdown.Menu>
@@ -126,7 +133,7 @@ const HomeHeader = () => {
                     <Dropdown.Item onClick={() => navigate("/userprofile", { state: { User: user } })}>Thông tin cá nhân</Dropdown.Item>
                     <Dropdown.Item
                       onClick={async () => {
-                        await fetchLogOut();
+                        await fetchLogOut(user.id);
                         localStorage.clear();
                         navigate("/");
                       }}

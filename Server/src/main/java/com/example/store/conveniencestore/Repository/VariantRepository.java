@@ -2,6 +2,7 @@ package com.example.store.conveniencestore.Repository;
 
 import com.example.store.conveniencestore.Domain.Product;
 import com.example.store.conveniencestore.Domain.ProductVariant;
+import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,12 +16,12 @@ import java.util.List;
 @Repository
 public interface VariantRepository extends JpaRepository<ProductVariant,Long>, JpaSpecificationExecutor<ProductVariant> {
 
-    ProductVariant save(ProductVariant productVariant);
+    ProductVariant save(@NonNull ProductVariant productVariant);
     ProductVariant findByVariantId(long id);
     List<ProductVariant> findByProduct_ProductId(long productProductId);
-    void delete(ProductVariant productVariant);
+    void delete(@NonNull ProductVariant productVariant);
     void deleteAllByProduct(Product product);
-    Page<ProductVariant> findAll(Specification<ProductVariant> spec, Pageable pageable);
+    Page<ProductVariant> findAll(Specification<ProductVariant> spec, @NonNull Pageable pageable);
     @Query("SELECT pv.calUnit FROM ProductVariant pv JOIN pv.product p JOIN p.brand b JOIN p.category c WHERE (:category IS NULL OR c.categoryName = :category) AND (:subCategory IS NULL OR p.subCategory.subCategoryName = :subCategory) AND (:productName IS NULL OR LOWER(p.productName) like LOWER(CONCAT('%' , :productName , '%'))) GROUP BY pv.calUnit")
     List<String> facetUnit(
             @Param("category") String category,

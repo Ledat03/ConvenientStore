@@ -56,6 +56,7 @@ public class User {
     @OneToOne(fetch = FetchType.EAGER,mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private Cart cart;
+    private boolean verifiedEmail;
     public static User convertUserDTOToUser(UserDTO userDTO, UserService userService, PasswordEncoder passwordEncoder,Role role) {
         User user = new User();
         user.setId(userDTO.getId());

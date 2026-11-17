@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.smartcardio.CardException;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -73,7 +74,17 @@ public class UserService {
     public Page<User> getUserByEmailOrRole(String name, String role, Pageable pageable){
         return userRepository.findUserByEmailOrRole(name,role,pageable);
     }
-
+    @Transactional
+    public RestResponse<Object> updatePassword(String gmail,String password){
+        User user  = findByEmail(gmail);
+        if(passwordEncoder.matches(password,user.getPasswordHash())) return RestResponse.error(409,"Password has already used for old password ");
+        String hashPassword = passwordEncoder.encode(password);
+        user.setPasswordHash(hashPassword);
+        user.setUpdatedAt(Instant.now());
+        user.setUpdatedBy("user");
+        save(user);
+        return RestResponse.ok(200,"Update successfully");
+    }
     public RestResponse<List<UserDTO>> handleListUser() {
         List<User> users = findAll();
         List<UserDTO> userDTOs = users.stream().map(UserDTO::new).toList();

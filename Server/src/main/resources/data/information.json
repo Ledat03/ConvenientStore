@@ -1,0 +1,38 @@
+[
+  {
+    "type": "TERM_SERVICE",
+    "topic": "RETURN_POLICY",
+    "aliases": ["đổi trả", "trả hàng", "chính sách đổi trả"],
+    "answer": ""
+  },
+  {
+    "type": "TERM_SERVICE",
+    "topic": "REFUND_POLICY",
+    "aliases": ["hoàn tiền", "chính sách hoàn tiền"],
+    "answer": ""
+  },
+  {
+    "type": "TERM_SERVICE",
+    "topic": "PRIVACY_POLICY",
+    "aliases": ["bảo mật", "thông tin cá nhân", "chính sách bảo mật"],
+    "answer": ""
+  },
+  {
+    "type": "GENERAL_SUPPORT",
+    "topic": "CHECKOUT",
+    "aliases": ["đặt hàng", "mua hàng", "thanh toán"],
+    "answer": "Để mua hàng, bạn hãy chọn sản phẩm và biến thể phù hợp, thêm vào giỏ hàng rồi chuyển sang bước thanh toán. Tại trang thanh toán, bạn có thể điền thông tin nhận hàng, lựa chọn phương thức giao hàng và thanh toán."
+  },
+  {
+    "type": "GENERAL_SUPPORT",
+    "topic": "VNPAY",
+    "aliases": ["vnpay", "thanh toán vnpay", "ví điện tử"],
+    "answer": "Tại bước thanh toán, bạn có thể lựa chọn phương thức VNPay. Sau khi gửi đơn hàng, hệ thống sẽ chuyển bạn đến trang thanh toán VNPay để tiếp tục giao dịch."
+  },
+  {
+    "type": "GENERAL_SUPPORT",
+    "topic": "VOUCHER",
+    "aliases": ["áp dụng voucher", "nhập voucher", "sử dụng mã giảm giá"],
+    "answer": "Bạn có thể lựa chọn voucher tại bước thanh toán. Hãy kiểm tra điều kiện áp dụng của mã trước khi hoàn tất đơn hàng."
+  }
+]

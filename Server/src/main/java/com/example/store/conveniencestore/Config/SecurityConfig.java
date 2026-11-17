@@ -21,12 +21,15 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import com.example.store.conveniencestore.Service.UserDetailsCustom;
 import com.example.store.conveniencestore.Service.UserService;
 import com.example.store.conveniencestore.Util.SecurityToken;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
+
+import java.security.SecureRandom;
 import java.util.List;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -43,13 +46,20 @@ public class SecurityConfig {
         this.userService = userService;
         this.entryPointConfig = entryPointConfig;
     }
-
+    @Bean
+    public SecureRandom secureRandom() {
+        return new SecureRandom();
+    }
     @Value("${store.jwt.base64-secret}")
     private String jwtPrivateKey;
 
     @Value("${store.jwt.access-token-validity-in-seconds}")
     private long jwtExpiredTime;
 
+    @Bean
+    public RestTemplate restTemplate(){
+        return new RestTemplate();
+    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -90,12 +100,17 @@ public class SecurityConfig {
                         "/product/view/**",
                         "/variant/view/**",
                         "/main/",
+                        "/api/check/forgot",
+                        "/api/check/verify/forgot",
+                        "/api/check/update-password",
                         "/brand/view",
                         "/promotion/view",
+                        "/api/check/logout/**",
                         "/order/vnpay_jsp/vnpay_return",
                         "/user/re-password",
                         "/api/check/login",
                         "/api/check/signup",
+                        "/api/chatbot/message",
                         "/product/all_products"
                 )
                 .csrf(AbstractHttpConfigurer::disable)

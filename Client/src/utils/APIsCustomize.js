@@ -23,6 +23,7 @@ APIsCustomize.interceptors.response.use(
     return res;
   },
   async (error) => {
+    console.log(error.response)
     let user = localStorage.getItem("user");
     if (user == null) {
       return Promise.reject(error);
@@ -47,7 +48,7 @@ APIsCustomize.interceptors.response.use(
     }
     if (error.response.status === 403) {
       try {
-        await fetchLogOut();
+        await fetchLogOut(user?.id);
         localStorage.removeItem("accessToken");
         localStorage.removeItem("user");
         window.location.href = "/authenticate";
@@ -56,7 +57,7 @@ APIsCustomize.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-    return Promise.reject(error);
+    return error;
   },
 );
 

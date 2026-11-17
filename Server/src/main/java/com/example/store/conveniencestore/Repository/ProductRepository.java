@@ -21,7 +21,7 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> , JpaSpecificationExecutor<Product> {
     Product save(Product product);
     Page<Product> findAll(Pageable pageable);
-    @Query("SELECT p from Product p")
+    @Query("SELECT p from Product p ORDER BY p.productId DESC LIMIT 40")
     List<Product> getAllProduct();
     @Query("Select p from Product p where " + " (:name IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%' , :name , '%'))) " + " and ( :isActive IS NULL OR p.isActive = :isActive ) and ( :status IS NULL OR p.status = :status) ")
     Page<Product> getProductsWithNameAndStatusAndState(@Param("name")String name,@Param("isActive") Boolean isActive,@Param("status") String status,Pageable pageable);
@@ -38,6 +38,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> , JpaSpe
     List<String> facetUnitBrand(@Param("category") String category,
                                 @Param("subCategory") String subCategory,
                                 @Param("productName") String productName);
+    @Query("SELECT p.productId from Product p WHERE p.productName LIKE LOWER(CONCAT('%',:productName,'%'))")
+    List<Long> findByProductsName(@Param("productName") String productName);
     Product findById(long id);
     void deleteById(Long id);
     List<Product> findByCategory_CategoryName(String categoryCategoryName);

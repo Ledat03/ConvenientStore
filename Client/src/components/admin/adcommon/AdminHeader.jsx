@@ -23,7 +23,8 @@ export const AdminHeader = ({ setCollapse, collapse, user } = props) => {
               <Dropdown.Item onClick={() => navigate("/userprofile", { state: { User: user } })}>Thông tin cá nhân</Dropdown.Item>
               <Dropdown.Item
                 onClick={async () => {
-                  await fetchLogOut();
+                  console.log(user.id)
+                  await fetchLogOut(user?.id);
                   localStorage.clear();
                   navigate("/");
                 }}
